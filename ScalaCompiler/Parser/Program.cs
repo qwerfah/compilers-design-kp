@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScalaCompiler
+namespace Parser
 {
     class Program
     {
