@@ -1,1 +1,1 @@
-# compilers-design-kp
+## Компилятор Scala в WebAssembly
