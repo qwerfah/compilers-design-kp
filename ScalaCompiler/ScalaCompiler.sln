@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScalaLexer", "ScalaLexer\ScalaLexer.csproj", "{ADBDA5E3-0833-43AD-A554-E0392B82F481}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parser", "Parser\Parser.csproj", "{C2925189-B624-45DD-ADB7-9C32DA7653C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{C2925189-B624-45DD-ADB7-9C32DA7653C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "Compiler\Compiler.csproj", "{7174C857-879A-4597-AB25-0A02AC2D687B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ADBDA5E3-0833-43AD-A554-E0392B82F481}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADBDA5E3-0833-43AD-A554-E0392B82F481}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADBDA5E3-0833-43AD-A554-E0392B82F481}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADBDA5E3-0833-43AD-A554-E0392B82F481}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C2925189-B624-45DD-ADB7-9C32DA7653C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C2925189-B624-45DD-ADB7-9C32DA7653C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2925189-B624-45DD-ADB7-9C32DA7653C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2925189-B624-45DD-ADB7-9C32DA7653C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7174C857-879A-4597-AB25-0A02AC2D687B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7174C857-879A-4597-AB25-0A02AC2D687B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7174C857-879A-4597-AB25-0A02AC2D687B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7174C857-879A-4597-AB25-0A02AC2D687B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
