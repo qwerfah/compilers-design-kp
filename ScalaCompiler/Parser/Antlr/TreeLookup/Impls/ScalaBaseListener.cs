@@ -19,10 +19,13 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
-namespace Parser.Antlr.Grammar {
+namespace Parser.Antlr.TreeLookup.Impls
+{
 
 using Antlr4.Runtime.Misc;
-using IErrorNode = Antlr4.Runtime.Tree.IErrorNode;
+    using Parser.Antlr.Grammar;
+    using Parser.Antlr.TreeLookup.Interfaces;
+    using IErrorNode = Antlr4.Runtime.Tree.IErrorNode;
 using ITerminalNode = Antlr4.Runtime.Tree.ITerminalNode;
 using IToken = Antlr4.Runtime.IToken;
 using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;

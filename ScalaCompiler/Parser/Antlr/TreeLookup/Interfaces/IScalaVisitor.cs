@@ -19,10 +19,12 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
-namespace Parser.Antlr.Grammar {
+namespace Parser.Antlr.TreeLookup.Interfaces
+{
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using IToken = Antlr4.Runtime.IToken;
+    using Parser.Antlr.Grammar;
+    using IToken = Antlr4.Runtime.IToken;
 
 /// <summary>
 /// This interface defines a complete generic visitor for a parse tree produced
