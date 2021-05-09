@@ -15,7 +15,7 @@ namespace Parser.ErrorListeners
 {
     public class ParserErrorListener : BaseErrorListener
     {
-        public List<SyntaxError> SyntaxErrors { get; } = new();
+        public List<SyntaxError<IToken>> SyntaxErrors { get; } = new();
         
         public override void ReportAmbiguity(
             [NotNull] Antlr4.Runtime.Parser recognizer,
@@ -62,7 +62,8 @@ namespace Parser.ErrorListeners
                                     $"charPositionInLine = {charPositionInLine}; " +
                                     $"message = {msg}\n");
             
-            SyntaxErrors.Add(new SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e));
+            SyntaxErrors.Add(new SyntaxError<IToken>(
+                recognizer, offendingSymbol, line, charPositionInLine, msg, e));
         }
     }
 }
