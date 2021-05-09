@@ -10,7 +10,7 @@ namespace Compiler
     {
         static void Main(string[] args)
         {
-            string workingDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+            string workingDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.FullName;
             string expression = File.ReadAllText(workingDirectory + "/Resources/code.scala");
 
             var inputStream = new AntlrInputStream(expression);
@@ -24,7 +24,12 @@ namespace Compiler
             parser.AddErrorListener(new ParserErrorListener());
 
             parser.BuildParseTree = true;
-            Console.WriteLine(parser.compilationUnit().ToStringTree());
+            var tree = parser.compilationUnit();
+
+            if (parser.NumberOfSyntaxErrors == 0)
+            {
+                Console.WriteLine(tree.ToStringTree(parser));
+            }
         }
     }
 }
