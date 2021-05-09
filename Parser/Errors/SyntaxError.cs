@@ -2,10 +2,10 @@ using Antlr4.Runtime;
 
 namespace Parser.Errors
 {
-    public class SyntaxError
+    public class SyntaxError<TSymbol>
     {
         public IRecognizer Recognizer { get; }
-        public IToken OffendingSymbol { get; }
+        public TSymbol OffendingSymbol { get; }
         public int Line { get; }
         public int CharPositionInLine { get; }
         public string Message { get; }
@@ -13,7 +13,7 @@ namespace Parser.Errors
 
         public SyntaxError(
             IRecognizer recognizer, 
-            IToken offendingSymbol, 
+            TSymbol offendingSymbol, 
             int line, 
             int charPositionInLine,
             string message, 
