@@ -13,8 +13,14 @@ using Parser.Errors;
 
 namespace Parser.ErrorListeners
 {
+    /// <summary>
+    /// Parser error listener for gathering parser errors.
+    /// </summary>
     public class ParserErrorListener : BaseErrorListener
     {
+        /// <summary>
+        /// List of syntax errors.
+        /// </summary>
         public List<SyntaxError<IToken>> SyntaxErrors { get; } = new();
         
         public override void ReportAmbiguity(

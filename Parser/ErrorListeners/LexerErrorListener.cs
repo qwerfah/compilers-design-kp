@@ -9,8 +9,14 @@ using Parser.Errors;
 
 namespace Parser.ErrorListeners
 {
+    /// <summary>
+    /// Lexer error listener for gathering syntax errors.
+    /// </summary>
     public class LexerErrorListener : IAntlrErrorListener<int>
     {
+        /// <summary>
+        /// List of syntax errors.
+        /// </summary>
         public List<SyntaxError<int>> SyntaxErrors { get; } = new();
         
         public void SyntaxError(
