@@ -2,6 +2,7 @@
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Tree;
 using Parser.Antlr.Grammar;
+using Parser.Antlr.TreeLookup.Impls;
 using Parser.ErrorListeners;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,7 @@ namespace Compiler
 
             lexer.AddErrorListener(new LexerErrorListener());
 
+            Console.WriteLine("\n**************************** TOKENS ****************************");
             foreach (var token in lexer.GetAllTokens())
             {
                 Console.WriteLine(token);
@@ -62,11 +64,20 @@ namespace Compiler
             parser.ErrorHandler = new DefaultErrorStrategy();
             tree = parser.compilationUnit();
 
-
+            Console.WriteLine("\n***************************** TREE *****************************");
             if (parser.NumberOfSyntaxErrors == 0)
             {
                 Lookup(tree);
             }
+
+            var visitor = new ScalaBaseVisitor<bool>();
+            Console.WriteLine("\n***************************** VISITOR *****************************");
+            visitor.Visit(tree);
+
+            var listener = new ScalaBaseListener();
+            var walker = new ParseTreeWalker();
+            Console.WriteLine("\n***************************** LISTENER *****************************");
+            walker.Walk(listener, tree);
         }
     }
 }
