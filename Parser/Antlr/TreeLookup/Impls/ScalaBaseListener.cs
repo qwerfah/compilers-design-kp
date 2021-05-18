@@ -25,6 +25,8 @@ namespace Parser.Antlr.TreeLookup.Impls
     using Antlr4.Runtime.Misc;
     using Parser.Antlr.Grammar;
     using Parser.Antlr.TreeLookup.Interfaces;
+    using System;
+    using System.Collections.Generic;
     using IErrorNode = Antlr4.Runtime.Tree.IErrorNode;
     using ITerminalNode = Antlr4.Runtime.Tree.ITerminalNode;
     using IToken = Antlr4.Runtime.IToken;
@@ -39,70 +41,110 @@ namespace Parser.Antlr.TreeLookup.Impls
     [System.CLSCompliant(false)]
     public partial class ScalaBaseListener : IScalaListener
     {
+        public Dictionary<int, string> literals = new();
+        public Dictionary<int, string> identifiers = new();
+
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.literal"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterLiteral([NotNull] ScalaParser.LiteralContext context) { }
+        public virtual void EnterLiteral([NotNull] ScalaParser.LiteralContext context)
+        {
+            Console.WriteLine($"Enter literal <{context.GetText()}>");
+            literals.Add(literals.Count, context.GetText());
+        }
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.literal"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitLiteral([NotNull] ScalaParser.LiteralContext context) { }
+        public virtual void ExitLiteral([NotNull] ScalaParser.LiteralContext context) 
+        {
+            Console.WriteLine($"Exit literal <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.qualId"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterQualId([NotNull] ScalaParser.QualIdContext context) { }
+        public virtual void EnterQualId([NotNull] ScalaParser.QualIdContext context) 
+        {
+            Console.WriteLine($"Enter qualId <{context.GetText()}>");
+            identifiers.Add(identifiers.Count, context.GetText());
+        }
+
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.qualId"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitQualId([NotNull] ScalaParser.QualIdContext context) { }
+        public virtual void ExitQualId([NotNull] ScalaParser.QualIdContext context)
+        {
+            Console.WriteLine($"Exit qualId <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.ids"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterIds([NotNull] ScalaParser.IdsContext context) { }
+        public virtual void EnterIds([NotNull] ScalaParser.IdsContext context) 
+        {
+            Console.WriteLine($"Enter Ids <{context.GetText()}>");
+            identifiers.Add(identifiers.Count, context.GetText());
+        }
+
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.ids"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitIds([NotNull] ScalaParser.IdsContext context) { }
+        public virtual void ExitIds([NotNull] ScalaParser.IdsContext context)
+        {
+            Console.WriteLine($"Exit Ids <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.stableId"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterStableId([NotNull] ScalaParser.StableIdContext context) { }
+        public virtual void EnterStableId([NotNull] ScalaParser.StableIdContext context)
+        {
+            Console.WriteLine($"Enter stableId <{context.GetText()}>");
+            identifiers.Add(identifiers.Count, context.GetText());
+        }
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.stableId"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitStableId([NotNull] ScalaParser.StableIdContext context) { }
+        public virtual void ExitStableId([NotNull] ScalaParser.StableIdContext context)
+        {
+            Console.WriteLine($"Exit stableId <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.classQualifier"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterClassQualifier([NotNull] ScalaParser.ClassQualifierContext context) { }
+        public virtual void EnterClassQualifier([NotNull] ScalaParser.ClassQualifierContext context) 
+        {
+            Console.WriteLine($"Enter classQualifier <{context.GetText()}>");
+        }
+
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.classQualifier"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitClassQualifier([NotNull] ScalaParser.ClassQualifierContext context) { }
+        public virtual void ExitClassQualifier([NotNull] ScalaParser.ClassQualifierContext context)
+        {
+            Console.WriteLine($"Exit classQualifier <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.type_"/>.
@@ -291,13 +333,20 @@ namespace Parser.Antlr.TreeLookup.Impls
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterExpr([NotNull] ScalaParser.ExprContext context) { }
+        public virtual void EnterExpr([NotNull] ScalaParser.ExprContext context)
+        {
+            Console.WriteLine($"Enter expr <{context.GetText()}>");
+        }
+
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.expr"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitExpr([NotNull] ScalaParser.ExprContext context) { }
+        public virtual void ExitExpr([NotNull] ScalaParser.ExprContext context)
+        {
+            Console.WriteLine($"Exit expr <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.expr1"/>.
@@ -746,52 +795,80 @@ namespace Parser.Antlr.TreeLookup.Impls
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterClassParamClauses([NotNull] ScalaParser.ClassParamClausesContext context) { }
+        public virtual void EnterClassParamClauses([NotNull] ScalaParser.ClassParamClausesContext context)
+        {
+            Console.WriteLine($"Enter classParamClauses <{context.GetText()}>");
+        }
+
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.classParamClauses"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitClassParamClauses([NotNull] ScalaParser.ClassParamClausesContext context) { }
+        public virtual void ExitClassParamClauses([NotNull] ScalaParser.ClassParamClausesContext context)
+        {
+            Console.WriteLine($"Exit classParamClauses <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.classParamClause"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterClassParamClause([NotNull] ScalaParser.ClassParamClauseContext context) { }
+        public virtual void EnterClassParamClause([NotNull] ScalaParser.ClassParamClauseContext context)
+        {
+            Console.WriteLine($"Enter classParamClause <{context.GetText()}>");
+        }
+
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.classParamClause"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitClassParamClause([NotNull] ScalaParser.ClassParamClauseContext context) { }
+        public virtual void ExitClassParamClause([NotNull] ScalaParser.ClassParamClauseContext context)
+        {
+            Console.WriteLine($"Exit classParamClause <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.classParams"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterClassParams([NotNull] ScalaParser.ClassParamsContext context) { }
+        public virtual void EnterClassParams([NotNull] ScalaParser.ClassParamsContext context)
+        {
+            Console.WriteLine($"Enter classParams <{context.GetText()}>");
+        }
+
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.classParams"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitClassParams([NotNull] ScalaParser.ClassParamsContext context) { }
+        public virtual void ExitClassParams([NotNull] ScalaParser.ClassParamsContext context)
+        {
+            Console.WriteLine($"Exit classParams <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.classParam"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterClassParam([NotNull] ScalaParser.ClassParamContext context) { }
+        public virtual void EnterClassParam([NotNull] ScalaParser.ClassParamContext context)
+        {
+            Console.WriteLine($"Enter classParam <{context.GetText()}>");
+        }
+
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.classParam"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitClassParam([NotNull] ScalaParser.ClassParamContext context) { }
+        public virtual void ExitClassParam([NotNull] ScalaParser.ClassParamContext context)
+        {
+            Console.WriteLine($"Exit classParam <{context.GetText()}>");
+        }
 
         /// <summary>
         /// Enter a parse tree produced by <see cref="ScalaParser.bindings"/>.
@@ -1409,13 +1486,19 @@ namespace Parser.Antlr.TreeLookup.Impls
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void EnterCompilationUnit([NotNull] ScalaParser.CompilationUnitContext context) { }
+        public virtual void EnterCompilationUnit([NotNull] ScalaParser.CompilationUnitContext context) 
+        {
+            Console.WriteLine($"Enter compilation unit <{context.GetText()}>");
+        }
         /// <summary>
         /// Exit a parse tree produced by <see cref="ScalaParser.compilationUnit"/>.
         /// <para>The default implementation does nothing.</para>
         /// </summary>
         /// <param name="context">The parse tree.</param>
-        public virtual void ExitCompilationUnit([NotNull] ScalaParser.CompilationUnitContext context) { }
+        public virtual void ExitCompilationUnit([NotNull] ScalaParser.CompilationUnitContext context) 
+        {
+            Console.WriteLine($"Exit compilation unit <{context.GetText()}>");
+        }
 
         /// <inheritdoc/>
         /// <remarks>The default implementation does nothing.</remarks>
