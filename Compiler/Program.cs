@@ -45,6 +45,7 @@ namespace Compiler
             var lexer = new ScalaLexer(inputStream);
 
             lexer.AddErrorListener(new LexerErrorListener());
+
             foreach (var token in lexer.GetAllTokens())
             {
                 Console.WriteLine(token);
@@ -60,7 +61,7 @@ namespace Compiler
             parser.Interpreter.PredictionMode = PredictionMode.Sll;
             parser.ErrorHandler = new DefaultErrorStrategy();
             tree = parser.compilationUnit();
-            
+
 
             if (parser.NumberOfSyntaxErrors == 0)
             {

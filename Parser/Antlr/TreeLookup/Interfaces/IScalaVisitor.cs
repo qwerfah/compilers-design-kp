@@ -21,759 +21,760 @@
 
 namespace Parser.Antlr.TreeLookup.Interfaces
 {
-using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
+    using Antlr4.Runtime.Misc;
+    using Antlr4.Runtime.Tree;
     using Parser.Antlr.Grammar;
     using IToken = Antlr4.Runtime.IToken;
 
-/// <summary>
-/// This interface defines a complete generic visitor for a parse tree produced
-/// by <see cref="ScalaParser"/>.
-/// </summary>
-/// <typeparam name="Result">The return type of the visit operation.</typeparam>
-[System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.6.6")]
-[System.CLSCompliant(false)]
-public interface IScalaVisitor<Result> : IParseTreeVisitor<Result> {
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.literal"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitLiteral([NotNull] ScalaParser.LiteralContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.qualId"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitQualId([NotNull] ScalaParser.QualIdContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.ids"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitIds([NotNull] ScalaParser.IdsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.stableId"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitStableId([NotNull] ScalaParser.StableIdContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classQualifier"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassQualifier([NotNull] ScalaParser.ClassQualifierContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.type_"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitType_([NotNull] ScalaParser.Type_Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.functionArgTypes"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFunctionArgTypes([NotNull] ScalaParser.FunctionArgTypesContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.existentialClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitExistentialClause([NotNull] ScalaParser.ExistentialClauseContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.existentialDcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitExistentialDcl([NotNull] ScalaParser.ExistentialDclContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.infixType"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitInfixType([NotNull] ScalaParser.InfixTypeContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.compoundType"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitCompoundType([NotNull] ScalaParser.CompoundTypeContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.annotType"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitAnnotType([NotNull] ScalaParser.AnnotTypeContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.simpleType"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitSimpleType([NotNull] ScalaParser.SimpleTypeContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.typeArgs"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTypeArgs([NotNull] ScalaParser.TypeArgsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.types"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTypes([NotNull] ScalaParser.TypesContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.refinement"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitRefinement([NotNull] ScalaParser.RefinementContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.refineStat"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitRefineStat([NotNull] ScalaParser.RefineStatContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.typePat"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTypePat([NotNull] ScalaParser.TypePatContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.ascription"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitAscription([NotNull] ScalaParser.AscriptionContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitExpr([NotNull] ScalaParser.ExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.expr1"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitExpr1([NotNull] ScalaParser.Expr1Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.prefixDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPrefixDef([NotNull] ScalaParser.PrefixDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.postfixExpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPostfixExpr([NotNull] ScalaParser.PostfixExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.infixExpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitInfixExpr([NotNull] ScalaParser.InfixExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.prefixExpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPrefixExpr([NotNull] ScalaParser.PrefixExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.simpleExpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitSimpleExpr([NotNull] ScalaParser.SimpleExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.simpleExpr1"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitSimpleExpr1([NotNull] ScalaParser.SimpleExpr1Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.exprs"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitExprs([NotNull] ScalaParser.ExprsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.argumentExprs"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArgumentExprs([NotNull] ScalaParser.ArgumentExprsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.args"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArgs([NotNull] ScalaParser.ArgsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.blockExpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitBlockExpr([NotNull] ScalaParser.BlockExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.block"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitBlock([NotNull] ScalaParser.BlockContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.blockStat"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitBlockStat([NotNull] ScalaParser.BlockStatContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.resultExpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitResultExpr([NotNull] ScalaParser.ResultExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.enumerators"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitEnumerators([NotNull] ScalaParser.EnumeratorsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.generator"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitGenerator([NotNull] ScalaParser.GeneratorContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.caseClauses"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitCaseClauses([NotNull] ScalaParser.CaseClausesContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.caseClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitCaseClause([NotNull] ScalaParser.CaseClauseContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.guard"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitGuard([NotNull] ScalaParser.GuardContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.pattern"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPattern([NotNull] ScalaParser.PatternContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.pattern1"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPattern1([NotNull] ScalaParser.Pattern1Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.pattern2"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPattern2([NotNull] ScalaParser.Pattern2Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.pattern3"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPattern3([NotNull] ScalaParser.Pattern3Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.simplePattern"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitSimplePattern([NotNull] ScalaParser.SimplePatternContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.patterns"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPatterns([NotNull] ScalaParser.PatternsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.typeParamClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTypeParamClause([NotNull] ScalaParser.TypeParamClauseContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.funTypeParamClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFunTypeParamClause([NotNull] ScalaParser.FunTypeParamClauseContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.variantTypeParam"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVariantTypeParam([NotNull] ScalaParser.VariantTypeParamContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.typeParam"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTypeParam([NotNull] ScalaParser.TypeParamContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.paramClauses"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitParamClauses([NotNull] ScalaParser.ParamClausesContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.paramClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitParamClause([NotNull] ScalaParser.ParamClauseContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.params"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitParams([NotNull] ScalaParser.ParamsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.param"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitParam([NotNull] ScalaParser.ParamContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.paramType"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitParamType([NotNull] ScalaParser.ParamTypeContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classParamClauses"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassParamClauses([NotNull] ScalaParser.ClassParamClausesContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classParamClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassParamClause([NotNull] ScalaParser.ClassParamClauseContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classParams"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassParams([NotNull] ScalaParser.ClassParamsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classParam"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassParam([NotNull] ScalaParser.ClassParamContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.bindings"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitBindings([NotNull] ScalaParser.BindingsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.binding"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitBinding([NotNull] ScalaParser.BindingContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.modifier"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitModifier([NotNull] ScalaParser.ModifierContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.localModifier"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitLocalModifier([NotNull] ScalaParser.LocalModifierContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.accessModifier"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitAccessModifier([NotNull] ScalaParser.AccessModifierContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.accessQualifier"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitAccessQualifier([NotNull] ScalaParser.AccessQualifierContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.annotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitAnnotation([NotNull] ScalaParser.AnnotationContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.constrAnnotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitConstrAnnotation([NotNull] ScalaParser.ConstrAnnotationContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.templateBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTemplateBody([NotNull] ScalaParser.TemplateBodyContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.templateStat"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTemplateStat([NotNull] ScalaParser.TemplateStatContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.selfType"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitSelfType([NotNull] ScalaParser.SelfTypeContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.import_"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitImport_([NotNull] ScalaParser.Import_Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.importExpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitImportExpr([NotNull] ScalaParser.ImportExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.importSelectors"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitImportSelectors([NotNull] ScalaParser.ImportSelectorsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.importSelector"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitImportSelector([NotNull] ScalaParser.ImportSelectorContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.dcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitDcl([NotNull] ScalaParser.DclContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.valDcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitValDcl([NotNull] ScalaParser.ValDclContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.varDcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVarDcl([NotNull] ScalaParser.VarDclContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.funDcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFunDcl([NotNull] ScalaParser.FunDclContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.funSig"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFunSig([NotNull] ScalaParser.FunSigContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.typeDcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTypeDcl([NotNull] ScalaParser.TypeDclContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.patVarDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPatVarDef([NotNull] ScalaParser.PatVarDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.def"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitDef([NotNull] ScalaParser.DefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.patDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPatDef([NotNull] ScalaParser.PatDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.varDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVarDef([NotNull] ScalaParser.VarDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.funDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFunDef([NotNull] ScalaParser.FunDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.typeDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTypeDef([NotNull] ScalaParser.TypeDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.tmplDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTmplDef([NotNull] ScalaParser.TmplDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassDef([NotNull] ScalaParser.ClassDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.traitDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTraitDef([NotNull] ScalaParser.TraitDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.objectDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitObjectDef([NotNull] ScalaParser.ObjectDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classTemplateOpt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassTemplateOpt([NotNull] ScalaParser.ClassTemplateOptContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.traitTemplateOpt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTraitTemplateOpt([NotNull] ScalaParser.TraitTemplateOptContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classTemplate"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassTemplate([NotNull] ScalaParser.ClassTemplateContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.traitTemplate"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTraitTemplate([NotNull] ScalaParser.TraitTemplateContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.classParents"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitClassParents([NotNull] ScalaParser.ClassParentsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.traitParents"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTraitParents([NotNull] ScalaParser.TraitParentsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.constr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitConstr([NotNull] ScalaParser.ConstrContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.earlyDefs"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitEarlyDefs([NotNull] ScalaParser.EarlyDefsContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.earlyDef"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitEarlyDef([NotNull] ScalaParser.EarlyDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.constrExpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitConstrExpr([NotNull] ScalaParser.ConstrExprContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.constrBlock"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitConstrBlock([NotNull] ScalaParser.ConstrBlockContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.selfInvocation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitSelfInvocation([NotNull] ScalaParser.SelfInvocationContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.topStatSeq"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTopStatSeq([NotNull] ScalaParser.TopStatSeqContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.topStat"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTopStat([NotNull] ScalaParser.TopStatContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.packaging"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPackaging([NotNull] ScalaParser.PackagingContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.packageObject"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPackageObject([NotNull] ScalaParser.PackageObjectContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ScalaParser.compilationUnit"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitCompilationUnit([NotNull] ScalaParser.CompilationUnitContext context);
-}
+    /// <summary>
+    /// This interface defines a complete generic visitor for a parse tree produced
+    /// by <see cref="ScalaParser"/>.
+    /// </summary>
+    /// <typeparam name="Result">The return type of the visit operation.</typeparam>
+    [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.6.6")]
+    [System.CLSCompliant(false)]
+    public interface IScalaVisitor<Result> : IParseTreeVisitor<Result>
+    {
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.literal"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitLiteral([NotNull] ScalaParser.LiteralContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.qualId"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitQualId([NotNull] ScalaParser.QualIdContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.ids"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitIds([NotNull] ScalaParser.IdsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.stableId"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitStableId([NotNull] ScalaParser.StableIdContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classQualifier"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassQualifier([NotNull] ScalaParser.ClassQualifierContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.type_"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitType_([NotNull] ScalaParser.Type_Context context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.functionArgTypes"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitFunctionArgTypes([NotNull] ScalaParser.FunctionArgTypesContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.existentialClause"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitExistentialClause([NotNull] ScalaParser.ExistentialClauseContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.existentialDcl"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitExistentialDcl([NotNull] ScalaParser.ExistentialDclContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.infixType"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitInfixType([NotNull] ScalaParser.InfixTypeContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.compoundType"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitCompoundType([NotNull] ScalaParser.CompoundTypeContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.annotType"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitAnnotType([NotNull] ScalaParser.AnnotTypeContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.simpleType"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitSimpleType([NotNull] ScalaParser.SimpleTypeContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.typeArgs"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTypeArgs([NotNull] ScalaParser.TypeArgsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.types"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTypes([NotNull] ScalaParser.TypesContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.refinement"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitRefinement([NotNull] ScalaParser.RefinementContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.refineStat"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitRefineStat([NotNull] ScalaParser.RefineStatContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.typePat"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTypePat([NotNull] ScalaParser.TypePatContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.ascription"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitAscription([NotNull] ScalaParser.AscriptionContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.expr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitExpr([NotNull] ScalaParser.ExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.expr1"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitExpr1([NotNull] ScalaParser.Expr1Context context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.prefixDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPrefixDef([NotNull] ScalaParser.PrefixDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.postfixExpr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPostfixExpr([NotNull] ScalaParser.PostfixExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.infixExpr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitInfixExpr([NotNull] ScalaParser.InfixExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.prefixExpr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPrefixExpr([NotNull] ScalaParser.PrefixExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.simpleExpr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitSimpleExpr([NotNull] ScalaParser.SimpleExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.simpleExpr1"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitSimpleExpr1([NotNull] ScalaParser.SimpleExpr1Context context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.exprs"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitExprs([NotNull] ScalaParser.ExprsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.argumentExprs"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitArgumentExprs([NotNull] ScalaParser.ArgumentExprsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.args"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitArgs([NotNull] ScalaParser.ArgsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.blockExpr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitBlockExpr([NotNull] ScalaParser.BlockExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.block"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitBlock([NotNull] ScalaParser.BlockContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.blockStat"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitBlockStat([NotNull] ScalaParser.BlockStatContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.resultExpr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitResultExpr([NotNull] ScalaParser.ResultExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.enumerators"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitEnumerators([NotNull] ScalaParser.EnumeratorsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.generator"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitGenerator([NotNull] ScalaParser.GeneratorContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.caseClauses"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitCaseClauses([NotNull] ScalaParser.CaseClausesContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.caseClause"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitCaseClause([NotNull] ScalaParser.CaseClauseContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.guard"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitGuard([NotNull] ScalaParser.GuardContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.pattern"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPattern([NotNull] ScalaParser.PatternContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.pattern1"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPattern1([NotNull] ScalaParser.Pattern1Context context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.pattern2"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPattern2([NotNull] ScalaParser.Pattern2Context context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.pattern3"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPattern3([NotNull] ScalaParser.Pattern3Context context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.simplePattern"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitSimplePattern([NotNull] ScalaParser.SimplePatternContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.patterns"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPatterns([NotNull] ScalaParser.PatternsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.typeParamClause"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTypeParamClause([NotNull] ScalaParser.TypeParamClauseContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.funTypeParamClause"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitFunTypeParamClause([NotNull] ScalaParser.FunTypeParamClauseContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.variantTypeParam"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitVariantTypeParam([NotNull] ScalaParser.VariantTypeParamContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.typeParam"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTypeParam([NotNull] ScalaParser.TypeParamContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.paramClauses"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitParamClauses([NotNull] ScalaParser.ParamClausesContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.paramClause"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitParamClause([NotNull] ScalaParser.ParamClauseContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.params"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitParams([NotNull] ScalaParser.ParamsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.param"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitParam([NotNull] ScalaParser.ParamContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.paramType"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitParamType([NotNull] ScalaParser.ParamTypeContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classParamClauses"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassParamClauses([NotNull] ScalaParser.ClassParamClausesContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classParamClause"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassParamClause([NotNull] ScalaParser.ClassParamClauseContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classParams"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassParams([NotNull] ScalaParser.ClassParamsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classParam"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassParam([NotNull] ScalaParser.ClassParamContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.bindings"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitBindings([NotNull] ScalaParser.BindingsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.binding"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitBinding([NotNull] ScalaParser.BindingContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.modifier"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitModifier([NotNull] ScalaParser.ModifierContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.localModifier"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitLocalModifier([NotNull] ScalaParser.LocalModifierContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.accessModifier"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitAccessModifier([NotNull] ScalaParser.AccessModifierContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.accessQualifier"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitAccessQualifier([NotNull] ScalaParser.AccessQualifierContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.annotation"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitAnnotation([NotNull] ScalaParser.AnnotationContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.constrAnnotation"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitConstrAnnotation([NotNull] ScalaParser.ConstrAnnotationContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.templateBody"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTemplateBody([NotNull] ScalaParser.TemplateBodyContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.templateStat"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTemplateStat([NotNull] ScalaParser.TemplateStatContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.selfType"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitSelfType([NotNull] ScalaParser.SelfTypeContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.import_"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitImport_([NotNull] ScalaParser.Import_Context context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.importExpr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitImportExpr([NotNull] ScalaParser.ImportExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.importSelectors"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitImportSelectors([NotNull] ScalaParser.ImportSelectorsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.importSelector"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitImportSelector([NotNull] ScalaParser.ImportSelectorContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.dcl"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitDcl([NotNull] ScalaParser.DclContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.valDcl"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitValDcl([NotNull] ScalaParser.ValDclContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.varDcl"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitVarDcl([NotNull] ScalaParser.VarDclContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.funDcl"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitFunDcl([NotNull] ScalaParser.FunDclContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.funSig"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitFunSig([NotNull] ScalaParser.FunSigContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.typeDcl"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTypeDcl([NotNull] ScalaParser.TypeDclContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.patVarDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPatVarDef([NotNull] ScalaParser.PatVarDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.def"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitDef([NotNull] ScalaParser.DefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.patDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPatDef([NotNull] ScalaParser.PatDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.varDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitVarDef([NotNull] ScalaParser.VarDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.funDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitFunDef([NotNull] ScalaParser.FunDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.typeDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTypeDef([NotNull] ScalaParser.TypeDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.tmplDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTmplDef([NotNull] ScalaParser.TmplDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassDef([NotNull] ScalaParser.ClassDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.traitDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTraitDef([NotNull] ScalaParser.TraitDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.objectDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitObjectDef([NotNull] ScalaParser.ObjectDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classTemplateOpt"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassTemplateOpt([NotNull] ScalaParser.ClassTemplateOptContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.traitTemplateOpt"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTraitTemplateOpt([NotNull] ScalaParser.TraitTemplateOptContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classTemplate"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassTemplate([NotNull] ScalaParser.ClassTemplateContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.traitTemplate"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTraitTemplate([NotNull] ScalaParser.TraitTemplateContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.classParents"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitClassParents([NotNull] ScalaParser.ClassParentsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.traitParents"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTraitParents([NotNull] ScalaParser.TraitParentsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.constr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitConstr([NotNull] ScalaParser.ConstrContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.earlyDefs"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitEarlyDefs([NotNull] ScalaParser.EarlyDefsContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.earlyDef"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitEarlyDef([NotNull] ScalaParser.EarlyDefContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.constrExpr"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitConstrExpr([NotNull] ScalaParser.ConstrExprContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.constrBlock"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitConstrBlock([NotNull] ScalaParser.ConstrBlockContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.selfInvocation"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitSelfInvocation([NotNull] ScalaParser.SelfInvocationContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.topStatSeq"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTopStatSeq([NotNull] ScalaParser.TopStatSeqContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.topStat"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitTopStat([NotNull] ScalaParser.TopStatContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.packaging"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPackaging([NotNull] ScalaParser.PackagingContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.packageObject"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitPackageObject([NotNull] ScalaParser.PackageObjectContext context);
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="ScalaParser.compilationUnit"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        Result VisitCompilationUnit([NotNull] ScalaParser.CompilationUnitContext context);
+    }
 } // namespace ScalaLexer.Grammar
