@@ -39,10 +39,10 @@ namespace Compiler
             parser.Interpreter.PredictionMode = PredictionMode.Sll;
             parser.ErrorHandler = new DefaultErrorStrategy();
             tree = parser.compilationUnit();
-            
-            // var serializer = new ParseTreeSerializer("tree.dot");
-            // serializer.ToDot(tree);
-            // serializer.Close();
+
+            var serializer = new ParseTreeSerializer("tree.dot");
+            serializer.ToDot(tree);
+            serializer.Close();
 
             Console.WriteLine(tree.ToStringTree(parser));
 
