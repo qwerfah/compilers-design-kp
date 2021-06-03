@@ -1,5 +1,5 @@
 class SomeClass(val x: Int, val y: Double) {
-    def method(): Double {
+    def method(): Double = {
         return x + y
     }
 }

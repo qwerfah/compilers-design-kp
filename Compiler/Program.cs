@@ -15,8 +15,8 @@ namespace Compiler
     {
         static void Main(string[] args)
         {
-            string workingDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.FullName;
-            string expression = File.ReadAllText(workingDirectory + "/Resources/code.scala");
+            var workingDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.FullName;
+            var expression = File.ReadAllText(workingDirectory + "/Resources/code.scala");
 
             var inputStream = new AntlrInputStream(expression);
             var lexer = new ScalaLexer(inputStream);
@@ -39,9 +39,12 @@ namespace Compiler
             parser.Interpreter.PredictionMode = PredictionMode.Sll;
             parser.ErrorHandler = new DefaultErrorStrategy();
             tree = parser.compilationUnit();
+            
+            // var serializer = new ParseTreeSerializer("tree.dot");
+            // serializer.ToDot(tree);
+            // serializer.Close();
 
-            var serializer = new ParseTreeSerializer("");
-            serializer.ToDot(tree);
+            Console.WriteLine(tree.ToStringTree(parser));
 
             var visitor = new ScalaBaseVisitor<bool>();
             Console.WriteLine("\n***************************** VISITOR *****************************");
