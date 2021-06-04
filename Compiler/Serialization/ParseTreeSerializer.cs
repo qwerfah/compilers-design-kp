@@ -77,7 +77,6 @@ namespace Compiler.Serialization
         {
             string nodeName = node.GetType().Name.Replace("Context", string.Empty);
             string nodeHash = node.GetHashCode().ToString();
-            string nodeText = node.GetText();
 
             for (int i = 0; i < node.ChildCount; i++)
             {
