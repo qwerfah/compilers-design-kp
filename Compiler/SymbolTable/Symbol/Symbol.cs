@@ -11,9 +11,13 @@ namespace Compiler.SymbolTable.Symbol
     /// <summary>
     /// Represents symbol (variable/function/class/type definition) in symbol table.
     /// </summary>
-    public abstract class Symbol
+    public abstract class SymbolBase
     {
-        private const string ContextSuffix = "Context";
+        /// <summary>
+        /// Unique symbol identifier.
+        /// </summary>
+        public Guid Guid { get; }
+
         /// <summary>
         /// String symbol name.
         /// </summary>
@@ -40,12 +44,38 @@ namespace Compiler.SymbolTable.Symbol
         /// <param name="context"> Parse rule context of symbol in parse tree. </param>
         /// <param name="type"> Symbol type (variable/function/class). </param>
         /// <param name="scope"> Symbol scope according to parse tree lookup. </param>
-        public Symbol(ParserRuleContext context, Scope scope)
+        public SymbolBase(ParserRuleContext context, Scope scope)
         {
+            Guid = Guid.NewGuid();
             ContextType = context.GetType();
-            Name = ContextType.Name.Replace(ContextSuffix, string.Empty);
+            Name = GetName(context);
             Definition = context.GetText();
             Scope = scope;
+        }
+
+        /// <summary>
+        /// Get name of symbol from its definition represented by parse subtree.
+        /// </summary>
+        /// <param name="context"> Root of parse subtree that represents symbol definition. </param>
+        /// <returns> Symbol name. </returns>
+        private string GetName(ParserRuleContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (context.ChildCount == 0 && context is StableIdContext stableId)
+            {
+                return stableId.GetText();
+            }
+
+            for (int i = 0; i < context.ChildCount; i++)
+            {
+                GetName(context.GetChild(i) as ParserRuleContext);
+            }
+
+            throw new ArgumentException("Given node has no StableIdContext as a child.");
         }
     }
 }

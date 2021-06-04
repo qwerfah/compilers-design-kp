@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Compiler.SymbolTable.Symbol
 {
-    public class FunctionSymbol : SymbolBase
+    public class TypeSymbol : SymbolBase
     {
-        public FunctionSymbol(ParserRuleContext context, Scope scope) : base(context, scope)
+        public TypeSymbol(ParserRuleContext context, Scope scope) : base(context, scope)
         {
 
         }

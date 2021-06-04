@@ -7804,6 +7804,9 @@ namespace Parser.Antlr.Grammar
             return _localctx;
         }
 
+        /// <summary>
+        /// Represents variable definition.
+        /// </summary>
         public partial class PatVarDefContext : ParserRuleContext
         {
             public PatDefContext patDef()
@@ -7879,6 +7882,9 @@ namespace Parser.Antlr.Grammar
             return _localctx;
         }
 
+        /// <summary>
+        /// Represents any symbol definition (variable/type/function/class/template).
+        /// </summary>
         public partial class DefContext : ParserRuleContext
         {
             public PatVarDefContext patVarDef()
@@ -8173,6 +8179,9 @@ namespace Parser.Antlr.Grammar
             return _localctx;
         }
 
+        /// <summary>
+        /// Represents function definition.
+        /// </summary>
         public partial class FunDefContext : ParserRuleContext
         {
             public FunSigContext funSig()
@@ -8335,6 +8344,9 @@ namespace Parser.Antlr.Grammar
             return _localctx;
         }
 
+        /// <summary>
+        /// Represents type definition.
+        /// </summary>
         public partial class TypeDefContext : ParserRuleContext
         {
             public ITerminalNode Id() { return GetToken(ScalaParser.Id, 0); }
@@ -8407,6 +8419,10 @@ namespace Parser.Antlr.Grammar
             return _localctx;
         }
 
+        /// <summary>
+        /// Represents complex type definition (class/object/trait).
+        /// Type can be either regular or template.
+        /// </summary>
         public partial class TmplDefContext : ParserRuleContext
         {
             public ClassDefContext classDef()
@@ -8514,6 +8530,9 @@ namespace Parser.Antlr.Grammar
             return _localctx;
         }
 
+        /// <summary>
+        /// Represents class definition (regular or template).
+        /// </summary>
         public partial class ClassDefContext : ParserRuleContext
         {
             public ITerminalNode Id() { return GetToken(ScalaParser.Id, 0); }
