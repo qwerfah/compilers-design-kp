@@ -1,5 +1,5 @@
-class SomeClass(val x: Int, val y: Double) {
-    private var f: Boolean = false
+class SomeClass[T] extends Some {
+    private var f, m: Boolean
     
     def method(n: Double): Double = {
         var m = 10

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Compiler.SymbolTable.Symbol;
+using Compiler.SymbolTable.Symbol.Class;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable
@@ -27,9 +28,24 @@ namespace Compiler.SymbolTable
         public Scope EnclosingScope { get; set; }
 
         /// <summary>
-        /// Symbol map for current scope.
+        /// Class symbol map for current scope.
         /// </summary>
-        protected Dictionary<string, SymbolBase> symbolMap = new();
+        protected Dictionary<string, SymbolBase> ClassMap = new();
+
+        /// <summary>
+        /// Function symbol map for current scope.
+        /// </summary>
+        protected Dictionary<string, SymbolBase> FunctionMap = new();
+
+        /// <summary>
+        /// Varialbe symbol map for current scope.
+        /// </summary>
+        protected Dictionary<string, SymbolBase> VariableMap = new();
+
+        /// <summary>
+        /// Type symbol map for current scope.
+        /// </summary>
+        protected Dictionary<string, SymbolBase> TypeMap = new();
 
         public Scope(ScopeType type, Scope enclosingScope = null)
         {
@@ -51,14 +67,15 @@ namespace Compiler.SymbolTable
 
             SymbolBase symbol = context switch
             {
-                TmplDefContext => new ClassSymbol(context, this),
-                FunDefContext => new FunctionSymbol(context, this),
+                ClassDefContext => new ClassSymbol(context as ClassDefContext, this),
+                ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, this),
+                FunDefContext => new FunctionSymbol(context as FunDefContext, this),
                 PatVarDefContext => new VariableSymbol(context, this),
                 TypeDefContext => new TypeSymbol(context, this),
                 _ => throw new NotImplementedException(),
             };
 
-            symbolMap.Add(symbol.Name, symbol);
+            Define(symbol);
         }
 
         /// <summary>
@@ -73,7 +90,15 @@ namespace Compiler.SymbolTable
             }
 
             symbol.Scope = this;
-            symbolMap.Add(symbol.Name, symbol);
+
+            switch (symbol)
+            {
+                case ClassSymbolBase: ClassMap.Add(symbol.Name, symbol); break;
+                case FunctionSymbol: FunctionMap.Add(symbol.Name, symbol); break;
+                case VariableSymbol: VariableMap.Add(symbol.Name, symbol); break;
+                case TypeSymbol: TypeMap.Add(symbol.Name, symbol); break;
+                default: throw new NotImplementedException();
+            }
         }
     }
 }

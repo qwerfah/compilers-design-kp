@@ -13,19 +13,9 @@ namespace Compiler.SymbolTable
     public class TableBuilder : ScalaBaseVisitor<bool>
     {
         /// <summary>
-        /// Table of all variable definitions.
+        /// Table of all symbol definitions.
         /// </summary>
-        public SymbolTable VariableTable { get; }
-
-        /// <summary>
-        /// Table of all class definitions.
-        /// </summary>
-        public SymbolTable ClassTable { get; }
-
-        /// <summary>
-        /// Table of all type definitions.
-        /// </summary>
-        public SymbolTable TypeTable { get; }
+        public SymbolTable SymbolTable { get; }
 
         /// <summary>
         /// Visitor method for class definition (class/template/object/trait).
@@ -36,6 +26,9 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitTmplDef([NotNull] TmplDefContext context)
         {
+            SymbolTable.GetCurrentScope().Define(context);
+            SymbolTable.PushScope();
+
             return base.VisitTmplDef(context);
         }
 
@@ -47,6 +40,8 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitClassParam([NotNull] ClassParamContext context)
         {
+            SymbolTable.GetCurrentScope().Define(context);
+
             return base.VisitClassParam(context);
         }
 
@@ -58,6 +53,9 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitFunDef([NotNull] FunDefContext context)
         {
+            SymbolTable.GetCurrentScope().Define(context);
+            SymbolTable.PushScope();
+
             return base.VisitFunDef(context);
         }
 
@@ -68,7 +66,19 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitParam([NotNull] ParamContext context)
         {
+            SymbolTable.GetCurrentScope().Define(context);
+
             return base.VisitParam(context);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override bool VisitTemplateStat([NotNull] TemplateStatContext context)
+        {
+            return base.VisitTemplateStat(context);
         }
 
         /// <summary>
@@ -79,6 +89,8 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitPatVarDef([NotNull] PatVarDefContext context)
         {
+            SymbolTable.GetCurrentScope().Define(context);
+
             return base.VisitPatVarDef(context);
         }
     }

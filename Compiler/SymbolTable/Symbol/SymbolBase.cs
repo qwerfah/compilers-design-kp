@@ -21,7 +21,7 @@ namespace Compiler.SymbolTable.Symbol
         /// <summary>
         /// String symbol name.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; init; }
         
         /// <summary>
         /// Type of parse rule context in parse tree.
@@ -46,9 +46,19 @@ namespace Compiler.SymbolTable.Symbol
         /// <param name="scope"> Symbol scope according to parse tree lookup. </param>
         public SymbolBase(ParserRuleContext context, Scope scope)
         {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (scope is null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
             Guid = Guid.NewGuid();
             ContextType = context.GetType();
-            Name = GetName(context);
+            // Name = GetName(context);
             Definition = context.GetText();
             Scope = scope;
         }
