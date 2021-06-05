@@ -3,19 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Antlr4.Runtime;
 using Compiler.SymbolTable.Symbol;
+using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable
 {
-    /// <summary>
-    /// Scope type (global/local).
-    /// </summary>
-    public enum ScopeType
-    {
-        Global,
-        Local
-    }
-
     public class Scope
     {
         /// <summary>
@@ -38,7 +31,7 @@ namespace Compiler.SymbolTable
         /// </summary>
         protected Dictionary<string, SymbolBase> symbolMap = new();
 
-        public Scope(ScopeType type, Scope enclosingScope)
+        public Scope(ScopeType type, Scope enclosingScope = null)
         {
             Guid = Guid.NewGuid();
             Type = type;
@@ -46,23 +39,39 @@ namespace Compiler.SymbolTable
         }
 
         /// <summary>
-        /// Define new variable symbol for current scope.
+        /// Define new variable symbol from parse tree node context for current scope.
         /// </summary>
-        /// <param name="name"> Variable  </param>
-        /// <param name="parameters"></param>
+        /// <param name="context"> Parse tree node context. </param>
         public void Define(ParserRuleContext context)
         {
-            string strParams = parameters.ToString();
-            //Symbol symbol = new Symbol(null, name + strParams, null);
-            //define(symbol);
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            SymbolBase symbol = context switch
+            {
+                TmplDefContext => new ClassSymbol(context, this),
+                FunDefContext => new FunctionSymbol(context, this),
+                PatVarDefContext => new VariableSymbol(context, this),
+                TypeDefContext => new TypeSymbol(context, this),
+                _ => throw new NotImplementedException(),
+            };
+
+            symbolMap.Add(symbol.Name, symbol);
         }
 
         /// <summary>
-        /// Define new variable symbol for current scope.
+        /// Define new variable symbol from its instance for current scope.
         /// </summary>
-        /// <param name="symbol"></param>
-        private void Define(SymbolBase symbol)
+        /// <param name="symbol"> Symbol instance to define. </param>
+        public void Define(SymbolBase symbol)
         {
+            if (symbol is null)
+            {
+                throw new ArgumentNullException(nameof(symbol));
+            }
+
             symbol.Scope = this;
             symbolMap.Add(symbol.Name, symbol);
         }
