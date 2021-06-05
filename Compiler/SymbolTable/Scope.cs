@@ -24,7 +24,7 @@ namespace Compiler.SymbolTable
         /// <summary>
         /// Enclosing scope for current scope.
         /// </summary>
-        public Scope EnclosingScope { get; }
+        public Scope EnclosingScope { get; set; }
 
         /// <summary>
         /// Symbol map for current scope.

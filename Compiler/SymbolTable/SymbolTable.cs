@@ -51,6 +51,24 @@ namespace Compiler.SymbolTable
         }
 
         /// <summary>
+        /// Push existing scope to scope stack and add it in list of all program scopes.
+        /// Top scope in stack will be used as enclosing for newly added scope. 
+        /// </summary>
+        /// <param name="scope"> Scope instance. </param>
+        public void PushScope(Scope scope)
+        {
+            if (scope is null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            scope.EnclosingScope = _scopeStack.Peek();
+
+            _scopeStack.Push(scope);
+            _scopes.Add(scope);
+        }
+
+        /// <summary>
         /// Extract top scope from stack.
         /// </summary>
         public void PopScope()
