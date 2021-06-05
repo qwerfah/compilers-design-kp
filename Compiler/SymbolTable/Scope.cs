@@ -50,17 +50,21 @@ namespace Compiler.SymbolTable
         /// </summary>
         /// <param name="name"> Variable  </param>
         /// <param name="parameters"></param>
-        public void Define(String name, IEnumerable<String> parameters)
+        public void Define(ParserRuleContext context)
         {
             string strParams = parameters.ToString();
             //Symbol symbol = new Symbol(null, name + strParams, null);
             //define(symbol);
         }
 
-        private void define(SymbolBase symbol)
+        /// <summary>
+        /// Define new variable symbol for current scope.
+        /// </summary>
+        /// <param name="symbol"></param>
+        private void Define(SymbolBase symbol)
         {
-            //symbol.setScope(this);
-            //symbolMap.put(symbol.name, symbol);
+            symbol.Scope = this;
+            symbolMap.Add(symbol.Name, symbol);
         }
     }
 }

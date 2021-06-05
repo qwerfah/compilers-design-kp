@@ -36,7 +36,7 @@ namespace Compiler.SymbolTable.Symbol
         /// <summary>
         /// Symbol scope in code.
         /// </summary>
-        public Scope Scope { get; }
+        public Scope Scope { get; set; }
 
         /// <summary>
         /// Construct new symbol from specified rule context in stated scope.
