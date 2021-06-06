@@ -1,9 +1,6 @@
-object G
-
-object F extends B
-
-class A
-
-class B extends A
-
-class C extends B
+class A {
+	val a: Int
+	val b = 100
+	val c: Double = 200
+	var k = 500
+}

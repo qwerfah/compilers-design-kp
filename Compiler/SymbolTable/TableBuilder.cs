@@ -105,19 +105,9 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitParam([NotNull] ParamContext context)
         {
-            SymbolTable.GetCurrentScope().Define(context);
+            // SymbolTable.GetCurrentScope().Define(context);
 
             return base.VisitParam(context);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public override bool VisitTemplateStat([NotNull] TemplateStatContext context)
-        {
-            return base.VisitTemplateStat(context);
         }
 
         /// <summary>
@@ -128,7 +118,7 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitPatVarDef([NotNull] PatVarDefContext context)
         {
-            SymbolTable.GetCurrentScope().Define(context);
+            // SymbolTable.GetCurrentScope().Define(context);
 
             return base.VisitPatVarDef(context);
         }

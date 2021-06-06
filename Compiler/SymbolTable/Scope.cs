@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
+using Compiler.SymbolTable.Symbol.Variable;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable
@@ -80,8 +81,10 @@ namespace Compiler.SymbolTable
                 ClassDefContext => new ClassSymbol(context as ClassDefContext, this),
                 ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, this),
                 FunDefContext => new FunctionSymbol(context as FunDefContext, this),
-                PatVarDefContext => new VariableSymbol(context, this),
-                TypeDefContext => new TypeSymbol(context, this),
+                ParamContext => new FunctionParamSymbol(context as ParamContext, this),
+                ClassParamsContext => new ClassParamSymbol(context as ClassParamContext, this),
+                PatVarDefContext => new VariableSymbol(context as PatVarDefContext, this),
+                TypeDefContext => new TypeSymbol(context as TypeDefContext, this),
                 _ => throw new NotImplementedException(),
             };
 

@@ -9,7 +9,7 @@ using static Parser.Antlr.Grammar.ScalaParser;
 namespace Compiler.SymbolTable.Symbol
 {
     /// <summary>
-    /// Represents symbol (variable/function/class/type definition) in symbol table.
+    /// Represents symbol (variable/function/class/object/trait/type definition) in symbol table.
     /// </summary>
     public abstract class SymbolBase
     {
@@ -58,7 +58,6 @@ namespace Compiler.SymbolTable.Symbol
 
             Guid = Guid.NewGuid();
             ContextType = context.GetType();
-            // Name = GetName(context);
             Definition = context.GetText();
             Scope = scope;
         }
