@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
 using System;
@@ -30,6 +31,24 @@ namespace Compiler.SymbolTable
             SymbolTable.PopScope();
 
             return result;
+        }
+
+        /// <summary>
+        /// Build symbol table from given parse tree.
+        /// </summary>
+        /// <param name="tree"> Parse tree. </param>
+        /// <returns></returns>
+        public bool Build(IParseTree tree)
+        {
+            return Visit(tree);
+        }
+
+        /// <summary>
+        /// Resolve all unresolved symbols in any symbol definition after first pass.
+        /// </summary>
+        public void Resolve()
+        {
+            SymbolTable.Resolve();
         }
 
         /// <summary>

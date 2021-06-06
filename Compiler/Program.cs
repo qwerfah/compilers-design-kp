@@ -51,7 +51,8 @@ namespace Compiler
 
             var builder = new TableBuilder();
 
-            builder.Visit(tree);
+            builder.Build(tree);
+            builder.Resolve();
 
             foreach (var scope in builder.SymbolTable.Scopes)
             {

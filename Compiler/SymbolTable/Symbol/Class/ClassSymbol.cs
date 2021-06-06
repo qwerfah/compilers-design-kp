@@ -14,7 +14,7 @@ namespace Compiler.SymbolTable.Symbol.Class
             : base(context.Parent as TmplDefContext, scope)
         {
             Name = GetName(context);
-            Parents = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents(), scope);
+            Parents = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());
         }
     }
 }

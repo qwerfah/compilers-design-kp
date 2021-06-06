@@ -87,5 +87,10 @@ namespace Compiler.SymbolTable.Symbol
 
             throw new ArgumentException("Given node has no StableIdContext as a child.");
         }
+
+        /// <summary>
+        /// Resolve all unresolved symbols in current symbol definition.
+        /// </summary>
+        public abstract void Resolve();
     }
 }

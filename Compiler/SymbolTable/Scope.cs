@@ -131,5 +131,21 @@ namespace Compiler.SymbolTable
                 _ => throw new NotImplementedException(),
             };
         }
+
+        /// <summary>
+         /// Resolve all unresolved symbols current scope.
+         /// </summary>
+        public void Resolve()
+        {
+            foreach (var symbol in ClassMap.Values)
+            {
+                symbol.Resolve();
+            }
+
+            foreach (var symbol in ObjectMap.Values)
+            {
+                symbol.Resolve();
+            }
+        }
     }
 }

@@ -21,5 +21,10 @@ namespace Compiler.SymbolTable.Symbol
         {
 
         }
+
+        public override void Resolve()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

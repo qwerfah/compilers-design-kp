@@ -99,5 +99,16 @@ namespace Compiler.SymbolTable
         {
             return _scopeStack.SingleOrDefault(s => s.Guid == guid);
         }
+
+        /// <summary>
+        /// Resolve all unresolved symbols in any symbol definition for all scopes.
+        /// </summary>
+        public void Resolve()
+        {
+            foreach (var scope in Scopes)
+            {
+                scope.Resolve();
+            }
+        }
     }
 }

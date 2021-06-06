@@ -15,8 +15,8 @@ namespace Compiler.SymbolTable.Symbol.Class
     /// </summary>
     public abstract class ClassSymbolBase : SymbolBase
     {
-        protected string UnresolvedParent = null;
-        protected List<string> UnresolvedTraits = new();
+        protected string _unresolvedParent = null;
+        protected List<string> _unresolvedTraits = new();
 
         public List<SymbolBase> Parents { get; set; } = null;
 
@@ -41,7 +41,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// <param name="context"> Class parents context. </param>
         /// <returns> List of inherited class and traits, that are resolved on this stage of analysis, 
         /// or null, if class not extends or if unable to resolve any parent symbol on this stage of analysis. </returns>
-        protected List<SymbolBase> GetParents(ClassParentsContext context, Scope scope)
+        protected List<SymbolBase> GetParents(ClassParentsContext context)
         {
             if (context is null)
             {
@@ -59,11 +59,11 @@ namespace Compiler.SymbolTable.Symbol.Class
 
             List<SymbolBase> parents = new();
 
-            SymbolBase parentSymbol = scope.GetSymbol(parent, SymbolType.Class) ?? scope.GetSymbol(parent, SymbolType.Trait);
+            SymbolBase parentSymbol = Scope.GetSymbol(parent, SymbolType.Class) ?? Scope.GetSymbol(parent, SymbolType.Trait);
 
             if (parentSymbol is null)
             {
-                UnresolvedParent = parent;
+                _unresolvedParent = parent;
             }
             else
             {
@@ -72,11 +72,11 @@ namespace Compiler.SymbolTable.Symbol.Class
 
             foreach (var trait in traits)
             {
-                SymbolBase traitSymbol = scope.GetSymbol(trait, SymbolType.Trait);
+                SymbolBase traitSymbol = Scope.GetSymbol(trait, SymbolType.Trait);
 
                 if (traitSymbol is null)
                 {
-                    UnresolvedTraits.Add(trait);
+                    _unresolvedTraits.Add(trait);
                 }
                 else
                 {
@@ -85,6 +85,60 @@ namespace Compiler.SymbolTable.Symbol.Class
             }
 
             return parents.Any() ? parents : null;
+        }
+
+        public override void Resolve()
+        {
+            if (_unresolvedParent is { })
+            {
+                ResolveParent();
+            }
+
+            if (_unresolvedTraits is { } && _unresolvedTraits.Any())
+            {
+                ResolveTraits();
+            }
+        }
+
+        private void ResolveParent()
+        {
+            SymbolBase parentSymbol = Scope.GetSymbol(
+                _unresolvedParent, SymbolType.Class) ?? Scope.GetSymbol(_unresolvedParent, SymbolType.Trait);
+
+            if (parentSymbol is null)
+            {
+                Console.Error.WriteLine($"Undefined symbol {_unresolvedParent} in definition of symbol {Name}");
+            }
+            else
+            {
+                Parents = Parents ?? new();
+                Parents.Add(parentSymbol);
+            }
+        }
+
+        private void ResolveTraits()
+        {
+            List<SymbolBase> traits = new();
+
+            foreach (var trait in _unresolvedTraits)
+            {
+                SymbolBase traitSymbol = Scope.GetSymbol(trait, SymbolType.Trait);
+
+                if (traitSymbol is null)
+                {
+                    Console.Error.WriteLine($"Undefined symbol {trait} in definition of symbol {Name}");
+                }
+                else
+                {
+                    traits.Add(traitSymbol);
+                }
+            }
+
+            if (traits.Any())
+            {
+                Parents = Parents ?? new();
+                Parents.AddRange(traits);
+            }
         }
     }
 }
