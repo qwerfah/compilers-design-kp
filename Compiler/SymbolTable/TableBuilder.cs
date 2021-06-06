@@ -26,8 +26,10 @@ namespace Compiler.SymbolTable
         {
             SymbolTable.GetCurrentScope().Define(context);
             SymbolTable.PushScope();
+            bool result = base.VisitClassDef(context);
+            SymbolTable.PopScope();
 
-            return base.VisitClassDef(context);
+            return result;
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace Compiler.SymbolTable
         {
             SymbolTable.GetCurrentScope().Define(context);
             SymbolTable.PushScope();
-            bool result =  base.VisitObjectDef(context);
+            bool result = base.VisitObjectDef(context);
             SymbolTable.PopScope();
 
             return result;

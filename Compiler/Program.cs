@@ -65,6 +65,8 @@ namespace Compiler
                     {
                         Console.WriteLine($"Extends {parent.Name}");
                     }
+
+                    Console.WriteLine();
                 }
 
                 foreach (var symbol in scope.ObjectMap)
@@ -75,6 +77,8 @@ namespace Compiler
                     {
                         Console.WriteLine($"Extends {parent.Name}");
                     }
+
+                    Console.WriteLine();
                 }
             }
         }
