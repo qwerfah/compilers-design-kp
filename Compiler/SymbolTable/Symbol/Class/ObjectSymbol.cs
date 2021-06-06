@@ -13,7 +13,7 @@ namespace Compiler.SymbolTable.Symbol.Class
             : base(context.Parent as TmplDefContext, scope)
         {
             Name = GetName(context);
-            Parents = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());
+            (Parent, Traits) = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());
         }
     }
 }

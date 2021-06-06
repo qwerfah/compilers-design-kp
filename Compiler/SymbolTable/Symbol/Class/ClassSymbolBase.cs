@@ -18,7 +18,8 @@ namespace Compiler.SymbolTable.Symbol.Class
         protected string _unresolvedParent = null;
         protected List<string> _unresolvedTraits = new();
 
-        public List<SymbolBase> Parents { get; set; } = null;
+        public SymbolBase Parent { get; set; } = null;
+        public List<SymbolBase> Traits { get; set; } = null;
 
         public ClassSymbolBase(TmplDefContext context, Scope scope) : base(context, scope)
         {
@@ -41,12 +42,12 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// <param name="context"> Class parents context. </param>
         /// <returns> List of inherited class and traits, that are resolved on this stage of analysis, 
         /// or null, if class not extends or if unable to resolve any parent symbol on this stage of analysis. </returns>
-        protected List<SymbolBase> GetParents(ClassParentsContext context)
+        protected (SymbolBase, List<SymbolBase>) GetParents(ClassParentsContext context)
         {
             if (context is null)
             {
                 Console.WriteLine($"Class {Name} don't have parents.");
-                return null;
+                return (null, null);
             }
 
             string parent = context.constr()?.annotType()?.simpleType()?.stableId().GetText();
@@ -57,18 +58,15 @@ namespace Compiler.SymbolTable.Symbol.Class
                 throw new InvalidParseTreeException("Invalid subtree for class parent definition.");
             }
 
-            List<SymbolBase> parents = new();
-
-            SymbolBase parentSymbol = Scope.GetSymbol(parent, SymbolType.Class) ?? Scope.GetSymbol(parent, SymbolType.Trait);
+            SymbolBase parentSymbol = Scope.GetSymbol(
+                parent, SymbolType.Class) ?? Scope.GetSymbol(parent, SymbolType.Trait);
 
             if (parentSymbol is null)
             {
                 _unresolvedParent = parent;
             }
-            else
-            {
-                parents.Add(parentSymbol);
-            }
+
+            List<SymbolBase> traitSymbols = new();
 
             foreach (var trait in traits)
             {
@@ -80,11 +78,13 @@ namespace Compiler.SymbolTable.Symbol.Class
                 }
                 else
                 {
-                    parents.Add(traitSymbol);
+                    traitSymbols.Add(traitSymbol);
                 }
             }
 
-            return parents.Any() ? parents : null;
+            return parentSymbol is { }
+                ? (parentSymbol, traitSymbols.Any() ? traitSymbols : null) 
+                : (null, null);
         }
 
         public override void Resolve()
@@ -111,8 +111,7 @@ namespace Compiler.SymbolTable.Symbol.Class
             }
             else
             {
-                Parents = Parents ?? new();
-                Parents.Add(parentSymbol);
+                Parent = parentSymbol;
             }
         }
 
@@ -136,8 +135,7 @@ namespace Compiler.SymbolTable.Symbol.Class
 
             if (traits.Any())
             {
-                Parents = Parents ?? new();
-                Parents.AddRange(traits);
+                Traits = Traits ?? traits;
             }
         }
     }

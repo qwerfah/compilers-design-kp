@@ -62,9 +62,14 @@ namespace Compiler
                 {
                     Console.WriteLine($"Class {symbol.Key}");
 
-                    foreach (var parent in (symbol.Value as ClassSymbol).Parents ?? new List<SymbolBase>())
+                    if ((symbol.Value as ClassSymbol).Parent is { } parent)
                     {
                         Console.WriteLine($"Extends {parent.Name}");
+                    }
+
+                    foreach (var trait in (symbol.Value as ClassSymbol).Traits ?? new List<SymbolBase>())
+                    {
+                        Console.WriteLine($"With {trait.Name}");
                     }
 
                     Console.WriteLine();
@@ -74,9 +79,14 @@ namespace Compiler
                 {
                     Console.WriteLine($"Object {symbol.Key}");
 
-                    foreach (var parent in (symbol.Value as ObjectSymbol).Parents ?? new List<SymbolBase>())
+                    if ((symbol.Value as ObjectSymbol).Parent is { } parent)
                     {
                         Console.WriteLine($"Extends {parent.Name}");
+                    }
+
+                    foreach (var trait in (symbol.Value as ObjectSymbol).Traits ?? new List<SymbolBase>())
+                    {
+                        Console.WriteLine($"With {trait.Name}");
                     }
 
                     Console.WriteLine();
