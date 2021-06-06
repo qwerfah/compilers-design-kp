@@ -30,22 +30,32 @@ namespace Compiler.SymbolTable
         /// <summary>
         /// Class symbol map for current scope.
         /// </summary>
-        protected Dictionary<string, SymbolBase> ClassMap = new();
+        public Dictionary<string, SymbolBase> ClassMap = new();
+
+        /// <summary>
+        /// Object symbol map for current scope.
+        /// </summary>
+        public Dictionary<string, SymbolBase> ObjectMap = new();
+
+        /// <summary>
+        /// Trait symbol map for current scope.
+        /// </summary>
+        public Dictionary<string, SymbolBase> TraitMap = new();
 
         /// <summary>
         /// Function symbol map for current scope.
         /// </summary>
-        protected Dictionary<string, SymbolBase> FunctionMap = new();
+        public Dictionary<string, SymbolBase> FunctionMap = new();
 
         /// <summary>
         /// Varialbe symbol map for current scope.
         /// </summary>
-        protected Dictionary<string, SymbolBase> VariableMap = new();
+        public Dictionary<string, SymbolBase> VariableMap = new();
 
         /// <summary>
         /// Type symbol map for current scope.
         /// </summary>
-        protected Dictionary<string, SymbolBase> TypeMap = new();
+        public Dictionary<string, SymbolBase> TypeMap = new();
 
         public Scope(ScopeType type, Scope enclosingScope = null)
         {
@@ -93,12 +103,33 @@ namespace Compiler.SymbolTable
 
             switch (symbol)
             {
-                case ClassSymbolBase: ClassMap.Add(symbol.Name, symbol); break;
+                case ClassSymbol: ClassMap.Add(symbol.Name, symbol); break;
+                case ObjectSymbol: ObjectMap.Add(symbol.Name, symbol); break;
                 case FunctionSymbol: FunctionMap.Add(symbol.Name, symbol); break;
                 case VariableSymbol: VariableMap.Add(symbol.Name, symbol); break;
                 case TypeSymbol: TypeMap.Add(symbol.Name, symbol); break;
                 default: throw new NotImplementedException();
             }
+        }
+
+        /// <summary>
+        /// Looking for symbol by name in current and all enclousing scopes.
+        /// </summary>
+        /// <param name="name"> Symbol name. </param>
+        /// /// <param name="name"> Symbol name. </param>
+        /// <returns> Symbol with corresponding name in the nearest enclosing scope. </returns>
+        public SymbolBase GetSymbol(string name, SymbolType type)
+        {
+            return type switch
+            {
+                SymbolType.Class => ClassMap.ContainsKey(name) ? ClassMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Object => ObjectMap.ContainsKey(name) ? ObjectMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Trait => TraitMap.ContainsKey(name) ? TraitMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Function => FunctionMap.ContainsKey(name) ? FunctionMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Variable => VariableMap.ContainsKey(name) ? VariableMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Type => TypeMap.ContainsKey(name) ? TypeMap[name] : EnclosingScope?.GetSymbol(name, type),
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

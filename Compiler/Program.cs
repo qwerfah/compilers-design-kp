@@ -2,6 +2,9 @@
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Tree;
 using Compiler.Serialization;
+using Compiler.SymbolTable;
+using Compiler.SymbolTable.Symbol;
+using Compiler.SymbolTable.Symbol.Class;
 using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
 using Parser.ErrorListeners;
@@ -46,14 +49,34 @@ namespace Compiler
 
             Console.WriteLine(tree.ToStringTree(parser));
 
-            var visitor = new ScalaBaseVisitor<bool>();
-            Console.WriteLine("\n***************************** VISITOR *****************************");
-            visitor.Visit(tree);
+            var builder = new TableBuilder();
 
-            var listener = new ScalaBaseListener();
-            var walker = new ParseTreeWalker();
-            Console.WriteLine("\n***************************** LISTENER *****************************");
-            walker.Walk(listener, tree);
+            builder.Visit(tree);
+
+            foreach (var scope in builder.SymbolTable.Scopes)
+            {
+                Console.WriteLine($"Scope {scope.Guid}");
+
+                foreach (var symbol in scope.ClassMap)
+                {
+                    Console.WriteLine($"Class {symbol.Key}");
+
+                    foreach (var parent in (symbol.Value as ClassSymbol).Parents ?? new List<SymbolBase>())
+                    {
+                        Console.WriteLine($"Extends {parent.Name}");
+                    }
+                }
+
+                foreach (var symbol in scope.ObjectMap)
+                {
+                    Console.WriteLine($"Object {symbol.Key}");
+
+                    foreach (var parent in (symbol.Value as ObjectSymbol).Parents ?? new List<SymbolBase>())
+                    {
+                        Console.WriteLine($"Extends {parent.Name}");
+                    }
+                }
+            }
         }
     }
 }

@@ -1,20 +1,9 @@
-class SomeClass[T] extends Some {
-    private var f, m: Boolean
-    
-    def method(n: Double): Double = {
-        var m = 10
+class A
 
-        def xf(x: Int, f: Int -> Int): Int = {
-            f(x)
-        }
+class B extends A
 
-        return x + y
-    }
-}
+class C extends B
 
-object Main extends App {
-    println("Message")
-    val s: Tin = 100
-    val r = r + f
-    println(r)
-}
+object G
+
+object F extends B

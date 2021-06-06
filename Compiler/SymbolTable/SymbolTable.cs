@@ -22,17 +22,17 @@ namespace Compiler.SymbolTable
         /// <summary>
         /// List of all scopes in program extracting during tree lookup.
         /// </summary>
-        private List<Scope> _scopes;
+        public List<Scope> Scopes { get; }
 
         public SymbolTable()
         {
             Guid = Guid.NewGuid();
             _scopeStack = new();
-            _scopes = new();
+            Scopes = new();
 
             Scope global = new Scope(ScopeType.Global, null);
             _scopeStack.Push(global);
-            _scopes.Add(global);
+            Scopes.Add(global);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Compiler.SymbolTable
             Scope scope = new Scope(ScopeType.Local, enclosingScope);
 
             _scopeStack.Push(scope);
-            _scopes.Add(scope);
+            Scopes.Add(scope);
 
             return scope;
         }
@@ -65,7 +65,7 @@ namespace Compiler.SymbolTable
             scope.EnclosingScope = _scopeStack.Peek();
 
             _scopeStack.Push(scope);
-            _scopes.Add(scope);
+            Scopes.Add(scope);
         }
 
         /// <summary>

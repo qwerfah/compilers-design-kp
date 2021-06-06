@@ -15,21 +15,34 @@ namespace Compiler.SymbolTable
         /// <summary>
         /// Table of all symbol definitions.
         /// </summary>
-        public SymbolTable SymbolTable { get; }
+        public SymbolTable SymbolTable { get; } = new();
 
         /// <summary>
-        /// Visitor method for class definition (class/template/object/trait).
-        /// Method adds new class definition to class table 
-        /// and all definitions (fields and methods) to corresponding tables in embedded scope.
+        /// Visitor method for class definition.
         /// </summary>
         /// <param name="context"> Class definiton tree node context. </param>
         /// <returns></returns>
-        public override bool VisitTmplDef([NotNull] TmplDefContext context)
+        public override bool VisitClassDef([NotNull]ClassDefContext context)
         {
             SymbolTable.GetCurrentScope().Define(context);
             SymbolTable.PushScope();
 
-            return base.VisitTmplDef(context);
+            return base.VisitClassDef(context);
+        }
+
+        /// <summary>
+        /// Visitor method for object definition.
+        /// </summary>
+        /// <param name="context"> Object definiton tree node context. </param>
+        /// <returns></returns>
+        public override bool VisitObjectDef([NotNull] ObjectDefContext context)
+        {
+            SymbolTable.GetCurrentScope().Define(context);
+            SymbolTable.PushScope();
+            bool result =  base.VisitObjectDef(context);
+            SymbolTable.PopScope();
+
+            return result;
         }
 
         /// <summary>
@@ -41,8 +54,11 @@ namespace Compiler.SymbolTable
         public override bool VisitClassParam([NotNull] ClassParamContext context)
         {
             SymbolTable.GetCurrentScope().Define(context);
+            SymbolTable.PushScope();
+            bool result = base.VisitClassParam(context);
+            SymbolTable.PopScope();
 
-            return base.VisitClassParam(context);
+            return result;
         }
 
         /// <summary>
@@ -55,8 +71,10 @@ namespace Compiler.SymbolTable
         {
             SymbolTable.GetCurrentScope().Define(context);
             SymbolTable.PushScope();
+            bool result = base.VisitFunDef(context);
+            SymbolTable.PopScope();
 
-            return base.VisitFunDef(context);
+            return result;
         }
 
         /// <summary>
