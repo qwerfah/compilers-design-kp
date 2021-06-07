@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Compiler.SymbolTable.Symbol.Class;
 using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
 using System;
@@ -17,6 +18,11 @@ namespace Compiler.SymbolTable
         /// Table of all symbol definitions.
         /// </summary>
         public SymbolTable SymbolTable { get; } = new();
+
+        public TableBuilder()
+        {
+            LoadStandartTypes();
+        }
 
         /// <summary>
         /// Visitor method for class definition.
@@ -111,16 +117,58 @@ namespace Compiler.SymbolTable
         }
 
         /// <summary>
-        /// Visitor method for variable definition.
+        /// Visitor method for mutable/immutable variable definition.
         /// Symbol may be local function variable or class field and than it can have an access modifier.
         /// </summary>
         /// <param name="context"> Variable definiton tree node context </param>
         /// <returns></returns>
         public override bool VisitPatVarDef([NotNull] PatVarDefContext context)
         {
-            // SymbolTable.GetCurrentScope().Define(context);
+            SymbolTable.GetCurrentScope().Define(context);
 
             return base.VisitPatVarDef(context);
+        }
+
+        /// <summary>
+        /// Visitor method for immutable single/multiple variable declaration.
+        /// </summary>
+        /// <param name="context"> Immutalbe single/multiple variable declaration context. </param>
+        /// <returns></returns>
+        public override bool VisitValDcl([NotNull] ValDclContext context)
+        {
+            SymbolTable.GetCurrentScope().Define(context);
+
+            return base.VisitValDcl(context);
+        }
+
+        /// <summary>
+        /// Visitor method for mutable single/multiple variable declaration.
+        /// </summary>
+        /// <param name="context"> Mutable single/multiple variable declaration context. </param>
+        /// <returns></returns>
+        public override bool VisitVarDcl([NotNull] VarDclContext context)
+        {
+            SymbolTable.GetCurrentScope().Define(context);
+
+            return base.VisitVarDcl(context);
+        }
+
+
+
+        public void LoadStandartTypes()
+        {
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Any"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyVal"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyRef"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Unit"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Boolean"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Char"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Byte"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Short"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Int"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Long"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Float"));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Double"));
         }
     }
 }

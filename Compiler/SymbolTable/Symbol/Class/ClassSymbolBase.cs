@@ -21,6 +21,10 @@ namespace Compiler.SymbolTable.Symbol.Class
         public SymbolBase Parent { get; set; } = null;
         public List<SymbolBase> Traits { get; set; } = null;
 
+        public ClassSymbolBase(string name, Scope scope = null) : base(name, scope)
+        {
+        }
+
         public ClassSymbolBase(TmplDefContext context, Scope scope) : base(context, scope)
         {
         }

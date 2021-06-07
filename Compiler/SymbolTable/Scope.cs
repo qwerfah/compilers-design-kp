@@ -83,7 +83,8 @@ namespace Compiler.SymbolTable
                 FunDefContext => new FunctionSymbol(context as FunDefContext, this),
                 ParamContext => new FunctionParamSymbol(context as ParamContext, this),
                 ClassParamsContext => new ClassParamSymbol(context as ClassParamContext, this),
-                PatVarDefContext => new VariableSymbol(context as PatVarDefContext, this),
+                ParserRuleContext c when (c is ValDclContext || c is VarDclContext || c is PatVarDefContext) => 
+                    new VariableSymbol(context, this),
                 TypeDefContext => new TypeSymbol(context as TypeDefContext, this),
                 _ => throw new NotImplementedException(),
             };

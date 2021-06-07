@@ -10,7 +10,21 @@ namespace Compiler.SymbolTable.Symbol.Class
 {
     class ClassSymbol : ClassSymbolBase
     {
-        public ClassSymbol(ClassDefContext context, Scope scope)
+        public ClassSymbol(string name, SymbolBase parent = null, List<SymbolBase> traits = null, Scope scope = null) 
+            : base(name, scope)
+        {
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            Name = name;
+            Parent = parent;
+            Traits = traits;
+            Scope = scope;
+        }
+
+        public ClassSymbol(ClassDefContext context, Scope scope = null)
             : base(context.Parent as TmplDefContext, scope)
         {
             Name = GetName(context);

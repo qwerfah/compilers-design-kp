@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Compiler.Exceptions
 {
     /// <summary>
-    /// Throws during building symbol table when tring to get current scope beyond any scope.
+    /// Throws during building symbol table when trying to get current scope beyond any scope.
     /// </summary>
     [Serializable]
     public class OutOfScopeException : Exception

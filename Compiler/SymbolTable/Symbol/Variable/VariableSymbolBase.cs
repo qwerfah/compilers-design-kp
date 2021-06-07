@@ -18,7 +18,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <summary>
         /// Shows if variable is defined as mutable (var) or immutable (val).
         /// </summary>
-        public bool Mutable { get; set; } = false;
+        public bool IsMutable { get; set; } = false;
 
         /// <summary>
         /// Reference to symbol that represents variable type.
@@ -35,6 +35,12 @@ namespace Compiler.SymbolTable.Symbol.Variable
         public VariableSymbolBase(ParserRuleContext context, Scope scope) : base(context, scope)
         {
 
+        }
+
+        public VariableSymbolBase(string name, bool isMutable, SymbolBase type) : base(name)
+        {
+            IsMutable = isMutable;
+            Type = type;
         }
 
         public override void Resolve()

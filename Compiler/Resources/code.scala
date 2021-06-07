@@ -1,6 +1,8 @@
 class A {
-	val a: Int
-	val b = 100
-	val c: Double = 200
-	var k = 500
+	val a, b: Int
+	var c, d: Int
+	val e = 100
+	val f: Double = func()
+	var g: Int = func1 func2 func3
+	var h = new A()
 }

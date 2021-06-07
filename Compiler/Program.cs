@@ -5,6 +5,7 @@ using Compiler.Serialization;
 using Compiler.SymbolTable;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
+using Compiler.SymbolTable.Symbol.Variable;
 using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
 using Parser.ErrorListeners;
@@ -90,6 +91,13 @@ namespace Compiler
                     }
 
                     Console.WriteLine();
+                }
+
+                foreach (var symbol in scope.VariableMap)
+                {
+                    var variable = (symbol.Value as VariableSymbol);
+
+                    Console.WriteLine($"Variable {variable.Name} IsMutable {variable.IsMutable} Type {variable.Type?.Name ?? "not defined"}");
                 }
             }
         }

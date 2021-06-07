@@ -38,22 +38,29 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         public Scope Scope { get; set; }
 
+        public SymbolBase(string name, Scope scope = null)
+        {
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            Guid = Guid.NewGuid();
+            Name = name;
+            Scope = scope;
+        }
+
         /// <summary>
         /// Construct new symbol from specified rule context in stated scope.
         /// </summary>
         /// <param name="context"> Parse rule context of symbol in parse tree. </param>
         /// <param name="type"> Symbol type (variable/function/class). </param>
         /// <param name="scope"> Symbol scope according to parse tree lookup. </param>
-        public SymbolBase(ParserRuleContext context, Scope scope)
+        public SymbolBase(ParserRuleContext context, Scope scope = null)
         {
             if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
-            }
-
-            if (scope is null)
-            {
-                throw new ArgumentNullException(nameof(scope));
             }
 
             Guid = Guid.NewGuid();
