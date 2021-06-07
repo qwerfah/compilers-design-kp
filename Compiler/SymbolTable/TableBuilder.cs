@@ -96,12 +96,14 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitFunDef([NotNull] FunDefContext context)
         {
-            SymbolTable.GetCurrentScope().Define(context);
-            SymbolTable.PushScope();
-            bool result = base.VisitFunDef(context);
-            SymbolTable.PopScope();
+            //SymbolTable.GetCurrentScope().Define(context);
+            //SymbolTable.PushScope();
+            //bool result = base.VisitFunDef(context);
+            //SymbolTable.PopScope();
 
-            return result;
+            //return result;
+
+            return base.VisitFunDef(context);
         }
 
         /// <summary>
