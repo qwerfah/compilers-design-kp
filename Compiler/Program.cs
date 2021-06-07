@@ -97,7 +97,10 @@ namespace Compiler
                 {
                     var variable = (symbol.Value as VariableSymbol);
 
-                    Console.WriteLine($"Variable {variable.Name} IsMutable {variable.IsMutable} Type {variable.Type?.Name ?? "not defined"}");
+                    Console.WriteLine($"Variable {variable.Name} " +
+                        $"IsMutable {variable.IsMutable} " +
+                        $"Type {variable.Type?.Name ?? "not defined"} " +
+                        $"Modifier {variable.AccessMod?.ToString() ?? "none"}");
                 }
             }
         }

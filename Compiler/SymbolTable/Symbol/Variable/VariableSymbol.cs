@@ -19,13 +19,14 @@ namespace Compiler.SymbolTable.Symbol.Variable
         public VariableSymbol(ParserRuleContext context, Scope scope)
             : base(context, scope)
         {
+            AccessMod = GetAccessModifier(context);
             IsMutable = CheckMutable(context);
             Type = GetType(context, scope);
             Name = GetName(context, scope);
         }
 
-        public VariableSymbol(string name, bool isMutable, SymbolBase type) 
-            : base(name, isMutable, type)
+        public VariableSymbol(string name, bool isMutable, SymbolBase type, AccessModifier? access)
+            : base(name, isMutable, type, access)
         {
         }
 
@@ -72,7 +73,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
                 VarDclContext varDcl => GetName(varDcl.ids(), scope),
                 PatVarDefContext patVarDef => GetName(patVarDef),
                 _ => throw new NotImplementedException(),
-            } 
+            }
             ?? throw new InvalidParseTreeException($"Invalid subtree for variable definition {Guid}.");
         }
 
@@ -94,7 +95,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             for (int i = 2; i < ids.ChildCount; i += 2)
             {
                 string name = ids.GetChild(i).GetText();
-                scope.Define(new VariableSymbol(name, IsMutable, Type));
+                scope.Define(new VariableSymbol(name, IsMutable, Type, AccessMod));
             }
 
             return ids.GetChild(0).GetText();
@@ -111,7 +112,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
             PatDefContext patDef = context.varDef()?.patDef() ?? context.patDef();
 
-            return patDef?.pattern2()?.First()?.GetText() 
+            return patDef?.pattern2()?.First()?.GetText()
                 ?? throw new InvalidParseTreeException($"Invalid subtree for variable definition {Guid}.");
         }
 
@@ -175,8 +176,8 @@ namespace Compiler.SymbolTable.Symbol.Variable
                     $"Invalid type subtree for variable definition {Guid}.");
             }
 
-            SymbolBase typeSymbol = scope.GetSymbol(typeName, SymbolType.Class) 
-                ?? scope.GetSymbol(typeName, SymbolType.Type) 
+            SymbolBase typeSymbol = scope.GetSymbol(typeName, SymbolType.Class)
+                ?? scope.GetSymbol(typeName, SymbolType.Type)
                 ?? scope.GetSymbol(typeName, SymbolType.Trait);
 
             if (typeSymbol is null)
@@ -197,6 +198,35 @@ namespace Compiler.SymbolTable.Symbol.Variable
         private SymbolBase DeductType(PatVarDefContext context, Scope scope)
         {
             return null;
+        }
+
+        /// <summary>
+        /// Get access modifier for variable declaration/definition.
+        /// </summary>
+        /// <param name="context"> Varialbe declaration/definition context. </param>
+        /// <returns> Variable modifier. </returns>
+        private AccessModifier? GetAccessModifier(ParserRuleContext context)
+        {
+            TemplateStatContext templateStat = context.Parent?.Parent as TemplateStatContext;
+            
+            if (templateStat is null)
+            {
+                Console.WriteLine("Variable is not a class member.");
+                return null;
+            }
+
+            ModifierContext[] modifiers = templateStat?.modifier();
+            string modifier = (modifiers is null || !modifiers.Any()) 
+                ? null 
+                : modifiers.First()?.accessModifier()?.GetText();
+
+            return modifier switch
+            {
+                null => AccessModifier.Public,
+                "private" => AccessModifier.Private,
+                "protected" => AccessModifier.Protected,
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

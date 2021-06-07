@@ -32,15 +32,21 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// </summary>
         public string Value { get; set; }
 
+        /// <summary>
+        /// Access modifier if variable is a class field.
+        /// </summary>
+        public AccessModifier? AccessMod { get; set; } = null;
+
         public VariableSymbolBase(ParserRuleContext context, Scope scope) : base(context, scope)
         {
 
         }
 
-        public VariableSymbolBase(string name, bool isMutable, SymbolBase type) : base(name)
+        public VariableSymbolBase(string name, bool isMutable, SymbolBase type, AccessModifier? access) : base(name)
         {
             IsMutable = isMutable;
             Type = type;
+            AccessMod = access;
         }
 
         public override void Resolve()

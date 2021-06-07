@@ -1,8 +1,8 @@
 class A {
 	val a: Int = 0
-	private var c: Int = 0
+	private var c, d: Int
 	val e = 100
-	val f: Double = 0
+	protected val f: Double = 0
 
 	def func(): Unit = {
 		var k: Int = 0
