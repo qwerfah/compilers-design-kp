@@ -41,7 +41,8 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         /// <param name="name"> Class/object/template/trait name. </param>
         /// <param name="scope"> Scope of class/object/template/trait definition. </param>
-        public ClassSymbolBase(string name, Scope scope = null) : base(name, scope)
+        public ClassSymbolBase(string name, ParserRuleContext context, Scope scope = null) 
+            : base(name, context, scope)
         {
         }
 
@@ -64,7 +65,8 @@ namespace Compiler.SymbolTable.Symbol.Class
         {
             if (context.GetChild(0) is TerminalNodeImpl impl)
             {
-                return impl.GetText();
+                return impl.GetText() ?? throw new InvalidSyntaxException(
+                    "Invalid class definition: class name expected.");
             }
 
             throw new InvalidCastException(
@@ -81,7 +83,6 @@ namespace Compiler.SymbolTable.Symbol.Class
         {
             if (context is null)
             {
-                Console.WriteLine($"Class {Name} don't have parents.");
                 return (Scope.GetSymbol("AnyRef", SymbolType.Class), null);
             }
 
@@ -90,11 +91,11 @@ namespace Compiler.SymbolTable.Symbol.Class
 
             if (parent is null || traits.Any(t => t is null))
             {
-                throw new InvalidParseTreeException("Invalid subtree for class parent definition.");
+                throw new InvalidSyntaxException("Invalid class parent definition: parent name expected.");
             }
 
-            SymbolBase parentSymbol = Scope.GetSymbol(
-                parent, SymbolType.Class) ?? Scope.GetSymbol(parent, SymbolType.Trait);
+            SymbolBase parentSymbol = Scope.GetSymbol(parent, SymbolType.Class) 
+                ?? Scope.GetSymbol(parent, SymbolType.Trait);
 
             if (parentSymbol is null)
             {
@@ -140,19 +141,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         private void ResolveParent()
         {
-            if (_unresolvedParent is null) return;
-
-            SymbolBase parentSymbol = Scope.GetSymbol(
-                _unresolvedParent, SymbolType.Class) ?? Scope.GetSymbol(_unresolvedParent, SymbolType.Trait);
-
-            if (parentSymbol is null)
-            {
-                Console.Error.WriteLine($"Undefined symbol {_unresolvedParent} in definition of symbol {Name}");
-            }
-            else
-            {
-                Parent = parentSymbol;
-            }
+            Parent = ResolveType(_unresolvedParent) ?? Parent;
         }
 
         /// <summary>
@@ -170,7 +159,7 @@ namespace Compiler.SymbolTable.Symbol.Class
 
                 if (traitSymbol is null)
                 {
-                    Console.Error.WriteLine($"Undefined symbol {trait} in definition of symbol {Name}");
+                    Console.Error.WriteLine($"Undefined symbol {trait}.");
                 }
                 else
                 {

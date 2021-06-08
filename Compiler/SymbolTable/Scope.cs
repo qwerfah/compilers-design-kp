@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
+using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
@@ -73,20 +74,31 @@ namespace Compiler.SymbolTable
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            SymbolBase symbol = context switch
+            try
             {
-                ClassDefContext => new ClassSymbol(context as ClassDefContext, this),
-                ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, this),
-                FunDefContext => new FunctionSymbol(context as FunDefContext, this),
-                ParamContext => new FunctionParamSymbol(context as ParamContext, this),
-                ClassParamContext => new ClassParamSymbol(context as ClassParamContext, this),
-                ParserRuleContext c when (c is ValDclContext || c is VarDclContext || c is PatVarDefContext) => 
-                    new VariableSymbol(context, this),
-                TypeDefContext => new TypeSymbol(context as TypeDefContext, this),
-                _ => throw new NotImplementedException(),
-            };
+                SymbolBase symbol = context switch
+                {
+                    ClassDefContext => new ClassSymbol(context as ClassDefContext, this),
+                    ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, this),
+                    FunDefContext => new FunctionSymbol(context as FunDefContext, this),
+                    ParamContext => new FunctionParamSymbol(context as ParamContext, this),
+                    ClassParamContext => new ClassParamSymbol(context as ClassParamContext, this),
+                    ParserRuleContext c when (c is ValDclContext || c is VarDclContext || c is PatVarDefContext) =>
+                        new VariableSymbol(context, this),
+                    TypeDefContext => new TypeSymbol(context as TypeDefContext, this),
+                    _ => throw new NotImplementedException(),
+                };
 
-            Define(symbol);
+                Define(symbol);
+            }
+            catch (ArgumentException)
+            {
+                Console.Error.WriteLine($"Error at {context.Start.Line}:{context.Start.Column} - symbol with such name already defined.");
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Error at {context.Start.Line}:{context.Start.Column} - {e.Message}");
+            }
         }
 
         /// <summary>

@@ -8,18 +8,18 @@ namespace Compiler.Exceptions
 {
     /// <summary>
     /// Throws if actial parse tree structure does not corresponds to expected structure
-    /// (there are no some nodes in tree that are expected to be).
+    /// (there are no some nodes in tree that are expected to be) due to the syntax error.
     /// </summary>
-    class InvalidParseTreeException : Exception
+    class InvalidSyntaxException : Exception
     {
-        public InvalidParseTreeException()
+        public InvalidSyntaxException()
         { }
 
-        public InvalidParseTreeException(string message)
+        public InvalidSyntaxException(string message)
             : base(message)
         { }
 
-        public InvalidParseTreeException(string message, Exception innerException)
+        public InvalidSyntaxException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

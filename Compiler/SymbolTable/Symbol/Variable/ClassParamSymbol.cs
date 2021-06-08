@@ -45,7 +45,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
             if (terminals is null || !terminals.Any())
             {
-                throw new InvalidParseTreeException("Invalid parse tree for class ctor param.");
+                throw new InvalidSyntaxException("Invalid class ctor param declaration.");
             }
 
             return terminals;
@@ -60,12 +60,16 @@ namespace Compiler.SymbolTable.Symbol.Variable
         {
             try
             {
-                string name = terminals.SingleOrDefault(t => !new[] { "var", "val", ":" }.Contains(t.GetText())).GetText();
-                return name ?? throw new InvalidParseTreeException("Invalid parse tree for class ctor param.");
+                string name = terminals
+                    .SingleOrDefault(t => !Terminals.Contains(t.GetText()))
+                    .GetText();
+                return name ?? throw new InvalidSyntaxException(
+                    "Invalid class ctor param declaration: param name expected.");
             }
             catch (InvalidOperationException)
             {
-                throw new InvalidParseTreeException("Invalid parse tree for class ctor param.");
+                throw new InvalidSyntaxException(
+                    "Invalid class ctor param declaration: param name expected.");
             }
         }
 
@@ -78,7 +82,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         {
             try
             {
-                return terminals.SingleOrDefault(t => new[] { "var", "val" }.Contains(t.GetText()))?.GetText() switch
+                return terminals.SingleOrDefault(t => DefKeywords.Contains(t.GetText()))?.GetText() switch
                 {
                     "var" => true,
                     "val" => false,
@@ -88,7 +92,8 @@ namespace Compiler.SymbolTable.Symbol.Variable
             }
             catch (InvalidOperationException)
             {
-                throw new InvalidParseTreeException("Invalid parse tree for class ctor param.");
+                throw new InvalidSyntaxException(
+                    "Invalid class ctor param declaration: var/val keyword expected.");
             }
         }
 
@@ -102,7 +107,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
             TerminalNodeImpl[] terminals = GetTerminals(context);
-            string def = terminals.SingleOrDefault(t => new[] { "var", "val" }.Contains(t.GetText()))?.GetText();
+            string def = terminals.SingleOrDefault(t => DefKeywords.Contains(t.GetText()))?.GetText();
             string modifier = context.modifier()?.FirstOrDefault()?.accessModifier()?.GetText();
 
             return modifier switch
@@ -110,7 +115,8 @@ namespace Compiler.SymbolTable.Symbol.Variable
                 null => def is null ? AccessModifier.None : AccessModifier.Public,
                 "private" => AccessModifier.Private,
                 "protected" => AccessModifier.Protected,
-                _ => throw new NotImplementedException(),
+                _ => throw new InvalidSyntaxException(
+                    "Invalid class ctor param declaration: access modifier expected."),
             };
         }
 
@@ -123,29 +129,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
         private SymbolBase GetType(ClassParamContext context, Scope scope)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
+            _ = scope ?? throw new ArgumentNullException(nameof(scope));
 
-            string typeName = context
-                .paramType()
-                ?.type_()
-                ?.infixType()
-                ?.compoundType()?.FirstOrDefault()
-                ?.annotType()?.FirstOrDefault()
-                ?.simpleType()
-                ?.stableId()?.GetText();
+            Type_Context type = context.paramType().type_() ?? throw new InvalidSyntaxException("");
 
-            _ = typeName ?? throw new InvalidParseTreeException("Invalid subtree for class ctor param type.");
-
-            SymbolBase typeSymbol = scope.GetSymbol(typeName, SymbolType.Class)
-                ?? scope.GetSymbol(typeName, SymbolType.Type)
-                ?? scope.GetSymbol(typeName, SymbolType.Trait);
-
-            if (typeSymbol is null)
-            {
-                Console.Error.WriteLine($"Undefined type {typeName} for variable definition {Guid}.");
-                _unresolvedTypeName = typeName;
-            }
-
-            return typeSymbol;
+            return GetType(type, scope, out _unresolvedTypeName);
         }
     }
 }

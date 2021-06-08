@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime;
+using Compiler.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,21 +25,16 @@ namespace Compiler.SymbolTable.Symbol
         public string Name { get; init; }
         
         /// <summary>
-        /// Type of parse rule context in parse tree.
+        /// Symbol definition/declaration context.
         /// </summary>
-        public Type ContextType { get; }
-
-        /// <summary>
-        /// String representation of symbol definition in code.
-        /// </summary>
-        public string Definition { get; }
+        public ParserRuleContext Context { get; }
 
         /// <summary>
         /// Symbol scope in code.
         /// </summary>
         public Scope Scope { get; set; }
 
-        public SymbolBase(string name, Scope scope = null)
+        public SymbolBase(string name, ParserRuleContext context, Scope scope = null)
         {
             if (name is null)
             {
@@ -46,6 +42,7 @@ namespace Compiler.SymbolTable.Symbol
             }
 
             Guid = Guid.NewGuid();
+            Context = context;
             Name = name;
             Scope = scope;
         }
@@ -61,8 +58,7 @@ namespace Compiler.SymbolTable.Symbol
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
             Guid = Guid.NewGuid();
-            ContextType = context.GetType();
-            Definition = context.GetText();
+            Context = context;
             Scope = scope;
         }
 
@@ -70,5 +66,61 @@ namespace Compiler.SymbolTable.Symbol
         /// Resolve all unresolved symbols in current symbol definition.
         /// </summary>
         public abstract void Resolve();
+
+        /// <summary>
+        /// Resolve type by its name.
+        /// Type may be represented by Class, Trait or Type.
+        /// </summary>
+        /// <param name="typeName"> Type name (class/trait/type). </param>
+        /// <returns> Type symbol if found or null if unable to resolve type. </returns>
+        protected SymbolBase ResolveType(string typeName)
+        {
+            if (typeName is null) return null;
+
+            SymbolBase type = Scope.GetSymbol(typeName, SymbolType.Class)
+                ?? Scope.GetSymbol(typeName, SymbolType.Type)
+                ?? Scope.GetSymbol(typeName, SymbolType.Trait);
+
+            if (type is null)
+            {
+                Console.Error.WriteLine($"Can't resolve return type for symbol {Name} ({Guid}).");
+            }
+
+            return type;
+        }
+
+        /// <summary>
+        /// Get symbol type from type context.
+        /// </summary>
+        /// <param name="context"> Type context. </param>
+        /// <param name="scope"> Scope of symbol declaration/definition. </param>
+        /// <returns> Symbol of declared type or null if unable to resolve type at this moment. </returns>
+        protected SymbolBase GetType(Type_Context context, Scope scope, out string unresolvedTypeName)
+        {
+            unresolvedTypeName = null;
+
+            if (context is null) return null;
+
+            string typeName = context
+                ?.infixType()
+                ?.compoundType()?.FirstOrDefault()
+                ?.annotType()?.FirstOrDefault()
+                ?.simpleType()
+                ?.stableId()?.GetText();
+
+            _ = typeName ?? throw new InvalidSyntaxException($"Invalid type subtree for symbol definition {Name} ({Guid}).");
+
+            SymbolBase typeSymbol = scope.GetSymbol(typeName, SymbolType.Class)
+                ?? scope.GetSymbol(typeName, SymbolType.Type)
+                ?? scope.GetSymbol(typeName, SymbolType.Trait);
+
+            if (typeSymbol is null)
+            {
+                Console.Error.WriteLine($"Undefined type {typeName} in symbol definition {Name} ({Guid}).");
+                unresolvedTypeName = typeName;
+            }
+
+            return typeSymbol;
+        }
     }
 }

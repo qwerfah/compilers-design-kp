@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Tree;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,16 +18,16 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// Constructs class symbol with specified name, parent, traits in given scope.
         /// </summary>
         /// <param name="name"> Class name. </param>
-        /// <param name="baseClass"> Implicitly inherited base class (AnyVal or AnyRef). </param>
         /// <param name="parent"> Explicitly inherited parent class. </param>
         /// <param name="traits"> Traits that implemented by current class. </param>
         /// <param name="scope"> Class definition scope. </param>
         public ClassSymbol(
             string name,
+            ParserRuleContext context = null,
             SymbolBase parent = null, 
             List<SymbolBase> traits = null, 
             Scope scope = null) 
-            : base(name, scope)
+            : base(name, context, scope)
         {
             if (name is null)
             {

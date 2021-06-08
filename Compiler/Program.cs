@@ -93,14 +93,20 @@ namespace Compiler
                     Console.WriteLine();
                 }
 
-                foreach (var symbol in scope.VariableMap)
+                foreach (var variable in scope.VariableMap.Values)
                 {
-                    var variable = (symbol.Value as VariableSymbolBase);
-
                     Console.WriteLine($"Variable {variable.Name} " +
                         $"IsMutable {variable.IsMutable} " +
                         $"Type {variable.Type?.Name ?? "not defined"} " +
                         $"Modifier {variable.AccessMod}");
+                }
+
+                Console.WriteLine();
+
+                foreach (var function in scope.FunctionMap.Values)
+                {
+                    Console.WriteLine($"Function: {function.Name} " +
+                        $"Return type: {function.ReturnType.Name}");
                 }
             }
         }

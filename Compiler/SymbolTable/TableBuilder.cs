@@ -92,14 +92,12 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitFunDef([NotNull] FunDefContext context)
         {
-            //SymbolTable.GetCurrentScope().Define(context);
-            //SymbolTable.PushScope();
-            //bool result = base.VisitFunDef(context);
-            //SymbolTable.PopScope();
+            SymbolTable.GetCurrentScope().Define(context);
+            SymbolTable.PushScope();
+            bool result = base.VisitFunDef(context);
+            SymbolTable.PopScope();
 
-            //return result;
-
-            return base.VisitFunDef(context);
+            return result;
         }
 
         /// <summary>
@@ -157,17 +155,17 @@ namespace Compiler.SymbolTable
         public void LoadStandartTypes()
         {
             SymbolTable.Scopes.First().Define(new ClassSymbol("Any"));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyVal", SymbolTable.Scopes.First().ClassMap["Any"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyRef", SymbolTable.Scopes.First().ClassMap["Any"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Unit", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Boolean", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Char", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Byte", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Short", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Int", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Long", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Float", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Double", SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyVal",  parent: SymbolTable.Scopes.First().ClassMap["Any"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyRef",  parent: SymbolTable.Scopes.First().ClassMap["Any"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Unit",    parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Boolean", parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Char",    parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Byte",    parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Short",   parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Int",     parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Long",    parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Float",   parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Double",  parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
         }
     }
 }
