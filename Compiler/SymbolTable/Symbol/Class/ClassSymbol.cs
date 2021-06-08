@@ -8,9 +8,24 @@ using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable.Symbol.Class
 {
-    class ClassSymbol : ClassSymbolBase
+    /// <summary>
+    /// Represents class symbol definition.
+    /// </summary>
+    public class ClassSymbol : ClassSymbolBase
     {
-        public ClassSymbol(string name, SymbolBase parent = null, List<SymbolBase> traits = null, Scope scope = null) 
+        /// <summary>
+        /// Constructs class symbol with specified name, parent, traits in given scope.
+        /// </summary>
+        /// <param name="name"> Class name. </param>
+        /// <param name="baseClass"> Implicitly inherited base class (AnyVal or AnyRef). </param>
+        /// <param name="parent"> Explicitly inherited parent class. </param>
+        /// <param name="traits"> Traits that implemented by current class. </param>
+        /// <param name="scope"> Class definition scope. </param>
+        public ClassSymbol(
+            string name,
+            SymbolBase parent = null, 
+            List<SymbolBase> traits = null, 
+            Scope scope = null) 
             : base(name, scope)
         {
             if (name is null)
@@ -24,6 +39,11 @@ namespace Compiler.SymbolTable.Symbol.Class
             Scope = scope;
         }
 
+        /// <summary>
+        /// Constructs class symbol from given class definition context in given scope.
+        /// </summary>
+        /// <param name="context"> Class definition context. </param>
+        /// <param name="scope"> Class definition scope. </param>
         public ClassSymbol(ClassDefContext context, Scope scope = null)
             : base(context.Parent as TmplDefContext, scope)
         {

@@ -59,16 +59,16 @@ namespace Compiler
             {
                 Console.WriteLine($"Scope {scope.Guid}");
 
-                foreach (var symbol in scope.ClassMap)
+                foreach (var symbol in scope.ClassMap.Values)
                 {
-                    Console.WriteLine($"Class {symbol.Key}");
+                    Console.WriteLine($"Class {symbol.Name}");
 
-                    if ((symbol.Value as ClassSymbol).Parent is { } parent)
+                    if (symbol.Parent is { } parent)
                     {
                         Console.WriteLine($"Extends {parent.Name}");
                     }
 
-                    foreach (var trait in (symbol.Value as ClassSymbol).Traits ?? new List<SymbolBase>())
+                    foreach (var trait in symbol.Traits ?? new List<SymbolBase>())
                     {
                         Console.WriteLine($"With {trait.Name}");
                     }
@@ -76,16 +76,16 @@ namespace Compiler
                     Console.WriteLine();
                 }
 
-                foreach (var symbol in scope.ObjectMap)
+                foreach (var symbol in scope.ObjectMap.Values)
                 {
-                    Console.WriteLine($"Object {symbol.Key}");
+                    Console.WriteLine($"Object {symbol.Name}");
 
-                    if ((symbol.Value as ObjectSymbol).Parent is { } parent)
+                    if (symbol.Parent is { } parent)
                     {
                         Console.WriteLine($"Extends {parent.Name}");
                     }
 
-                    foreach (var trait in (symbol.Value as ObjectSymbol).Traits ?? new List<SymbolBase>())
+                    foreach (var trait in symbol.Traits ?? new List<SymbolBase>())
                     {
                         Console.WriteLine($"With {trait.Name}");
                     }

@@ -31,32 +31,32 @@ namespace Compiler.SymbolTable
         /// <summary>
         /// Class symbol map for current scope.
         /// </summary>
-        public Dictionary<string, SymbolBase> ClassMap = new();
+        public Dictionary<string, ClassSymbol> ClassMap = new();
 
         /// <summary>
         /// Object symbol map for current scope.
         /// </summary>
-        public Dictionary<string, SymbolBase> ObjectMap = new();
+        public Dictionary<string, ObjectSymbol> ObjectMap = new();
 
         /// <summary>
         /// Trait symbol map for current scope.
         /// </summary>
-        public Dictionary<string, SymbolBase> TraitMap = new();
+        public Dictionary<string, TraitSymbol> TraitMap = new();
 
         /// <summary>
         /// Function symbol map for current scope.
         /// </summary>
-        public Dictionary<string, SymbolBase> FunctionMap = new();
+        public Dictionary<string, FunctionSymbol> FunctionMap = new();
 
         /// <summary>
         /// Varialbe symbol map for current scope.
         /// </summary>
-        public Dictionary<string, SymbolBase> VariableMap = new();
+        public Dictionary<string, VariableSymbolBase> VariableMap = new();
 
         /// <summary>
         /// Type symbol map for current scope.
         /// </summary>
-        public Dictionary<string, SymbolBase> TypeMap = new();
+        public Dictionary<string, TypeSymbol> TypeMap = new();
 
         public Scope(ScopeType type, Scope enclosingScope = null)
         {
@@ -101,11 +101,12 @@ namespace Compiler.SymbolTable
 
             switch (symbol)
             {
-                case ClassSymbol: ClassMap.Add(symbol.Name, symbol); break;
-                case ObjectSymbol: ObjectMap.Add(symbol.Name, symbol); break;
-                case FunctionSymbol: FunctionMap.Add(symbol.Name, symbol); break;
-                case VariableSymbolBase: VariableMap.Add(symbol.Name, symbol); break;
-                case TypeSymbol: TypeMap.Add(symbol.Name, symbol); break;
+                case ClassSymbol s: ClassMap.Add(symbol.Name, s); break;
+                case ObjectSymbol s: ObjectMap.Add(symbol.Name, s); break;
+                case TraitSymbol s: TraitMap.Add(symbol.Name, s); break;
+                case FunctionSymbol s: FunctionMap.Add(symbol.Name, s); break;
+                case VariableSymbolBase s: VariableMap.Add(symbol.Name, s); break;
+                case TypeSymbol s: TypeMap.Add(symbol.Name, s); break;
                 default: throw new NotImplementedException();
             }
         }

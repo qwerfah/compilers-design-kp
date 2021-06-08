@@ -11,7 +11,7 @@ using static Parser.Antlr.Grammar.ScalaParser;
 namespace Compiler.SymbolTable.Symbol.Class
 {
     /// <summary>
-    /// Represents class symbol definition (class/object/template/trait).
+    /// Represents class/object/template/trait symbol definition.
     /// </summary>
     public abstract class ClassSymbolBase : SymbolBase
     {
@@ -51,7 +51,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         /// <param name="context"> Class/object/template/trait definition context. </param>
         /// <param name="scope"> Scope of class/object/template/trait definition. </param>
-        public ClassSymbolBase(TmplDefContext context, Scope scope) : base(context, scope)
+        public ClassSymbolBase(ParserRuleContext context, Scope scope) : base(context, scope)
         {
         }
 
@@ -82,7 +82,7 @@ namespace Compiler.SymbolTable.Symbol.Class
             if (context is null)
             {
                 Console.WriteLine($"Class {Name} don't have parents.");
-                return (null, null);
+                return (Scope.GetSymbol("AnyRef", SymbolType.Class), null);
             }
 
             string parent = context.constr()?.annotType()?.simpleType()?.stableId().GetText();
