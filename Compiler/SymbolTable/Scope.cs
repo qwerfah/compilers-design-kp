@@ -12,6 +12,11 @@ using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable
 {
+    /// <summary>
+    /// Represents symbol scope. Scope can be limited by class, 
+    /// function of block body. Besides that, there is one global scope, 
+    /// that can contains only class/object/trait definitions.
+    /// </summary>
     public class Scope
     {
         /// <summary>
@@ -93,11 +98,13 @@ namespace Compiler.SymbolTable
             }
             catch (ArgumentException)
             {
-                Console.Error.WriteLine($"Error at {context.Start.Line}:{context.Start.Column} - symbol with such name already defined.");
+                Console.Error.WriteLine(
+                    $"Error at {context.Start.Line}:{context.Start.Column} - symbol with such name already defined.");
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"Error at {context.Start.Line}:{context.Start.Column} - {e.Message}");
+                Console.Error.WriteLine(
+                    $"Error at {context.Start.Line}:{context.Start.Column} - {e.Message}");
             }
         }
 
@@ -148,20 +155,29 @@ namespace Compiler.SymbolTable
         /// </summary>
         public void Resolve()
         {
-            foreach (var symbol in ClassMap.Values)
-            {
-                symbol.Resolve();
-            }
+            Resolve(ClassMap);
+            Resolve(ObjectMap);
+            Resolve(FunctionMap);
+            Resolve(VariableMap);
+        }
 
-            foreach (var symbol in ObjectMap.Values)
+        /// <summary>
+        /// Resolve all symbols in specified dictionary.
+        /// </summary>
+        /// <typeparam name="TEntity"> Symbol type. </typeparam>
+        /// <param name="dict"> Symbol dictionary. </param>
+        private void Resolve<TEntity>(Dictionary<string, TEntity> dict) where TEntity : SymbolBase
+        {
+            foreach (var symbol in dict.Values)
             {
-                symbol.Resolve();
-            }
-
-            foreach (var symbol in VariableMap.Values)
-
-            {
-                symbol.Resolve();
+                try
+                {
+                    symbol.Resolve();
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine($"Error at {symbol.Context.Start.Line}:{symbol.Context.Start.Column} - {e.Message}");
+                }
             }
         }
     }

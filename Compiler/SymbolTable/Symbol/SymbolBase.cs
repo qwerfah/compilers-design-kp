@@ -81,11 +81,6 @@ namespace Compiler.SymbolTable.Symbol
                 ?? Scope.GetSymbol(typeName, SymbolType.Type)
                 ?? Scope.GetSymbol(typeName, SymbolType.Trait);
 
-            if (type is null)
-            {
-                Console.Error.WriteLine($"Can't resolve return type for symbol {Name} ({Guid}).");
-            }
-
             return type;
         }
 
@@ -108,7 +103,7 @@ namespace Compiler.SymbolTable.Symbol
                 ?.simpleType()
                 ?.stableId()?.GetText();
 
-            _ = typeName ?? throw new InvalidSyntaxException($"Invalid type subtree for symbol definition {Name} ({Guid}).");
+            _ = typeName ?? throw new InvalidSyntaxException($"Invalid symbol definition: type expected.");
 
             SymbolBase typeSymbol = scope.GetSymbol(typeName, SymbolType.Class)
                 ?? scope.GetSymbol(typeName, SymbolType.Type)
@@ -116,7 +111,6 @@ namespace Compiler.SymbolTable.Symbol
 
             if (typeSymbol is null)
             {
-                Console.Error.WriteLine($"Undefined type {typeName} in symbol definition {Name} ({Guid}).");
                 unresolvedTypeName = typeName;
             }
 

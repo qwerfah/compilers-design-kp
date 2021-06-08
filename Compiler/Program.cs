@@ -106,7 +106,7 @@ namespace Compiler
                 foreach (var function in scope.FunctionMap.Values)
                 {
                     Console.WriteLine($"Function: {function.Name} " +
-                        $"Return type: {function.ReturnType.Name}");
+                        $"Return type: {function.ReturnType?.Name}");
                 }
             }
         }

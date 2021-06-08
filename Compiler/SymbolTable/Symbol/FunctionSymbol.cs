@@ -52,7 +52,8 @@ namespace Compiler.SymbolTable.Symbol
 
             if (terminals is null || terminals.Length != 1)
             {
-                throw new InvalidSyntaxException($"Invalid parse subtree for function signature {Guid}.");
+                throw new InvalidSyntaxException(
+                    $"Invalid function definition: name expected.");
             }
 
             return terminals.First().GetText();
@@ -74,7 +75,9 @@ namespace Compiler.SymbolTable.Symbol
 
         public override void Resolve()
         {
-            ReturnType = ResolveType(_unresolvedReturnType) ?? ReturnType;
+            ReturnType = ResolveType(_unresolvedReturnType) ?? ReturnType 
+                ?? throw new InvalidSyntaxException(
+                    "Invalid function definition: can't resolve return type.");
         }
     }
 }

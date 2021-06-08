@@ -141,7 +141,9 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         private void ResolveParent()
         {
-            Parent = ResolveType(_unresolvedParent) ?? Parent;
+            Parent = ResolveType(_unresolvedParent) ?? Parent 
+                ?? throw new InvalidSyntaxException(
+                    "Invalid class definition: unable to resolve parent type.");
         }
 
         /// <summary>
@@ -157,20 +159,12 @@ namespace Compiler.SymbolTable.Symbol.Class
             {
                 SymbolBase traitSymbol = Scope.GetSymbol(trait, SymbolType.Trait);
 
-                if (traitSymbol is null)
-                {
-                    Console.Error.WriteLine($"Undefined symbol {trait}.");
-                }
-                else
-                {
-                    traits.Add(traitSymbol);
-                }
+                _ = traitSymbol ?? throw new InvalidSyntaxException(
+                    "Invalid class definition: unable to resolve trait type.");
+                traits.Add(traitSymbol);
             }
 
-            if (traits.Any())
-            {
-                Traits = Traits ?? traits;
-            }
+            Traits = traits;
         }
     }
 }

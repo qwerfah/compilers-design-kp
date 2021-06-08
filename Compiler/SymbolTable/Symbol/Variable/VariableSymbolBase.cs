@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime;
+using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol.Class;
 using System;
 using System.Collections.Generic;
@@ -88,7 +89,9 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
         public override void Resolve()
         {
-            Type = ResolveType(_unresolvedTypeName) ?? Type;
+            Type = ResolveType(_unresolvedTypeName) ?? Type 
+                ?? throw new InvalidSyntaxException(
+                    "Invalid variable definition/declaration: unable to resolve variable type.");
         }
     }
 }
