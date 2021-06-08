@@ -20,7 +20,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             : base(context, scope)
         {
             AccessMod = GetAccessModifier(context);
-            IsMutable = CheckMutable(context);
+            IsMutable = CheckMutability(context);
             Type = GetType(context, scope);
             Name = GetName(context, scope);
         }
@@ -36,7 +36,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <param name="context"> Variable declaration/definition context 
         /// that may be ValDclContext, VarDclContext or PatVarDefContext.  </param>
         /// <returns> True if variable is mutable, otherwise - false. </returns>
-        private bool CheckMutable(ParserRuleContext context)
+        private bool CheckMutability(ParserRuleContext context)
         {
             IParseTree subtree = context switch
             {
@@ -45,10 +45,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
                 _ => throw new NotImplementedException(),
             };
 
-            if (subtree is null)
-            {
-                throw new InvalidParseTreeException($"Invalid subtree for val declaration {Guid}.");
-            }
+            _ = subtree ?? throw new InvalidParseTreeException($"Invalid subtree for val declaration {Guid}.");
 
             if (!"valvar".Contains(subtree.GetText()))
             {
@@ -87,7 +84,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <returns> Name of the first declared variable. </returns>
         private string GetName(IdsContext ids, Scope scope)
         {
-            if (ids is null || ids.ChildCount == 0)
+            if (ids is null || !ids.children.Any())
             {
                 throw new InvalidParseTreeException("Invalid multiple variables declaration.");
             }
@@ -170,11 +167,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
                 ?.simpleType()
                 ?.stableId()?.GetText();
 
-            if (typeName is null)
-            {
-                throw new InvalidParseTreeException(
-                    $"Invalid type subtree for variable definition {Guid}.");
-            }
+            _ = typeName ?? throw new InvalidParseTreeException($"Invalid type subtree for variable definition {Guid}.");
 
             SymbolBase typeSymbol = scope.GetSymbol(typeName, SymbolType.Class)
                 ?? scope.GetSymbol(typeName, SymbolType.Type)
@@ -183,6 +176,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             if (typeSymbol is null)
             {
                 Console.Error.WriteLine($"Undefined type {typeName} for variable definition {Guid}.");
+                _unresolvedTypeName = typeName;
             }
 
             return typeSymbol;
@@ -197,6 +191,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <returns></returns>
         private SymbolBase DeductType(PatVarDefContext context, Scope scope)
         {
+            // TODO: auto type deduction
             return null;
         }
 

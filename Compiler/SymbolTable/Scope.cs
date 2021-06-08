@@ -71,10 +71,7 @@ namespace Compiler.SymbolTable
         /// <param name="context"> Parse tree node context. </param>
         public void Define(ParserRuleContext context)
         {
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            _ = context ?? throw new ArgumentNullException(nameof(context));
 
             SymbolBase symbol = context switch
             {
@@ -82,7 +79,7 @@ namespace Compiler.SymbolTable
                 ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, this),
                 FunDefContext => new FunctionSymbol(context as FunDefContext, this),
                 ParamContext => new FunctionParamSymbol(context as ParamContext, this),
-                ClassParamsContext => new ClassParamSymbol(context as ClassParamContext, this),
+                ClassParamContext => new ClassParamSymbol(context as ClassParamContext, this),
                 ParserRuleContext c when (c is ValDclContext || c is VarDclContext || c is PatVarDefContext) => 
                     new VariableSymbol(context, this),
                 TypeDefContext => new TypeSymbol(context as TypeDefContext, this),
@@ -98,11 +95,8 @@ namespace Compiler.SymbolTable
         /// <param name="symbol"> Symbol instance to define. </param>
         public void Define(SymbolBase symbol)
         {
-            if (symbol is null)
-            {
-                throw new ArgumentNullException(nameof(symbol));
-            }
-
+            _ = symbol ?? throw new ArgumentNullException(nameof(symbol));
+           
             symbol.Scope = this;
 
             switch (symbol)
@@ -110,7 +104,7 @@ namespace Compiler.SymbolTable
                 case ClassSymbol: ClassMap.Add(symbol.Name, symbol); break;
                 case ObjectSymbol: ObjectMap.Add(symbol.Name, symbol); break;
                 case FunctionSymbol: FunctionMap.Add(symbol.Name, symbol); break;
-                case VariableSymbol: VariableMap.Add(symbol.Name, symbol); break;
+                case VariableSymbolBase: VariableMap.Add(symbol.Name, symbol); break;
                 case TypeSymbol: TypeMap.Add(symbol.Name, symbol); break;
                 default: throw new NotImplementedException();
             }
@@ -137,8 +131,8 @@ namespace Compiler.SymbolTable
         }
 
         /// <summary>
-         /// Resolve all unresolved symbols current scope.
-         /// </summary>
+        /// Resolve all unresolved symbols current scope.
+        /// </summary>
         public void Resolve()
         {
             foreach (var symbol in ClassMap.Values)
@@ -147,6 +141,12 @@ namespace Compiler.SymbolTable
             }
 
             foreach (var symbol in ObjectMap.Values)
+            {
+                symbol.Resolve();
+            }
+
+            foreach (var symbol in VariableMap.Values)
+
             {
                 symbol.Resolve();
             }

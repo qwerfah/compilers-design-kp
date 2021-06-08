@@ -1,13 +1,6 @@
-class A {
-	val a: Int = 0
-	private var c, d: Int
-	val e = 100
-	protected val f: Double = 0
-
-	def func(): Unit = {
-		var k: Int = 0
-		val l: Double = 300
-    
-    println(k + l)
-	}
+class A(protected val a: Int, b: Double) {
+	val c: Int = 0
+	private var d, e: Int
+	val f = 100
+	protected val h: Double = 0
 }

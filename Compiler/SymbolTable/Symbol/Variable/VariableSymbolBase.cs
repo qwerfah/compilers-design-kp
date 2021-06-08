@@ -28,6 +28,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
         public SymbolBase Type { get; set; }
 
         /// <summary>
+        /// Contains variable type name if it wasn't resolved during first analyzer pass.
+        /// </summary>
+        protected string _unresolvedTypeName = null;
+
+        /// <summary>
         /// Variable value (if stated in definition).
         /// </summary>
         public string Value { get; set; }
@@ -37,12 +42,13 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// </summary>
         public AccessModifier? AccessMod { get; set; } = null;
 
-        public VariableSymbolBase(ParserRuleContext context, Scope scope) : base(context, scope)
+        public VariableSymbolBase(ParserRuleContext context, Scope scope) 
+            : base(context, scope)
         {
-
         }
 
-        public VariableSymbolBase(string name, bool isMutable, SymbolBase type, AccessModifier? access) : base(name)
+        public VariableSymbolBase(string name, bool isMutable, SymbolBase type, AccessModifier? access) 
+            : base(name)
         {
             IsMutable = isMutable;
             Type = type;
@@ -51,7 +57,16 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
         public override void Resolve()
         {
-            throw new NotImplementedException();
+            if (_unresolvedTypeName is null) return;
+
+            Type = Scope.GetSymbol(_unresolvedTypeName, SymbolType.Class)
+                ?? Scope.GetSymbol(_unresolvedTypeName, SymbolType.Type)
+                ?? Scope.GetSymbol(_unresolvedTypeName, SymbolType.Trait);
+
+            if (Type is null)
+            {
+                Console.Error.WriteLine($"Undefined type {_unresolvedTypeName} for variable definition {Guid}.");
+            }
         }
     }
 }

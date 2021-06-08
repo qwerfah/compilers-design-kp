@@ -95,7 +95,7 @@ namespace Compiler
 
                 foreach (var symbol in scope.VariableMap)
                 {
-                    var variable = (symbol.Value as VariableSymbol);
+                    var variable = (symbol.Value as VariableSymbolBase);
 
                     Console.WriteLine($"Variable {variable.Name} " +
                         $"IsMutable {variable.IsMutable} " +

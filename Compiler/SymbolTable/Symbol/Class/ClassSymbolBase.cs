@@ -15,20 +15,51 @@ namespace Compiler.SymbolTable.Symbol.Class
     /// </summary>
     public abstract class ClassSymbolBase : SymbolBase
     {
+        /// <summary>
+        /// Contains name of first class/trait in extends-chain
+        /// (that stated after "extends" keyword) if it wasn't resolved during first pass.
+        /// </summary>
         protected string _unresolvedParent = null;
+
+        /// <summary>
+        /// Contains names of traits in with-chain that weren't resolved during first pass.
+        /// </summary>
         protected List<string> _unresolvedTraits = new();
 
+        /// <summary>
+        /// Type symbol for parent class/trait (that stated after "extends" keyword).
+        /// </summary>
         public SymbolBase Parent { get; set; } = null;
+
+        /// <summary>
+        /// Type symbols for traits in with-chain (that stated after "with" keywords).
+        /// </summary>
         public List<SymbolBase> Traits { get; set; } = null;
 
+        /// <summary>
+        /// Constructs class/object/template/trait symbol with given name in specified scope.
+        /// </summary>
+        /// <param name="name"> Class/object/template/trait name. </param>
+        /// <param name="scope"> Scope of class/object/template/trait definition. </param>
         public ClassSymbolBase(string name, Scope scope = null) : base(name, scope)
         {
         }
 
+        /// <summary>
+        /// Constructs class/object/template/trait symbol 
+        /// from given definition context in specified scope.
+        /// </summary>
+        /// <param name="context"> Class/object/template/trait definition context. </param>
+        /// <param name="scope"> Scope of class/object/template/trait definition. </param>
         public ClassSymbolBase(TmplDefContext context, Scope scope) : base(context, scope)
         {
         }
 
+        /// <summary>
+        /// Get class/object/trait/template name from definition context.
+        /// </summary>
+        /// <param name="context"> Class/object/trait/template definition context. </param>
+        /// <returns> Definition name. </returns>
         protected string GetName(ParserRuleContext context)
         {
             if (context.GetChild(0) is TerminalNodeImpl impl)
@@ -104,8 +135,13 @@ namespace Compiler.SymbolTable.Symbol.Class
             }
         }
 
+        /// <summary>
+        /// Resolve parent class/trait symbol if unresolved.
+        /// </summary>
         private void ResolveParent()
         {
+            if (_unresolvedParent is null) return;
+
             SymbolBase parentSymbol = Scope.GetSymbol(
                 _unresolvedParent, SymbolType.Class) ?? Scope.GetSymbol(_unresolvedParent, SymbolType.Trait);
 
@@ -119,8 +155,13 @@ namespace Compiler.SymbolTable.Symbol.Class
             }
         }
 
+        /// <summary>
+        /// Resolve all unresolved trait symbols in class symbol definition.
+        /// </summary>
         private void ResolveTraits()
         {
+            if (_unresolvedTraits is null || !_unresolvedTraits.Any()) return;
+
             List<SymbolBase> traits = new();
 
             foreach (var trait in _unresolvedTraits)

@@ -58,40 +58,12 @@ namespace Compiler.SymbolTable.Symbol
         /// <param name="scope"> Symbol scope according to parse tree lookup. </param>
         public SymbolBase(ParserRuleContext context, Scope scope = null)
         {
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            _ = context ?? throw new ArgumentNullException(nameof(context));
 
             Guid = Guid.NewGuid();
             ContextType = context.GetType();
             Definition = context.GetText();
             Scope = scope;
-        }
-
-        /// <summary>
-        /// Get name of symbol from its definition represented by parse subtree.
-        /// </summary>
-        /// <param name="context"> Root of parse subtree that represents symbol definition. </param>
-        /// <returns> Symbol name. </returns>
-        private string GetName(ParserRuleContext context)
-        {
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (context.ChildCount == 0 && context is StableIdContext stableId)
-            {
-                return stableId.GetText();
-            }
-
-            for (int i = 0; i < context.ChildCount; i++)
-            {
-                GetName(context.GetChild(i) as ParserRuleContext);
-            }
-
-            throw new ArgumentException("Given node has no StableIdContext as a child.");
         }
 
         /// <summary>
