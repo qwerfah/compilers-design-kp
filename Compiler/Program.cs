@@ -100,7 +100,7 @@ namespace Compiler
                     Console.WriteLine($"Variable {variable.Name} " +
                         $"IsMutable {variable.IsMutable} " +
                         $"Type {variable.Type?.Name ?? "not defined"} " +
-                        $"Modifier {variable.AccessMod?.ToString() ?? "none"}");
+                        $"Modifier {variable.AccessMod}");
                 }
             }
         }

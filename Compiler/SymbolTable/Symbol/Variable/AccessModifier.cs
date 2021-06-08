@@ -12,6 +12,10 @@ namespace Compiler.SymbolTable.Symbol.Variable
     public enum AccessModifier
     {
         /// <summary>
+        /// No access modifier (not a class field).
+        /// </summary>
+        None,
+        /// <summary>
         /// Public class member.
         /// </summary>
         Public,

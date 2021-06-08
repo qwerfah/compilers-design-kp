@@ -40,14 +40,14 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <summary>
         /// Access modifier if variable is a class field.
         /// </summary>
-        public AccessModifier? AccessMod { get; set; } = null;
+        public AccessModifier AccessMod { get; set; } = AccessModifier.None;
 
         public VariableSymbolBase(ParserRuleContext context, Scope scope) 
             : base(context, scope)
         {
         }
 
-        public VariableSymbolBase(string name, bool isMutable, SymbolBase type, AccessModifier? access) 
+        public VariableSymbolBase(string name, bool isMutable, SymbolBase type, AccessModifier access) 
             : base(name)
         {
             IsMutable = isMutable;

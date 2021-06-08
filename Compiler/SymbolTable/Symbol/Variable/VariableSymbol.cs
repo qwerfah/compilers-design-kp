@@ -25,7 +25,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             Name = GetName(context, scope);
         }
 
-        public VariableSymbol(string name, bool isMutable, SymbolBase type, AccessModifier? access)
+        public VariableSymbol(string name, bool isMutable, SymbolBase type, AccessModifier access)
             : base(name, isMutable, type, access)
         {
         }
@@ -200,14 +200,14 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// </summary>
         /// <param name="context"> Varialbe declaration/definition context. </param>
         /// <returns> Variable modifier. </returns>
-        private AccessModifier? GetAccessModifier(ParserRuleContext context)
+        private AccessModifier GetAccessModifier(ParserRuleContext context)
         {
             TemplateStatContext templateStat = context.Parent?.Parent as TemplateStatContext;
             
             if (templateStat is null)
             {
                 Console.WriteLine("Variable is not a class member.");
-                return null;
+                return AccessModifier.None;
             }
 
             ModifierContext[] modifiers = templateStat?.modifier();

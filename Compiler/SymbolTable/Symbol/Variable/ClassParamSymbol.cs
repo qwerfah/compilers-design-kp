@@ -92,15 +92,22 @@ namespace Compiler.SymbolTable.Symbol.Variable
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         private AccessModifier GetAccessModifier(ClassParamContext context)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
+            TerminalNodeImpl[] terminals = GetTerminals(context);
+            string def = terminals.SingleOrDefault(t => new[] { "var", "val" }.Contains(t.GetText()))?.GetText();
             string modifier = context.modifier()?.FirstOrDefault()?.accessModifier()?.GetText();
 
             return modifier switch
             {
-                null => AccessModifier.Public,
+                null => def is null ? AccessModifier.None : AccessModifier.Public,
                 "private" => AccessModifier.Private,
                 "protected" => AccessModifier.Protected,
                 _ => throw new NotImplementedException(),
