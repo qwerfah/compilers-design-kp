@@ -28,14 +28,6 @@ namespace Compiler
 
             lexer.AddErrorListener(new LexerErrorListener());
 
-            Console.WriteLine("\n**************************** TOKENS ****************************");
-            foreach (var token in lexer.GetAllTokens())
-            {
-                Console.WriteLine(token);
-            }
-
-            lexer.Reset();
-
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new ScalaParser(tokenStream);
             ScalaParser.CompilationUnitContext tree = null;
@@ -49,8 +41,6 @@ namespace Compiler
             treeSerializer.ToDot(tree);
             treeSerializer.Close();
 
-            Console.WriteLine(tree.ToStringTree(parser));
-
             TableBuilder builder = new();
             builder.Build(tree);
             builder.Resolve();
@@ -58,61 +48,6 @@ namespace Compiler
             TableSerializer tableSerializer = new("table.dot");
             tableSerializer.ToDot(builder.SymbolTable);
             tableSerializer.Close();
-
-            foreach (var scope in builder.SymbolTable.Scopes)
-            {
-                Console.WriteLine($"Scope {scope.Guid}");
-
-                foreach (var symbol in scope.ClassMap.Values)
-                {
-                    Console.WriteLine($"Class {symbol.Name}");
-
-                    if (symbol.Parent is { } parent)
-                    {
-                        Console.WriteLine($"Extends {parent.Name}");
-                    }
-
-                    foreach (var trait in symbol.Traits ?? new List<SymbolBase>())
-                    {
-                        Console.WriteLine($"With {trait.Name}");
-                    }
-
-                    Console.WriteLine();
-                }
-
-                foreach (var symbol in scope.ObjectMap.Values)
-                {
-                    Console.WriteLine($"Object {symbol.Name}");
-
-                    if (symbol.Parent is { } parent)
-                    {
-                        Console.WriteLine($"Extends {parent.Name}");
-                    }
-
-                    foreach (var trait in symbol.Traits ?? new List<SymbolBase>())
-                    {
-                        Console.WriteLine($"With {trait.Name}");
-                    }
-
-                    Console.WriteLine();
-                }
-
-                foreach (var variable in scope.VariableMap.Values)
-                {
-                    Console.WriteLine($"Variable {variable.Name} " +
-                        $"IsMutable {variable.IsMutable} " +
-                        $"Type {variable.Type?.Name ?? "not defined"} " +
-                        $"Modifier {variable.AccessMod}");
-                }
-
-                Console.WriteLine();
-
-                foreach (var function in scope.FunctionMap.Values)
-                {
-                    Console.WriteLine($"Function: {function.Name} " +
-                        $"Return type: {function.ReturnType?.Name}");
-                }
-            }
         }
     }
 }

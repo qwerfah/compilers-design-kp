@@ -13,7 +13,8 @@ class B {
 
 	def B_Func1() : Unit = ???
 	def B_Func2(first: A, second: A) : A = {
-		def B_Func1(): Int = ???
+		a = B_Func1().B_Func2().B_Func2()
+
 	}
 }
 
