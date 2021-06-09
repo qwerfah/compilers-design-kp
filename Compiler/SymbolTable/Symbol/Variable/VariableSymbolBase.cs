@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol.Class;
+using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,6 +93,14 @@ namespace Compiler.SymbolTable.Symbol.Variable
             Type = ResolveType(_unresolvedTypeName) ?? Type 
                 ?? throw new InvalidSyntaxException(
                     "Invalid variable definition/declaration: unable to resolve variable type.");
+        }
+
+        public override string ToString()
+        {
+            return $"{(AccessMod is { } ? AccessMod : string.Empty)} " +
+                   $"{(IsMutable ? "var" : "val")} " +
+                   $"{Name} " +
+                   $" : {(Type is { } ? Type.Name : "Any")}";
         }
     }
 }

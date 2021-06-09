@@ -10,7 +10,7 @@ using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
 using static Parser.Antlr.Grammar.ScalaParser;
 
-namespace Compiler.SymbolTable
+namespace Compiler.SymbolTable.Table
 {
     /// <summary>
     /// Represents symbol scope. Scope can be limited by class, 
@@ -60,6 +60,11 @@ namespace Compiler.SymbolTable
         public Dictionary<string, VariableSymbolBase> VariableMap = new();
 
         /// <summary>
+        /// Param symbol map for current scope.
+        /// </summary>
+        public Dictionary<string, VariableSymbolBase> ParamMap = new();
+
+        /// <summary>
         /// Type symbol map for current scope.
         /// </summary>
         public Dictionary<string, TypeSymbol> TypeMap = new();
@@ -75,7 +80,7 @@ namespace Compiler.SymbolTable
         /// Define new variable symbol from parse tree node context for current scope.
         /// </summary>
         /// <param name="context"> Parse tree node context. </param>
-        public void Define(ParserRuleContext context)
+        public SymbolBase Define(ParserRuleContext context)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
@@ -83,18 +88,18 @@ namespace Compiler.SymbolTable
             {
                 SymbolBase symbol = context switch
                 {
-                    ClassDefContext => new ClassSymbol(context as ClassDefContext, this),
+                    ClassDefContext  => new ClassSymbol(context as ClassDefContext, this),
                     ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, this),
-                    FunDefContext => new FunctionSymbol(context as FunDefContext, this),
-                    ParamContext => new FunctionParamSymbol(context as ParamContext, this),
-                    ClassParamContext => new ClassParamSymbol(context as ClassParamContext, this),
+                    FunDefContext    => new FunctionSymbol(context as FunDefContext, this),
+                    ParserRuleContext c when (c is ParamContext || c is ClassParamContext) => 
+                        new ParamSymbol(context, this),
                     ParserRuleContext c when (c is ValDclContext || c is VarDclContext || c is PatVarDefContext) =>
                         new VariableSymbol(context, this),
-                    TypeDefContext => new TypeSymbol(context as TypeDefContext, this),
-                    _ => throw new NotImplementedException(),
+                    TypeDefContext   => new TypeSymbol(context as TypeDefContext, this),
+                    _                => throw new NotImplementedException(),
                 };
 
-                Define(symbol);
+                return Define(symbol);
             }
             catch (ArgumentException)
             {
@@ -106,13 +111,15 @@ namespace Compiler.SymbolTable
                 Console.Error.WriteLine(
                     $"Error at {context.Start.Line}:{context.Start.Column} - {e.Message}");
             }
+
+            return null;
         }
 
         /// <summary>
         /// Define new variable symbol from its instance for current scope.
         /// </summary>
         /// <param name="symbol"> Symbol instance to define. </param>
-        public void Define(SymbolBase symbol)
+        public SymbolBase Define(SymbolBase symbol)
         {
             _ = symbol ?? throw new ArgumentNullException(nameof(symbol));
            
@@ -120,14 +127,17 @@ namespace Compiler.SymbolTable
 
             switch (symbol)
             {
-                case ClassSymbol s: ClassMap.Add(symbol.Name, s); break;
-                case ObjectSymbol s: ObjectMap.Add(symbol.Name, s); break;
-                case TraitSymbol s: TraitMap.Add(symbol.Name, s); break;
+                case ClassSymbol    s: ClassMap.Add(symbol.Name, s);    break;
+                case ObjectSymbol   s: ObjectMap.Add(symbol.Name, s);   break;
+                case TraitSymbol    s: TraitMap.Add(symbol.Name, s);    break;
                 case FunctionSymbol s: FunctionMap.Add(symbol.Name, s); break;
-                case VariableSymbolBase s: VariableMap.Add(symbol.Name, s); break;
-                case TypeSymbol s: TypeMap.Add(symbol.Name, s); break;
+                case VariableSymbol s: VariableMap.Add(symbol.Name, s); break;
+                case ParamSymbol    s: ParamMap.Add(symbol.Name, s);    break;
+                case TypeSymbol     s: TypeMap.Add(symbol.Name, s);     break;
                 default: throw new NotImplementedException();
             }
+
+            return symbol;
         }
 
         /// <summary>

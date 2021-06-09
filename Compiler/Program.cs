@@ -6,6 +6,7 @@ using Compiler.SymbolTable;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
+using Compiler.SymbolTable.Table;
 using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
 using Parser.ErrorListeners;
@@ -44,16 +45,19 @@ namespace Compiler
             parser.ErrorHandler = new DefaultErrorStrategy();
             tree = parser.compilationUnit();
 
-            var serializer = new ParseTreeSerializer("tree.dot");
-            serializer.ToDot(tree);
-            serializer.Close();
+            ParseTreeSerializer treeSerializer = new("tree.dot");
+            treeSerializer.ToDot(tree);
+            treeSerializer.Close();
 
             Console.WriteLine(tree.ToStringTree(parser));
 
-            var builder = new TableBuilder();
-
+            TableBuilder builder = new();
             builder.Build(tree);
             builder.Resolve();
+
+            TableSerializer tableSerializer = new("table.dot");
+            tableSerializer.ToDot(builder.SymbolTable);
+            tableSerializer.Close();
 
             foreach (var scope in builder.SymbolTable.Scopes)
             {

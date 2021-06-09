@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,14 @@ namespace Compiler.SymbolTable.Symbol
         /// <summary>
         /// Function return type symbol.
         /// </summary>
-        public SymbolBase ReturnType { get; set; }
+        public SymbolBase ReturnType { get; private set; }
+
+        /// <summary>
+        /// Function body scope.
+        /// Does not set during symbol istantiation because function 
+        /// signature resolution precedes function body resolution.
+        /// </summary>
+        public Scope InnerScope { get; set; }
 
         /// <summary>
         /// Contains function return type name if it wasn't resolved during first pass.
@@ -78,6 +86,13 @@ namespace Compiler.SymbolTable.Symbol
             ReturnType = ResolveType(_unresolvedReturnType) ?? ReturnType 
                 ?? throw new InvalidSyntaxException(
                     "Invalid function definition: can't resolve return type.");
+        }
+
+        public override string ToString()
+        {
+            return $"def {Name} " +
+                   $": {(ReturnType is { } ? ReturnType.Name : "None")}";
+
         }
     }
 }

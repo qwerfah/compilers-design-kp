@@ -15,13 +15,8 @@ namespace Compiler.Serialization
     /// <summary>
     /// ANTLR IParseTree serializer to file in specified format.
     /// </summary>
-    class ParseTreeSerializer
+    public class ParseTreeSerializer : SerializerBase
     {
-        /// <summary>
-        /// File stream writer.
-        /// </summary>
-        private StreamWriter _writer;
-
         public ParseTreeSerializer(string filename)
         {
             try
@@ -35,34 +30,12 @@ namespace Compiler.Serialization
         }
 
         /// <summary>
-        /// Open file to write tree.
-        /// </summary>
-        /// <param name="filename"></param>
-        public void Open(string filename)
-        {
-            _writer?.Close();
-            _writer = new StreamWriter(filename);
-        }
-
-        /// <summary>
-        /// Close file.
-        /// </summary>
-        public void Close()
-        {
-            _writer.Close();
-            _writer = null;
-        }
-
-        /// <summary>
         /// Serialize parse tree to DOT format.
         /// </summary>
         /// <param name="tree"> Instance of parse tree class implementing IParseTree interface. </param>
         public void ToDot(IParseTree tree)
         {
-            if (_writer is null)
-            {
-                throw new ArgumentNullException("File not opened.");
-            }
+            _ = _writer ?? throw new ArgumentNullException("File not opened.");
 
             _writer.WriteLine("digraph ParseTree {");
             ToDotRecursive(tree);

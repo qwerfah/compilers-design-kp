@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
 using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
@@ -10,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Parser.Antlr.Grammar.ScalaParser;
 
-namespace Compiler.SymbolTable
+namespace Compiler.SymbolTable.Table
 {
     public class TableBuilder : ScalaBaseVisitor<bool>
     {
@@ -22,21 +23,6 @@ namespace Compiler.SymbolTable
         public TableBuilder()
         {
             LoadStandartTypes();
-        }
-
-        /// <summary>
-        /// Visitor method for class definition.
-        /// </summary>
-        /// <param name="context"> Class definiton tree node context. </param>
-        /// <returns></returns>
-        public override bool VisitClassDef([NotNull]ClassDefContext context)
-        {
-            SymbolTable.GetCurrentScope().Define(context);
-            SymbolTable.PushScope();
-            bool result = base.VisitClassDef(context);
-            SymbolTable.PopScope();
-
-            return result;
         }
 
         /// <summary>
@@ -58,14 +44,31 @@ namespace Compiler.SymbolTable
         }
 
         /// <summary>
+        /// Visitor method for class definition.
+        /// </summary>
+        /// <param name="context"> Class definiton tree node context. </param>
+        /// <returns></returns>
+        public override bool VisitClassDef([NotNull] ClassDefContext context)
+        {
+            ClassSymbol symbol = (ClassSymbol)SymbolTable.GetCurrentScope().Define(context);
+            Scope innerScope = SymbolTable.PushScope();
+            symbol.InnerScope = innerScope;
+            bool result = base.VisitClassDef(context);
+            SymbolTable.PopScope();
+
+            return result;
+        }
+
+        /// <summary>
         /// Visitor method for object definition.
         /// </summary>
         /// <param name="context"> Object definiton tree node context. </param>
         /// <returns></returns>
         public override bool VisitObjectDef([NotNull] ObjectDefContext context)
         {
-            SymbolTable.GetCurrentScope().Define(context);
-            SymbolTable.PushScope();
+            ObjectSymbol symbol = (ObjectSymbol)SymbolTable.GetCurrentScope().Define(context);
+            Scope innerScope = SymbolTable.PushScope();
+            symbol.InnerScope = innerScope;
             bool result = base.VisitObjectDef(context);
             SymbolTable.PopScope();
 
@@ -92,8 +95,9 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitFunDef([NotNull] FunDefContext context)
         {
-            SymbolTable.GetCurrentScope().Define(context);
-            SymbolTable.PushScope();
+            FunctionSymbol symbol = (FunctionSymbol)SymbolTable.GetCurrentScope().Define(context);
+            Scope innerScope = SymbolTable.PushScope();
+            symbol.InnerScope = innerScope;
             bool result = base.VisitFunDef(context);
             SymbolTable.PopScope();
 
@@ -107,7 +111,7 @@ namespace Compiler.SymbolTable
         /// <returns></returns>
         public override bool VisitParam([NotNull] ParamContext context)
         {
-            // SymbolTable.GetCurrentScope().Define(context);
+            SymbolTable.GetCurrentScope().Define(context);
 
             return base.VisitParam(context);
         }
@@ -154,18 +158,25 @@ namespace Compiler.SymbolTable
         /// </summary>
         public void LoadStandartTypes()
         {
+            Scope global = SymbolTable.Scopes.First();
             SymbolTable.Scopes.First().Define(new ClassSymbol("Any"));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyVal",  parent: SymbolTable.Scopes.First().ClassMap["Any"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyRef",  parent: SymbolTable.Scopes.First().ClassMap["Any"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Unit",    parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Boolean", parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Char",    parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Byte",    parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Short",   parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Int",     parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Long",    parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Float",   parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Double",  parent: SymbolTable.Scopes.First().ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyVal",  parent: global.ClassMap["Any"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyRef",  parent: global.ClassMap["Any"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Unit",    parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Boolean", parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Char",    parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Byte",    parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Short",   parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Int",     parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Long",    parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Float",   parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Double",  parent: global.ClassMap["AnyVal"]));
+
+            foreach (var symbol in global.ClassMap.Values)
+            {
+                symbol.InnerScope = SymbolTable.PushScope();
+                SymbolTable.PopScope();
+            }
         }
     }
 }

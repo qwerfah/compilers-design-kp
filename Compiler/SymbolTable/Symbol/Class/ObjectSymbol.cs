@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Compiler.SymbolTable.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,13 @@ namespace Compiler.SymbolTable.Symbol.Class
         {
             Name = GetName(context);
             (Parent, Traits) = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());
+        }
+
+        public override string ToString()
+        {
+            return $"object {Name} " +
+                   $"{(Parent is { } ? ("extends" + Parent.Name) : string.Empty)} " +
+                   $"{(Traits is { } ? string.Join(" ", Traits.Select(t => "with " + t.Name)) : string.Empty)}";
         }
     }
 }

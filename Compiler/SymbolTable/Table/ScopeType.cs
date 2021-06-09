@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compiler.SymbolTable
+namespace Compiler.SymbolTable.Table
 {
     /// <summary>
     /// Scope type (global/local).

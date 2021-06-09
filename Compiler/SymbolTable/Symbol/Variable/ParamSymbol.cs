@@ -1,5 +1,7 @@
-﻿using Antlr4.Runtime.Tree;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,23 +12,30 @@ using static Parser.Antlr.Grammar.ScalaParser;
 namespace Compiler.SymbolTable.Symbol.Variable
 {
     /// <summary>
-    /// Represents class constructor argument that may be also class field.
+    /// Represents class constructor or function argument that may be also class field.
     /// </summary>
-    class ClassParamSymbol : VariableSymbolBase
+    class ParamSymbol : VariableSymbolBase
     {
         /// <summary>
-        /// Constructs new symbol instance for class ctor param from its definition.
+        /// Constructs new symbol instance for ctor/func param from its definition.
         /// </summary>
-        /// <param name="context"> Class ctor param definition context. </param>
-        /// <param name="scope"> Class ctor param definition scope (class inner scope). </param>
-        public ClassParamSymbol(ClassParamContext context, Scope scope)
+        /// <param name="context"> Ctor/func param definition context. </param>
+        /// <param name="scope"> Ctor/func param definition scope (class inner scope). </param>
+        public ParamSymbol(ParserRuleContext context, Scope scope)
             : base(context, scope)
         {
+            if (context is not ClassParamContext && context is not ParamContext)
+            {
+                throw new ArgumentException(
+                    "Invalid context type: only ClassParam or Param context are acceptable.");
+            }
+
             TerminalNodeImpl[] terminals = GetTerminals(context);
-            Name = GetName(terminals);
+
+            Name      = GetName(terminals);
             IsMutable = CheckMutability(terminals);
-            AccessMod = GetAccessModifier(context);
-            Type = GetType(context, scope);
+            AccessMod = GetAccessModifier(context as ClassParamContext);
+            Type      = GetType(context, scope);
         }
 
         /// <summary>
@@ -34,28 +43,28 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// </summary>
         /// <param name="context"> Parse tree node context. </param>
         /// <returns> Array of terminal symbols. </returns>
-        private TerminalNodeImpl[] GetTerminals(ClassParamContext context)
+        private TerminalNodeImpl[] GetTerminals(ParserRuleContext context)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
             TerminalNodeImpl[] terminals = context.children
-                .Where(ch => ch is TerminalNodeImpl)
+                .Where(ch  => ch is TerminalNodeImpl)
                 .Select(ch => ch as TerminalNodeImpl)
                 .ToArray();
 
             if (terminals is null || !terminals.Any())
             {
-                throw new InvalidSyntaxException("Invalid class ctor param declaration.");
+                throw new InvalidSyntaxException("Invalid ctor/func param declaration.");
             }
 
             return terminals;
         }
 
         /// <summary>
-        /// Get class ctor param name.
+        /// Get ctor/function param name.
         /// </summary>
-        /// <param name="context"> Class ctor param definition context. </param>
-        /// <returns> Class ctor param name. </returns>
+        /// <param name="context"> Ctor/func param definition context. </param>
+        /// <returns> Ctor/func param name. </returns>
         private string GetName(TerminalNodeImpl[] terminals)
         {
             try
@@ -64,12 +73,12 @@ namespace Compiler.SymbolTable.Symbol.Variable
                     .SingleOrDefault(t => !Terminals.Contains(t.GetText()))
                     .GetText();
                 return name ?? throw new InvalidSyntaxException(
-                    "Invalid class ctor param declaration: param name expected.");
+                    "Invalid ctor/func param declaration: param name expected.");
             }
             catch (InvalidOperationException)
             {
                 throw new InvalidSyntaxException(
-                    "Invalid class ctor param declaration: param name expected.");
+                    "Invalid ctor/func param declaration: param name expected.");
             }
         }
 
@@ -93,18 +102,19 @@ namespace Compiler.SymbolTable.Symbol.Variable
             catch (InvalidOperationException)
             {
                 throw new InvalidSyntaxException(
-                    "Invalid class ctor param declaration: var/val keyword expected.");
+                    "Invalid ctor param declaration: var/val keyword expected.");
             }
         }
 
         /// <summary>
-        /// 
+        /// Get ctor param access modifier if stated. 
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        /// <param name="context"> Ctor param definition context. </param>
+        /// <returns> Ctor param access modifier if it stated in definition 
+        /// and current symbol is ctor param, otherwise AccessModifier.None. </returns>
         private AccessModifier GetAccessModifier(ClassParamContext context)
         {
-            _ = context ?? throw new ArgumentNullException(nameof(context));
+           if (context is null) return AccessModifier.None;
 
             TerminalNodeImpl[] terminals = GetTerminals(context);
             string def = terminals.SingleOrDefault(t => DefKeywords.Contains(t.GetText()))?.GetText();
@@ -112,11 +122,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
             return modifier switch
             {
-                null => def is null ? AccessModifier.None : AccessModifier.Public,
-                "private" => AccessModifier.Private,
+                null        => def is null ? AccessModifier.None : AccessModifier.Public,
+                "private"   => AccessModifier.Private,
                 "protected" => AccessModifier.Protected,
-                _ => throw new InvalidSyntaxException(
-                    "Invalid class ctor param declaration: access modifier expected."),
+                _           => throw new InvalidSyntaxException(
+                                  "Invalid class ctor param declaration: access modifier expected."),
             };
         }
 
@@ -126,12 +136,20 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <param name="context"> Class ctor param definition context </param>
         /// <param name="scope"> Scope of class ctor param definition (class inner scope). </param>
         /// <returns> Type symbol. </returns>
-        private SymbolBase GetType(ClassParamContext context, Scope scope)
+        private SymbolBase GetType(ParserRuleContext context, Scope scope)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
-            _ = scope ?? throw new ArgumentNullException(nameof(scope));
+            _ = scope   ?? throw new ArgumentNullException(nameof(scope));
 
-            Type_Context type = context.paramType().type_() ?? throw new InvalidSyntaxException("");
+            Type_Context type = context switch
+            {
+                ClassParamContext cp => cp.paramType()?.type_(),
+                ParamContext p       => p.paramType()?.type_(),
+                _                    => throw new NotImplementedException(),
+            };
+
+            _ = type ?? throw new InvalidSyntaxException(
+                "Invalid ctor/func param declaration: type expected.");
 
             return GetType(type, scope, out _unresolvedTypeName);
         }

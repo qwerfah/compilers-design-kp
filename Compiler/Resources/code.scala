@@ -1,5 +1,20 @@
 class A(a: Int, var b: Double, val c: Boolean, private var d: Int) {
-	def func(a: Int, b: Double): Unit = ???
+	def A_Func1(a: Int, b: Double): Unit = ???
+	def A_Func2(): F = ???
+}
 
-	def func1(): F = ???
+class B {
+	val B_Var1: Int
+	var B_Var2: Double
+	private var B_var3: Boolean
+	protected var B_var4: Any
+
+	def B_Func1() : Unit = ???
+	def B_Func2(first: A, second: A) : A = ???
+}
+
+class C extends A {
+}
+
+class D extends B {
 }

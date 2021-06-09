@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,14 @@ namespace Compiler.SymbolTable.Symbol.Variable
         public VariableSymbol(ParserRuleContext context, Scope scope)
             : base(context, scope)
         {
+            if (context is not ValDclContext 
+                && context is not VarDclContext 
+                && context is not PatVarDefContext)
+            {
+                throw new ArgumentException(
+                    "Invalid context type: only VarDcl, ValDcl or PatVarDef context are acceptable.");
+            }
+
             AccessMod = GetAccessModifier(context);
             IsMutable = CheckMutability(context);
             Type = GetType(context, scope);

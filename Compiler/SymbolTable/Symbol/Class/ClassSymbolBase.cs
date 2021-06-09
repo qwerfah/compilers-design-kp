@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,25 +17,32 @@ namespace Compiler.SymbolTable.Symbol.Class
     public abstract class ClassSymbolBase : SymbolBase
     {
         /// <summary>
+        /// Type symbol for parent class/trait (that stated after "extends" keyword).
+        /// </summary>
+        public SymbolBase Parent { get; set; }
+
+        /// <summary>
+        /// Type symbols for traits in with-chain (that stated after "with" keywords).
+        /// </summary>
+        public List<SymbolBase> Traits { get; set; }
+
+        /// <summary>
+        /// Class body scope.
+        /// Does not set during symbol istantiation because class
+        /// signature resolution precedes class body resolution.
+        /// </summary>
+        public Scope InnerScope { get; set; }
+
+        /// <summary>
         /// Contains name of first class/trait in extends-chain
         /// (that stated after "extends" keyword) if it wasn't resolved during first pass.
         /// </summary>
-        protected string _unresolvedParent = null;
+        protected string _unresolvedParent;
 
         /// <summary>
         /// Contains names of traits in with-chain that weren't resolved during first pass.
         /// </summary>
         protected List<string> _unresolvedTraits = new();
-
-        /// <summary>
-        /// Type symbol for parent class/trait (that stated after "extends" keyword).
-        /// </summary>
-        public SymbolBase Parent { get; set; } = null;
-
-        /// <summary>
-        /// Type symbols for traits in with-chain (that stated after "with" keywords).
-        /// </summary>
-        public List<SymbolBase> Traits { get; set; } = null;
 
         /// <summary>
         /// Constructs class/object/template/trait symbol with given name in specified scope.

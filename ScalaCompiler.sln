@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parser", "Parser\Parser.csproj", "{C2925189-B624-45DD-ADB7-9C32DA7653C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "Compiler\Compiler.csproj", "{7174C857-879A-4597-AB25-0A02AC2D687B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler", "Compiler\Compiler.csproj", "{7174C857-879A-4597-AB25-0A02AC2D687B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

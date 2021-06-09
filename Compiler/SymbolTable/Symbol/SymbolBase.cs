@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
