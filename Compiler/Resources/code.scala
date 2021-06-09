@@ -4,13 +4,17 @@ class A(a: Int, var b: Double, val c: Boolean, private var d: Int) {
 }
 
 class B {
+	class F extends B
+
 	val B_Var1: Int
 	var B_Var2: Double
 	private var B_var3: Boolean
 	protected var B_var4: Any
 
 	def B_Func1() : Unit = ???
-	def B_Func2(first: A, second: A) : A = ???
+	def B_Func2(first: A, second: A) : A = {
+		def B_Func1(): Int = ???
+	}
 }
 
 class C extends A {

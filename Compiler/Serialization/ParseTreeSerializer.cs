@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Parser.Antlr.Grammar;
 using System.Text.RegularExpressions;
+using DotNetGraph;
+using DotNetGraph.Extensions;
+using DotNetGraph.Node;
+using DotNetGraph.Edge;
+using System.Drawing;
 
 namespace Compiler.Serialization
 {
@@ -37,31 +42,40 @@ namespace Compiler.Serialization
         {
             _ = _writer ?? throw new ArgumentNullException("File not opened.");
 
-            _writer.WriteLine("digraph ParseTree {");
-            ToDotRecursive(tree);
-            _writer.WriteLine("}");
+            DotGraph graph = new("ParseTree");
+            ToDotRecursive(graph, tree);
+            _writer.Write(graph.Compile());
         }
 
         /// <summary>
         /// Serializing parse tree to DOT using recursive tree lookup.
         /// </summary>
         /// <param name="node"> Current parse tree node in lookup. </param>
-        private void ToDotRecursive(IParseTree node)
+        private DotNode ToDotRecursive(DotGraph graph, IParseTree tree)
         {
-            string nodeName = node.GetType().Name.Replace("Context", string.Empty);
-            string nodeHash = node.GetHashCode().ToString();
+            _ = graph ?? throw new ArgumentNullException(nameof(graph));
+            if (tree is null || string.IsNullOrWhiteSpace(tree.GetText())) return null;
 
-            for (int i = 0; i < node.ChildCount; i++)
+            DotNode node = new(tree.GetHashCode().ToString())
             {
-                string childName = node.GetChild(i).GetType().Name.Replace("Context", string.Empty);
-                string childHash = node.GetChild(i).GetHashCode().ToString();
-                string childText = node.GetChild(i).GetText();
+                Shape = DotNodeShape.Rectangle,
+                Label = tree.ChildCount == 0 
+                    ? tree.GetText()
+                    : tree.GetType().Name.Replace("Context", string.Empty),
+                Color = tree.ChildCount == 0 ? Color.Red : Color.Black
+            };
 
-                _writer.WriteLine($"\"{nodeHash}\n{nodeName}\"" +
-                                  $"-> \"{childHash}\n{childName}" +
-                                  $"{((node.GetChild(i).ChildCount == 0) ? "\nToken = \\\"" + Escape(childText) + "\\\"" : string.Empty)}\"\n");
-                ToDotRecursive(node.GetChild(i));
+            graph.Elements.Add(node);
+
+            for (int i = 0; i < tree.ChildCount; i++)
+            {
+                DotNode child = ToDotRecursive(graph, tree.GetChild(i));
+                if (child is null) continue;
+                DotEdge edge = new(node, child);
+                graph.Elements.Add(edge);
             }
+
+            return node;
         }
 
         /// <summary>
