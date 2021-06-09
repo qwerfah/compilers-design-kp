@@ -8,11 +8,11 @@ namespace Compiler.CallGraph
 {
     public class CallGraph
     {
-        public List<CallGraphNode> Root { get; }
+        public CallGraphNode Root { get; }
 
-        public CallGraph()
+        public CallGraph(CallGraphNode root)
         {
-            Root = new();
+            Root = root ?? throw new ArgumentNullException(nameof(root));
         }
     }
 }

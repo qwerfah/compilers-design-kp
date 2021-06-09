@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
 using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
@@ -22,7 +23,7 @@ namespace Compiler.CallGraph
         /// <summary>
         /// Call graph for specified parse tree and sybol table.
         /// </summary>
-        public CallGraph CallGraph { get; }
+        public CallGraphNode Root { get; private set; }
 
         /// <summary>
         /// Symbol table for specified parse tree.
@@ -41,20 +42,19 @@ namespace Compiler.CallGraph
         /// </summary>
         /// <param name="tree"> Parse tree. </param>
         /// <returns></returns>
-        public bool Build(ClassSymbolBase symbol)
+        public CallGraphNode Build(FunctionSymbol symbol)
         {
-            foreach (var func in symbol.InnerScope.FunctionMap.Values)
-            {
-                CallGraph.Root.Add(new CallGraphNode(func));
-                Visit(func.Context);
-            }
+            CallGraphNode node = new(symbol);
+            Root = node;
 
-            return true;
+            Visit(symbol.Context);
+
+            return node;
         }
 
         public override bool VisitSimpleExpr1([NotNull] SimpleExpr1Context context)
         {
-
+            Root.Children.Add(Build());
 
             return base.VisitSimpleExpr1(context);
         }

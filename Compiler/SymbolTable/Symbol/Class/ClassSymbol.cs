@@ -16,6 +16,11 @@ namespace Compiler.SymbolTable.Symbol.Class
     public class ClassSymbol : ClassSymbolBase
     {
         /// <summary>
+        /// Class constructor symbol.
+        /// </summary>
+        public FunctionSymbol Constructor { get; private set; }
+
+        /// <summary>
         /// Constructs class symbol with specified name, parent, traits in given scope.
         /// </summary>
         /// <param name="name"> Class name. </param>
@@ -64,8 +69,8 @@ namespace Compiler.SymbolTable.Symbol.Class
         {
             base.Resolve();
             // Define ctor function for current class.
-            FunctionSymbol symbol = new(Name, this, InnerScope, Context, Scope);
-            Scope.Define(symbol);
+            Constructor = new(Name + "_ctor", this, InnerScope, Context, Scope);
+            Scope.Define(Constructor);
         }
     }
 }
