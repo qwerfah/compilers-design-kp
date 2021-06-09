@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Tree;
+using Compiler.CallGraph;
 using Compiler.Serialization;
 using Compiler.SymbolTable;
 using Compiler.SymbolTable.Symbol;
@@ -13,6 +14,7 @@ using Parser.ErrorListeners;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Compiler
 {
@@ -48,6 +50,9 @@ namespace Compiler
             TableSerializer tableSerializer = new("table.dot");
             tableSerializer.ToDot(builder.SymbolTable);
             tableSerializer.Close();
+
+            CallGraphBuilder callGraphbuilder = new(builder.SymbolTable);
+            //callGraphbuilder.Build(builder.SymbolTable.Scopes.Last().FunctionMap.Values.Last());
         }
     }
 }

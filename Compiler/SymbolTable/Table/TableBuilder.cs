@@ -172,6 +172,7 @@ namespace Compiler.SymbolTable.Table
             SymbolTable.Scopes.First().Define(new ClassSymbol("Long",    new(), global.ClassMap["AnyVal"]));
             SymbolTable.Scopes.First().Define(new ClassSymbol("Float",   new(), global.ClassMap["AnyVal"]));
             SymbolTable.Scopes.First().Define(new ClassSymbol("Double",  new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("String",  new(), global.ClassMap["AnyVal"]));
 
             foreach (var symbol in global.ClassMap.Values)
             {

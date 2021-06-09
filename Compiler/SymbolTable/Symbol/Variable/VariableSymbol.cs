@@ -30,8 +30,8 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
             AccessMod = GetAccessModifier(context);
             IsMutable = CheckMutability(context);
-            Type = GetType(context, scope);
-            Name = GetName(context, scope);
+            Type = GetType(context);
+            Name = GetName(context);
         }
 
         public VariableSymbol(
@@ -79,12 +79,12 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// context that may be ValDclContext, VarDclContext or PatVarDefContext. </param>
         /// <param name="scope"> Scope of variable declaration/definition. </param>
         /// <returns> Name of current variable. </returns>
-        private string GetName(ParserRuleContext context, Scope scope)
+        private string GetName(ParserRuleContext context)
         {
             return context switch
             {
-                ValDclContext valDcl => GetName(valDcl.ids(), scope),
-                VarDclContext varDcl => GetName(varDcl.ids(), scope),
+                ValDclContext valDcl => GetName(valDcl.ids()),
+                VarDclContext varDcl => GetName(varDcl.ids()),
                 PatVarDefContext patVarDef => GetName(patVarDef),
                 _ => throw new NotImplementedException(),
             }
@@ -100,7 +100,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <param name="ids"> Context that contains variable identifiers. </param>
         /// <param name="scope"> Scope of variable declaration. </param>
         /// <returns> Name of the first declared variable. </returns>
-        private string GetName(IdsContext ids, Scope scope)
+        private string GetName(IdsContext ids)
         {
             if (ids is null || !ids.children.Any())
             {
@@ -111,7 +111,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             for (int i = 2; i < ids.ChildCount; i += 2)
             {
                 string name = ids.GetChild(i).GetText();
-                scope.Define(new VariableSymbol(name, Context, IsMutable, Type, AccessMod));
+                Scope.Define(new VariableSymbol(name, Context, IsMutable, Type, AccessMod));
             }
 
             return ids.GetChild(0).GetText();
@@ -140,7 +140,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// context that may be ValDclContext, VarDclContext or PatVarDefContext.</param>
         /// <param name="scope"> Scope of variable declaration/definition. </param>
         /// <returns> Symbol of variable type. </returns>
-        private SymbolBase GetType(ParserRuleContext context, Scope scope)
+        private SymbolBase GetType(ParserRuleContext context)
         {
             // Get type from explicit type declaration.
             Type_Context type = context switch
@@ -154,20 +154,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
                 _ => throw new NotImplementedException(),
             };
 
-            return GetType(type, scope, out _unresolvedTypeName);
-        }
-
-        /// <summary>
-        /// Deduct varialbe type if it is not stated in its definition.
-        /// Works only with variable definition (declaration MUST have explicitly specified variable type).
-        /// </summary>
-        /// <param name="context"> Varialbe definition context. </param>
-        /// <param name="scope"> Scope of variable definition. </param>
-        /// <returns></returns>
-        private SymbolBase DeductType(PatVarDefContext context, Scope scope)
-        {
-            // TODO: auto type deduction
-            return null;
+            return GetType(type, Scope, out _unresolvedTypeName);
         }
 
         /// <summary>
@@ -181,7 +168,6 @@ namespace Compiler.SymbolTable.Symbol.Variable
             
             if (templateStat is null)
             {
-                Console.WriteLine("Variable is not a class member.");
                 return AccessModifier.None;
             }
 
@@ -197,6 +183,161 @@ namespace Compiler.SymbolTable.Symbol.Variable
                 "protected" => AccessModifier.Protected,
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        public override void Resolve()
+        {
+            SymbolBase resolvedType = ResolveType(_unresolvedTypeName) ?? Type;
+
+            if (Context is PatVarDefContext context)
+            {
+                SymbolBase deductedType = DeductType(context);
+
+                Type = (resolvedType, deductedType) switch
+                {
+                    (null, null) => throw new InvalidSyntaxException("Invalid variable definition: can't define variable type."),
+                    ({ },  null) => resolvedType,
+                    (null,  { }) => deductedType,
+                    ({ },   { }) => (resolvedType == deductedType) 
+                        ? resolvedType 
+                        : throw new InvalidSyntaxException(
+                            "Invalid variable definition: specified variable type does not match with deducted type."),
+                };
+            }
+        }
+
+        /// <summary>
+        /// Deduct varialbe type if it is not stated in its definition.
+        /// Works only with variable definition (declaration MUST have explicitly specified variable type).
+        /// </summary>
+        /// <param name="context"> Varialbe definition context. </param>
+        /// <param name="scope"> Scope of variable definition. </param>
+        /// <returns> Deducted variable type if variable definition has expression, otherwise null. </returns>
+        private SymbolBase DeductType(PatVarDefContext context)
+        {
+            _ = context ?? throw new ArgumentNullException(nameof(context));
+
+            ExprContext expr = context.varDef()?.patDef()?.expr() 
+                ?? context.patDef()?.expr();
+
+            if (expr is null) return null;
+
+            return DeductTypeFromPrefixExpr(expr.expr1()?.postfixExpr()?.infixExpr()?.prefixExpr())
+                ?? DeductTypeFromInfixExpr(expr.expr1()?.postfixExpr()?.infixExpr())
+                ?? DeductTypeFromPostfixExpr(expr.expr1()?.postfixExpr())
+                ?? throw new InvalidSyntaxException(
+                    "Invalid variable definition: expected prefix, infix or postfix expression.");
+        }
+
+        /// <summary>
+        /// Tries to deduct variable type from postfix expression.
+        /// </summary>
+        /// <param name="context"> Postfix expression context. </param>
+        /// <returns> Variable type symbol if successfully deducted, otherwise null. </returns>
+        private SymbolBase DeductTypeFromPostfixExpr(PostfixExprContext context)
+        {
+            if (context is null) return null;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Tries to deduct variable type from infix expression.
+        /// </summary>
+        /// <param name="context"> Infix expression context. </param>
+        /// <returns> Variable type symbol if successfully deducted, otherwise null. </returns>
+        private SymbolBase DeductTypeFromInfixExpr(InfixExprContext context)
+        {
+            if (context is null) return null;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Tries to deduct variable type from prefix expression.
+        /// </summary>
+        /// <param name="context"> Prefix expression context. </param>
+        /// <returns> Variable type symbol if successfully deducted, otherwise null. </returns>
+        private SymbolBase DeductTypeFromPrefixExpr(PrefixExprContext context)
+        {
+            if (context is null) return null;
+
+            SimpleExpr1Context expr = context.simpleExpr1() 
+                ?? throw new InvalidSyntaxException(
+                    "Invalid variable defintion: prefix expression expected.");
+
+            if (expr.literal()?.GetText() is { } literal)
+            {
+                if (literal.First() == '\"' && literal.Last() == '\"')
+                {
+                    return Scope.GetSymbol("String", SymbolType.Class);
+                }
+                if (literal.First() == '\'' && literal.Last() == '\'' && char.TryParse(literal, out _))
+                {
+                    return Scope.GetSymbol("Char", SymbolType.Class);
+                }
+                if (bool.TryParse(literal, out _))
+                {
+                    return Scope.GetSymbol("Boolean", SymbolType.Class);
+                }
+                if (int.TryParse(literal, out _))
+                {
+                    return Scope.GetSymbol("Int", SymbolType.Class);
+                }
+                if (double.TryParse(literal, out _))
+                {
+                    return Scope.GetSymbol("String", SymbolType.Class);
+                }
+
+                throw new InvalidSyntaxException("Invalid expression: invalid literal.");
+            }
+            else if (expr.stableId()?.GetText() is { } varName)
+            {
+                return Scope.GetSymbol(varName, SymbolType.Variable) ??
+                    throw new InvalidSyntaxException($"Invalid expression: undefined variable {varName}.");
+            }
+            else if (expr.simpleExpr1() is { } simpleExpr)
+            {
+                List<Tuple<string, SymbolType>> varNames = GetExprSymbols(simpleExpr, null);
+            }
+
+            return null;
+        }
+
+        private List<Tuple<string, SymbolType>> GetExprSymbols(
+            ParserRuleContext context, 
+            ArgumentExprsContext args)
+        {
+            if (context is SimpleExpr1Context simpleExpr)
+            {
+                List<Tuple<string, SymbolType>> result = simpleExpr.simpleExpr1() is { } c
+                ? GetExprSymbols(c, simpleExpr.argumentExprs())
+                : simpleExpr.stableId()?.stableId() is { } id 
+                    ? GetExprSymbols(id, null)
+                    : new();
+
+                string name = simpleExpr.stableId()?.GetText()
+                    ?? context.children.SingleOrDefault(ch => ch is TerminalNodeImpl t && t.GetText() != ".")?.GetText();
+                if (name is null) return result;
+                result.Add(new(name, args is null ? SymbolType.Variable : SymbolType.Function));
+
+                return result;
+            }
+
+            if (context is StableIdContext stableId)
+            {
+                List<Tuple<string, SymbolType>> result = stableId.stableId() is { } id
+                    ? GetExprSymbols(id, null)
+                    : new();
+
+                string name = stableId.GetText();
+                result.Add(new(name, SymbolType.Variable));
+
+                return result;
+            }
+
+            throw new InvalidCastException(
+                    "Invalid context type: only SimpleExpr1Context and StableIdContext are acceptable.");
         }
     }
 }
