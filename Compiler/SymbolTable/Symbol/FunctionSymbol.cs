@@ -43,6 +43,18 @@ namespace Compiler.SymbolTable.Symbol
             Name = GetName(context);
             ReturnType = GetReturnType(context, scope);
         }
+
+        public FunctionSymbol(
+            string name, 
+            SymbolBase returnType, 
+            Scope innerScope, 
+            ParserRuleContext context, 
+            Scope scope) 
+            : base(name, context, scope)
+        {
+            ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
+            InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
+        }
         
         /// <summary>
         /// Get function name from its definition context.

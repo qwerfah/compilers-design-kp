@@ -43,8 +43,8 @@ namespace Compiler.SymbolTable.Symbol
             }
 
             Guid = Guid.NewGuid();
-            Context = context;
-            Name = name;
+            Context = context ?? throw new ArgumentNullException(nameof(context));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
             Scope = scope;
         }
 
@@ -56,10 +56,8 @@ namespace Compiler.SymbolTable.Symbol
         /// <param name="scope"> Symbol scope according to parse tree lookup. </param>
         public SymbolBase(ParserRuleContext context, Scope scope = null)
         {
-            _ = context ?? throw new ArgumentNullException(nameof(context));
-
             Guid = Guid.NewGuid();
-            Context = context;
+            Context = context ?? throw new ArgumentNullException(nameof(context));
             Scope = scope;
         }
 

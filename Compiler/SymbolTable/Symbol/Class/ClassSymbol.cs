@@ -59,5 +59,13 @@ namespace Compiler.SymbolTable.Symbol.Class
                    $"{(Parent is { } ? ("extends " + Parent.Name) : string.Empty)} " +
                    $"{(Traits is { } ? string.Join(" ", Traits.Select(t => "with " + t.Name)) : string.Empty)}";
         }
+
+        public override void Resolve()
+        {
+            base.Resolve();
+            // Define ctor function for current class.
+            FunctionSymbol symbol = new(Name, this, InnerScope, Context, Scope);
+            Scope.Define(symbol);
+        }
     }
 }

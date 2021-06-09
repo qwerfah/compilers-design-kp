@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
@@ -159,18 +160,18 @@ namespace Compiler.SymbolTable.Table
         public void LoadStandartTypes()
         {
             Scope global = SymbolTable.Scopes.First();
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Any"));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyVal",  parent: global.ClassMap["Any"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyRef",  parent: global.ClassMap["Any"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Unit",    parent: global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Boolean", parent: global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Char",    parent: global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Byte",    parent: global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Short",   parent: global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Int",     parent: global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Long",    parent: global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Float",   parent: global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Double",  parent: global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Any",     new()));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyVal",  new(), global.ClassMap["Any"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyRef",  new(), global.ClassMap["Any"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Unit",    new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Boolean", new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Char",    new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Byte",    new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Short",   new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Int",     new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Long",    new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Float",   new(), global.ClassMap["AnyVal"]));
+            SymbolTable.Scopes.First().Define(new ClassSymbol("Double",  new(), global.ClassMap["AnyVal"]));
 
             foreach (var symbol in global.ClassMap.Values)
             {

@@ -4,7 +4,7 @@ class A(a: Int, var b: Double, val c: Boolean, private var d: Int) {
 }
 
 class B {
-	class F extends B
+	
 
 	val B_Var1: Int
 	var B_Var2: Double
@@ -23,3 +23,5 @@ class C extends A {
 
 class D extends B {
 }
+
+class F extends B

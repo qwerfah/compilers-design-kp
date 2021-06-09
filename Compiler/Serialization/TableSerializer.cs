@@ -61,6 +61,7 @@ namespace Compiler.Serialization
 
             graph.Elements.Add(node);
 
+            /*
             foreach (var symbol in scope.ClassMap.Values)
             {
                 DotNode child = ToDotRecursive(graph, symbol.InnerScope);
@@ -70,6 +71,7 @@ namespace Compiler.Serialization
                 };
                 graph.Elements.Add(edge);
             }
+            */
 
             foreach (var symbol in scope.ObjectMap.Values)
             {
