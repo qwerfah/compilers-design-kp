@@ -68,13 +68,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
             AccessModifier accessMod,
             ParserRuleContext context,
             bool isMutable,
-            SymbolBase type,
-            AccessModifier access)
+            SymbolBase type)
             : base(name, accessMod, context)
         {
             IsMutable = isMutable;
             Type = type;
-            AccessMod = access;
         }
 
         public override void Resolve()

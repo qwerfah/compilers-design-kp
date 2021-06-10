@@ -33,6 +33,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
             IsMutable = CheckMutability(terminals);
             AccessMod = GetAccessModifier(context as ClassParamContext);
             Type = GetType(context, scope);
+
+            if (AccessMod != AccessModifier.None)
+            {
+                Scope.Define(new VariableSymbol(Name, AccessMod, Context, IsMutable, Type));
+            }
         }
 
         /// <summary>
