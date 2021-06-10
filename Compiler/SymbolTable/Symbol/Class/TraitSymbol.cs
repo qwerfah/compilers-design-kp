@@ -1,4 +1,5 @@
-﻿using Compiler.SymbolTable.Table;
+﻿using Compiler.SymbolTable.Symbol.Variable;
+using Compiler.SymbolTable.Table;
 using System.Linq;
 using static Parser.Antlr.Grammar.ScalaParser;
 
@@ -13,7 +14,8 @@ namespace Compiler.SymbolTable.Symbol.Class
 
         public override string ToString()
         {
-            return $"trait {Name} " +
+            return $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
+                   $"trait {Name} " +
                    $"{(Parent is { } ? ("extends" + Parent.Name) : string.Empty)} " +
                    $"{(Traits is { } ? string.Join(" ", Traits.Select(t => "with " + t.Name)) : string.Empty)}";
         }

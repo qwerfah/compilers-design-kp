@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
 using System;
 using System.Linq;
@@ -43,11 +44,12 @@ namespace Compiler.SymbolTable.Symbol
 
         public FunctionSymbol(
             string name,
+            AccessModifier accessMod,
             SymbolBase returnType,
             Scope innerScope,
             ParserRuleContext context,
             Scope scope)
-            : base(name, context, scope)
+            : base(name, accessMod, context, scope)
         {
             ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
             InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
@@ -99,7 +101,8 @@ namespace Compiler.SymbolTable.Symbol
 
         public override string ToString()
         {
-            return $"def {Name} " +
+            return $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
+                   $"def {Name} " +
                    $": {(ReturnType is { } ? ReturnType.Name : "None")}";
 
         }

@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
@@ -47,8 +48,8 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         /// <param name="name"> Class/object/template/trait name. </param>
         /// <param name="scope"> Scope of class/object/template/trait definition. </param>
-        public ClassSymbolBase(string name, ParserRuleContext context, Scope scope = null)
-            : base(name, context, scope)
+        public ClassSymbolBase(string name, AccessModifier accessMod, ParserRuleContext context, Scope scope = null)
+            : base(name, accessMod, context, scope)
         {
         }
 

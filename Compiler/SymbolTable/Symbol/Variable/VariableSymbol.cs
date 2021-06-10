@@ -2,6 +2,7 @@
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Table;
+using Compiler.Types;
 using System;
 using System.Linq;
 using static Parser.Antlr.Grammar.ScalaParser;
@@ -25,7 +26,6 @@ namespace Compiler.SymbolTable.Symbol.Variable
                     "Invalid context type: only VarDcl, ValDcl or PatVarDef context are acceptable.");
             }
 
-            AccessMod = GetAccessModifier(context);
             IsMutable = CheckMutability(context);
             Type = GetType(context);
             Name = GetName(context);
@@ -33,11 +33,12 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
         public VariableSymbol(
             string name,
+            AccessModifier accessMod,
             ParserRuleContext context,
             bool isMutable,
             SymbolBase type,
             AccessModifier access)
-            : base(name, context, isMutable, type, access)
+            : base(name, accessMod, context, isMutable, type, access)
         {
         }
 
@@ -108,7 +109,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             for (int i = 2; i < ids.ChildCount; i += 2)
             {
                 string name = ids.GetChild(i).GetText();
-                Scope.Define(new VariableSymbol(name, Context, IsMutable, Type, AccessMod));
+                Scope.Define(new VariableSymbol(name, AccessMod, Context, IsMutable, Type, AccessMod));
             }
 
             return ids.GetChild(0).GetText();
@@ -152,34 +153,6 @@ namespace Compiler.SymbolTable.Symbol.Variable
             };
 
             return GetType(type, Scope, out _unresolvedTypeName);
-        }
-
-        /// <summary>
-        /// Get access modifier for variable declaration/definition.
-        /// </summary>
-        /// <param name="context"> Varialbe declaration/definition context. </param>
-        /// <returns> Variable modifier. </returns>
-        private AccessModifier GetAccessModifier(ParserRuleContext context)
-        {
-            TemplateStatContext templateStat = context.Parent?.Parent as TemplateStatContext;
-
-            if (templateStat is null)
-            {
-                return AccessModifier.None;
-            }
-
-            ModifierContext[] modifiers = templateStat?.modifier();
-            string modifier = (modifiers is null || !modifiers.Any())
-                ? null
-                : modifiers.First()?.accessModifier()?.GetText();
-
-            return modifier switch
-            {
-                null => AccessModifier.Public,
-                "private" => AccessModifier.Private,
-                "protected" => AccessModifier.Protected,
-                _ => throw new NotImplementedException(),
-            };
         }
 
         public override void Resolve()

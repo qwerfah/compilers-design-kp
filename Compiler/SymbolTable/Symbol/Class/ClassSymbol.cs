@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime;
+using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
@@ -26,11 +27,12 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// <param name="scope"> Class definition scope. </param>
         public ClassSymbol(
             string name,
+            AccessModifier accessMod,
             ParserRuleContext context = null,
             SymbolBase parent = null,
             List<SymbolBase> traits = null,
             Scope scope = null)
-            : base(name, context, scope)
+            : base(name, accessMod, context, scope)
         {
             if (name is null)
             {
@@ -57,7 +59,8 @@ namespace Compiler.SymbolTable.Symbol.Class
 
         public override string ToString()
         {
-            return $"class {Name} " +
+            return $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
+                   $"class {Name} " +
                    $"{(Parent is { } ? ("extends " + Parent.Name) : string.Empty)} " +
                    $"{(Traits is { } ? string.Join(" ", Traits.Select(t => "with " + t.Name)) : string.Empty)}";
         }
@@ -66,7 +69,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         {
             base.Resolve();
             // Define ctor function for current class.
-            Constructor = new(Name + "_ctor", this, InnerScope, Context, Scope);
+            Constructor = new(Name + "_ctor", AccessMod, this, InnerScope, Context, Scope);
             Scope.Define(Constructor);
         }
     }

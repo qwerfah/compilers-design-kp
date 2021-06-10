@@ -43,11 +43,6 @@ namespace Compiler.SymbolTable.Symbol.Variable
         public string Value { get; set; }
 
         /// <summary>
-        /// Access modifier if variable is a class field.
-        /// </summary>
-        public AccessModifier AccessMod { get; set; } = AccessModifier.None;
-
-        /// <summary>
         /// Constructs variable symbol from given definition/declaration context
         /// in specified scope.
         /// </summary>
@@ -70,11 +65,12 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <param name="access"> Variable access modifier (None if not a class field). </param>
         public VariableSymbolBase(
             string name,
+            AccessModifier accessMod,
             ParserRuleContext context,
             bool isMutable,
             SymbolBase type,
             AccessModifier access)
-            : base(name, context)
+            : base(name, accessMod, context)
         {
             IsMutable = isMutable;
             Type = type;
@@ -90,7 +86,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
         public override string ToString()
         {
-            return $"{(AccessMod is { } ? AccessMod : string.Empty)} " +
+            return $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
                    $"{(IsMutable ? "var" : "val")} " +
                    $"{Name} " +
                    $" : {(Type is { } ? Type.Name : "Any")}";

@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
 using System;
 using System.Linq;
@@ -23,6 +24,11 @@ namespace Compiler.SymbolTable.Symbol
         public string Name { get; init; }
 
         /// <summary>
+        /// Symbol access modifier if it is class member.
+        /// </summary>
+        public AccessModifier AccessMod { get; set; } = AccessModifier.None;
+
+        /// <summary>
         /// Symbol definition/declaration context.
         /// </summary>
         public ParserRuleContext Context { get; }
@@ -32,7 +38,7 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         public Scope Scope { get; set; }
 
-        public SymbolBase(string name, ParserRuleContext context, Scope scope = null)
+        public SymbolBase(string name, AccessModifier accessMod, ParserRuleContext context, Scope scope = null)
         {
             if (name is null)
             {
@@ -42,6 +48,7 @@ namespace Compiler.SymbolTable.Symbol
             Guid = Guid.NewGuid();
             Context = context ?? throw new ArgumentNullException(nameof(context));
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            AccessMod = accessMod;
             Scope = scope;
         }
 
@@ -56,6 +63,7 @@ namespace Compiler.SymbolTable.Symbol
             Guid = Guid.NewGuid();
             Context = context ?? throw new ArgumentNullException(nameof(context));
             Scope = scope;
+            AccessMod = GetAccessModifier(context);
         }
 
         /// <summary>
@@ -111,6 +119,34 @@ namespace Compiler.SymbolTable.Symbol
             }
 
             return typeSymbol;
+        }
+
+        /// <summary>
+        /// Get symbol access modifier.
+        /// </summary>
+        /// <param name="context"> Symbol declaration/definition context. </param>
+        /// <returns> Symbol access modifier. </returns>
+        protected AccessModifier GetAccessModifier(ParserRuleContext context)
+        {
+            TemplateStatContext templateStat = context.Parent?.Parent as TemplateStatContext;
+
+            if (templateStat is null)
+            {
+                return AccessModifier.None;
+            }
+
+            ModifierContext[] modifiers = templateStat?.modifier();
+            string modifier = (modifiers is null || !modifiers.Any())
+                ? null
+                : modifiers.First()?.accessModifier()?.GetText();
+
+            return modifier switch
+            {
+                null => AccessModifier.Public,
+                "private" => AccessModifier.Private,
+                "protected" => AccessModifier.Protected,
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }
