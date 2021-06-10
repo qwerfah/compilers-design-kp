@@ -1,7 +1,9 @@
 ﻿using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
+using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
 using Parser.Antlr.TreeLookup.Impls;
 using System;
@@ -9,13 +11,30 @@ using System.Collections.Generic;
 using System.Linq;
 using static Parser.Antlr.Grammar.ScalaParser;
 
-namespace Compiler.SymbolTable.Symbol.Variable
+namespace Compiler.Types
 {
+    /// <summary>
+    /// Represents expression type deduction algorithm 
+    /// for variable definition without implicitly specified type.
+    /// </summary>
     public class ExprTypeDeductor : ScalaBaseVisitor<bool>
     {
+        /// <summary>
+        /// Exression symbol names. Order the same as in expression.
+        /// </summary>
         public List<Tuple<string, SymbolType, List<SymbolBase>>> Symbols { get; } = new();
+
+        /// <summary>
+        /// Expression definition scope.
+        /// </summary>
         private Scope _scope;
 
+        /// <summary>
+        /// Deduct expression type according to expression definition context.
+        /// </summary>
+        /// <param name="context"> Expression definition context. </param>
+        /// <param name="scope"> Expression definition scope. </param>
+        /// <returns> Deducted expression type. </returns>
         public SymbolBase Deduct(Expr1Context context, Scope scope)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
@@ -44,13 +63,8 @@ namespace Compiler.SymbolTable.Symbol.Variable
                     SymbolType.Variable => GetVariableType(Symbols[i].Item1, prevType),
                     SymbolType.Function => GetFunctionReturnType(Symbols[i], prevType),
                     _ => throw new NotImplementedException(),
-                };
-
-                if (currType is null)
-                {
-                    throw new InvalidSyntaxException(
-                        $"Invalid expression: type {prevType.Name} has no symbol {Symbols[i].Item1}");
-                }
+                } ?? throw new InvalidSyntaxException(
+                    $"Invalid expression: type {prevType.Name} has no symbol {Symbols[i].Item1}");
 
                 prevType = currType;
             }
@@ -58,6 +72,13 @@ namespace Compiler.SymbolTable.Symbol.Variable
             return prevType;
         }
 
+        /// <summary>
+        /// Get type for variable with specified name. 
+        /// Variable is expected to be defined in inner scope of precedence symbol type. 
+        /// </summary>
+        /// <param name="name"> Variable name. </param>
+        /// <param name="prevType"> Precedence symbol type. </param>
+        /// <returns> Variable type. </returns>
         private SymbolBase GetVariableType(string name, SymbolBase prevType)
         {
             VariableSymbolBase symbol = (VariableSymbolBase)(prevType is null ? _scope : (prevType as ClassSymbolBase).InnerScope)
@@ -68,6 +89,14 @@ namespace Compiler.SymbolTable.Symbol.Variable
             return symbol.Type;
         }
 
+        /// <summary>
+        /// Get return type for function with specified signature.
+        /// Function expected to be defined in inner 
+        /// scope of previously stated symbol in expression.
+        /// </summary>
+        /// <param name="symbol"> Contains partial function signature (name and argument types). </param>
+        /// <param name="prevType"> Type of previously stated symbol in expression defintion. </param>
+        /// <returns> Function return type. </returns>
         private SymbolBase GetFunctionReturnType(Tuple<string, SymbolType, List<SymbolBase>> symbol, SymbolBase prevType)
         {
             FunctionSymbol func = (FunctionSymbol)(prevType is null ? _scope : (prevType as ClassSymbolBase).InnerScope)
@@ -89,6 +118,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
             }
         }
 
+        /// <summary>
+        /// Extract symbol name from expression definition.
+        /// </summary>
+        /// <param name="context"> Exression definition context. </param>
+        /// <returns></returns>
         public override bool VisitSimpleExpr1([NotNull] SimpleExpr1Context context)
         {
             base.VisitSimpleExpr1(context);
@@ -129,6 +163,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
             return default;
         }
 
+        /// <summary>
+        /// Get symbol name from identifier nonterminal.
+        /// </summary>
+        /// <param name="context"> Identifier context. </param>
+        /// <returns></returns>
         public override bool VisitStableId([NotNull] StableIdContext context)
         {
             base.VisitStableId(context);
@@ -145,6 +184,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
             return default;
         }
 
+        /// <summary>
+        /// Do nothing to prevent type deduction for function argument expression subtrees.
+        /// </summary>
+        /// <param name="context"> Argument expression context. </param>
+        /// <returns></returns>
         public override bool VisitArgumentExprs([NotNull] ArgumentExprsContext context)
         {
             return default;
