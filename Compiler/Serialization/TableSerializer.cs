@@ -4,12 +4,8 @@ using DotNetGraph.Edge;
 using DotNetGraph.Extensions;
 using DotNetGraph.Node;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Compiler.Serialization
 {
@@ -29,11 +25,11 @@ namespace Compiler.Serialization
 
         public void ToDot(SymbolTable.Table.SymbolTable table)
         {
-            _ = table   ?? throw new ArgumentNullException(nameof(table));
+            _ = table ?? throw new ArgumentNullException(nameof(table));
             _ = _writer ?? throw new ArgumentNullException("File not opened.");
 
             DotGraph graph = new("SymbolTable");
-            Scope scope = table.Scopes.FirstOrDefault() 
+            Scope scope = table.Scopes.FirstOrDefault()
                 ?? throw new ArgumentException("No any scopes in symbol table.");
 
             ToDotRecursive(graph, scope);

@@ -3,13 +3,10 @@ using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Table;
-using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable.Symbol.Variable
@@ -33,16 +30,16 @@ namespace Compiler.SymbolTable.Symbol.Variable
             {
                 SymbolBase currType = Symbols[i].Item2 switch
                 {
-                    SymbolType.Literal when (Symbols[i].Item1.First(), Symbols[i].Item1.Last()) is ('\"', '\"') => 
+                    SymbolType.Literal when (Symbols[i].Item1.First(), Symbols[i].Item1.Last()) is ('\"', '\"') =>
                         _scope.GetSymbol("String", SymbolType.Class),
                     SymbolType.Literal when (Symbols[i].Item1.First(), Symbols[i].Item1.Last()) is ('\'', '\'')
-                        && char.TryParse(Symbols[i].Item1, out _) => 
+                        && char.TryParse(Symbols[i].Item1, out _) =>
                         _scope.GetSymbol("Char", SymbolType.Class),
-                    SymbolType.Literal when bool.TryParse(Symbols[i].Item1, out _) => 
+                    SymbolType.Literal when bool.TryParse(Symbols[i].Item1, out _) =>
                         _scope.GetSymbol("Boolean", SymbolType.Class),
-                    SymbolType.Literal when int.TryParse(Symbols[i].Item1, out _) => 
+                    SymbolType.Literal when int.TryParse(Symbols[i].Item1, out _) =>
                         _scope.GetSymbol("Int", SymbolType.Class),
-                    SymbolType.Literal when double.TryParse(Symbols[i].Item1, out _) => 
+                    SymbolType.Literal when double.TryParse(Symbols[i].Item1, out _) =>
                         _scope.GetSymbol("String", SymbolType.Class),
                     SymbolType.Variable => GetVariableType(Symbols[i].Item1, prevType),
                     SymbolType.Function => GetFunctionReturnType(Symbols[i], prevType),
@@ -107,7 +104,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
                    .ToList();
                 }
 
-                Symbols[Symbols.Count - 1] = 
+                Symbols[Symbols.Count - 1] =
                     new(Symbols.Last().Item1, SymbolType.Function, argTypes);
             }
 
@@ -128,7 +125,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
                     Symbols.Add(new(name, SymbolType.Literal, null));
                 }
             }
-            
+
             return default;
         }
 

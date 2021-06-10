@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Antlr4.Runtime;
-using Compiler.Exceptions;
+﻿using Antlr4.Runtime;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
+using System;
+using System.Collections.Generic;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable.Table
@@ -88,15 +84,15 @@ namespace Compiler.SymbolTable.Table
             {
                 SymbolBase symbol = context switch
                 {
-                    ClassDefContext  => new ClassSymbol(context as ClassDefContext, this),
+                    ClassDefContext => new ClassSymbol(context as ClassDefContext, this),
                     ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, this),
-                    FunDefContext    => new FunctionSymbol(context as FunDefContext, this),
-                    ParserRuleContext c when (c is ParamContext || c is ClassParamContext) => 
+                    FunDefContext => new FunctionSymbol(context as FunDefContext, this),
+                    ParserRuleContext c when (c is ParamContext || c is ClassParamContext) =>
                         new ParamSymbol(context, this),
                     ParserRuleContext c when (c is ValDclContext || c is VarDclContext || c is PatVarDefContext) =>
                         new VariableSymbol(context, this),
-                    TypeDefContext   => new TypeSymbol(context as TypeDefContext, this),
-                    _                => throw new NotImplementedException(),
+                    TypeDefContext => new TypeSymbol(context as TypeDefContext, this),
+                    _ => throw new NotImplementedException(),
                 };
 
                 return Define(symbol);
@@ -122,18 +118,18 @@ namespace Compiler.SymbolTable.Table
         public SymbolBase Define(SymbolBase symbol)
         {
             _ = symbol ?? throw new ArgumentNullException(nameof(symbol));
-           
+
             symbol.Scope = this;
 
             switch (symbol)
             {
-                case ClassSymbol    s: ClassMap.Add(symbol.Name, s);    break;
-                case ObjectSymbol   s: ObjectMap.Add(symbol.Name, s);   break;
-                case TraitSymbol    s: TraitMap.Add(symbol.Name, s);    break;
+                case ClassSymbol s: ClassMap.Add(symbol.Name, s); break;
+                case ObjectSymbol s: ObjectMap.Add(symbol.Name, s); break;
+                case TraitSymbol s: TraitMap.Add(symbol.Name, s); break;
                 case FunctionSymbol s: FunctionMap.Add(symbol.Name, s); break;
                 case VariableSymbol s: VariableMap.Add(symbol.Name, s); break;
-                case ParamSymbol    s: ParamMap.Add(symbol.Name, s);    break;
-                case TypeSymbol     s: TypeMap.Add(symbol.Name, s);     break;
+                case ParamSymbol s: ParamMap.Add(symbol.Name, s); break;
+                case TypeSymbol s: TypeMap.Add(symbol.Name, s); break;
                 default: throw new NotImplementedException();
             }
 

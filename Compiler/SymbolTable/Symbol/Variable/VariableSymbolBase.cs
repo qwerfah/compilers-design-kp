@@ -1,13 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Compiler.Exceptions;
-using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable.Symbol.Variable
 {
@@ -60,7 +53,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// </summary>
         /// <param name="context"> Varialbe definition/declaration context. </param>
         /// <param name="scope"> Varialbe definition/declaration scope. </param>
-        public VariableSymbolBase(ParserRuleContext context, Scope scope) 
+        public VariableSymbolBase(ParserRuleContext context, Scope scope)
             : base(context, scope)
         {
         }
@@ -76,11 +69,11 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <param name="type"> Variable type symbol. </param>
         /// <param name="access"> Variable access modifier (None if not a class field). </param>
         public VariableSymbolBase(
-            string name, 
-            ParserRuleContext context, 
-            bool isMutable, 
-            SymbolBase type, 
-            AccessModifier access) 
+            string name,
+            ParserRuleContext context,
+            bool isMutable,
+            SymbolBase type,
+            AccessModifier access)
             : base(name, context)
         {
             IsMutable = isMutable;
@@ -90,7 +83,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
         public override void Resolve()
         {
-            Type = ResolveType(_unresolvedTypeName) ?? Type 
+            Type = ResolveType(_unresolvedTypeName) ?? Type
                 ?? throw new InvalidSyntaxException(
                     "Invalid variable definition/declaration: unable to resolve variable type.");
         }

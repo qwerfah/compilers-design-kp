@@ -3,13 +3,9 @@ using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Dfa;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Sharpen;
+using Parser.Errors;
 using System;
 using System.Collections.Generic;
-using System.IO.Enumeration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Parser.Errors;
 
 namespace Parser.ErrorListeners
 {
@@ -22,7 +18,7 @@ namespace Parser.ErrorListeners
         /// List of syntax errors.
         /// </summary>
         public List<SyntaxError<IToken>> SyntaxErrors { get; } = new();
-        
+
         public override void ReportAmbiguity(
             [NotNull] Antlr4.Runtime.Parser recognizer,
             [NotNull] DFA dfa, int startIndex, int stopIndex, bool exact,
@@ -67,7 +63,7 @@ namespace Parser.ErrorListeners
                                     $"line = {line}; " +
                                     $"charPositionInLine = {charPositionInLine}; " +
                                     $"message = {msg}\n");
-            
+
             SyntaxErrors.Add(new SyntaxError<IToken>(
                 recognizer, offendingSymbol, line, charPositionInLine, msg, e));
         }

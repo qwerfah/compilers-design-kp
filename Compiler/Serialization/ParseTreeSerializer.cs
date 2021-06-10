@@ -1,19 +1,12 @@
 ﻿using Antlr4.Runtime.Tree;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Antlr4.Runtime;
-using Parser.Antlr.Grammar;
-using System.Text.RegularExpressions;
 using DotNetGraph;
+using DotNetGraph.Edge;
 using DotNetGraph.Extensions;
 using DotNetGraph.Node;
-using DotNetGraph.Edge;
+using System;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 
 namespace Compiler.Serialization
 {
@@ -59,7 +52,7 @@ namespace Compiler.Serialization
             DotNode node = new(tree.GetHashCode().ToString())
             {
                 Shape = DotNodeShape.Rectangle,
-                Label = tree.ChildCount == 0 
+                Label = tree.ChildCount == 0
                     ? tree.GetText()
                     : tree.GetType().Name.Replace("Context", string.Empty),
                 Color = tree.ChildCount == 0 ? Color.Red : Color.Black

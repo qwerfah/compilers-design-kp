@@ -5,8 +5,6 @@ using Compiler.SymbolTable.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable.Symbol.Class
@@ -49,7 +47,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         /// <param name="name"> Class/object/template/trait name. </param>
         /// <param name="scope"> Scope of class/object/template/trait definition. </param>
-        public ClassSymbolBase(string name, ParserRuleContext context, Scope scope = null) 
+        public ClassSymbolBase(string name, ParserRuleContext context, Scope scope = null)
             : base(name, context, scope)
         {
         }
@@ -102,7 +100,7 @@ namespace Compiler.SymbolTable.Symbol.Class
                 throw new InvalidSyntaxException("Invalid class parent definition: parent name expected.");
             }
 
-            SymbolBase parentSymbol = Scope.GetSymbol(parent, SymbolType.Class) 
+            SymbolBase parentSymbol = Scope.GetSymbol(parent, SymbolType.Class)
                 ?? Scope.GetSymbol(parent, SymbolType.Trait);
 
             if (parentSymbol is null)
@@ -127,7 +125,7 @@ namespace Compiler.SymbolTable.Symbol.Class
             }
 
             return parentSymbol is { }
-                ? (parentSymbol, traitSymbols.Any() ? traitSymbols : null) 
+                ? (parentSymbol, traitSymbols.Any() ? traitSymbols : null)
                 : (null, null);
         }
 
@@ -149,7 +147,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         private void ResolveParent()
         {
-            Parent = ResolveType(_unresolvedParent) ?? Parent 
+            Parent = ResolveType(_unresolvedParent) ?? Parent
                 ?? throw new InvalidSyntaxException(
                     "Invalid class definition: unable to resolve parent type.");
         }

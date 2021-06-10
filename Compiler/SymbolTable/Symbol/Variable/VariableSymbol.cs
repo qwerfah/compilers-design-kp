@@ -3,10 +3,7 @@ using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Table;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable.Symbol.Variable
@@ -20,8 +17,8 @@ namespace Compiler.SymbolTable.Symbol.Variable
         public VariableSymbol(ParserRuleContext context, Scope scope)
             : base(context, scope)
         {
-            if (context is not ValDclContext 
-                && context is not VarDclContext 
+            if (context is not ValDclContext
+                && context is not VarDclContext
                 && context is not PatVarDefContext)
             {
                 throw new ArgumentException(
@@ -35,10 +32,10 @@ namespace Compiler.SymbolTable.Symbol.Variable
         }
 
         public VariableSymbol(
-            string name, 
-            ParserRuleContext context, 
-            bool isMutable, 
-            SymbolBase type, 
+            string name,
+            ParserRuleContext context,
+            bool isMutable,
+            SymbolBase type,
             AccessModifier access)
             : base(name, context, isMutable, type, access)
         {
@@ -54,7 +51,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         {
             IParseTree subtree = context switch
             {
-                ParserRuleContext c when 
+                ParserRuleContext c when
                     (c is ValDclContext || c is VarDclContext) => context.Parent.GetChild(0),
                 PatVarDefContext => context.GetChild(0),
                 _ => throw new NotImplementedException(),
@@ -145,7 +142,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             // Get type from explicit type declaration.
             Type_Context type = context switch
             {
-                ValDclContext valDcl => valDcl.type_() 
+                ValDclContext valDcl => valDcl.type_()
                     ?? throw new InvalidSyntaxException($"Invalid variable declaration: type expected."),
                 VarDclContext varDcl => varDcl.type_()
                     ?? throw new InvalidSyntaxException($"Invalid variable declaration: type expected."),
@@ -165,15 +162,15 @@ namespace Compiler.SymbolTable.Symbol.Variable
         private AccessModifier GetAccessModifier(ParserRuleContext context)
         {
             TemplateStatContext templateStat = context.Parent?.Parent as TemplateStatContext;
-            
+
             if (templateStat is null)
             {
                 return AccessModifier.None;
             }
 
             ModifierContext[] modifiers = templateStat?.modifier();
-            string modifier = (modifiers is null || !modifiers.Any()) 
-                ? null 
+            string modifier = (modifiers is null || !modifiers.Any())
+                ? null
                 : modifiers.First()?.accessModifier()?.GetText();
 
             return modifier switch
@@ -196,10 +193,10 @@ namespace Compiler.SymbolTable.Symbol.Variable
                 Type = (resolvedType, deductedType) switch
                 {
                     (null, null) => throw new InvalidSyntaxException("Invalid variable definition: can't define variable type."),
-                    ({ },  null) => resolvedType,
-                    (null,  { }) => deductedType,
-                    ({ },   { }) => (resolvedType == deductedType) 
-                        ? resolvedType 
+                    ({ }, null) => resolvedType,
+                    (null, { }) => deductedType,
+                    ({ }, { }) => (resolvedType == deductedType)
+                        ? resolvedType
                         : throw new InvalidSyntaxException(
                             "Invalid variable definition: specified variable type does not match with deducted type."),
                 };
@@ -217,7 +214,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            ExprContext expr = context.varDef()?.patDef()?.expr() 
+            ExprContext expr = context.varDef()?.patDef()?.expr()
                 ?? context.patDef()?.expr();
 
             if (expr is null) return null;

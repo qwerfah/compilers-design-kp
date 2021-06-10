@@ -3,10 +3,7 @@ using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Table;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable.Symbol
@@ -45,17 +42,17 @@ namespace Compiler.SymbolTable.Symbol
         }
 
         public FunctionSymbol(
-            string name, 
-            SymbolBase returnType, 
-            Scope innerScope, 
-            ParserRuleContext context, 
-            Scope scope) 
+            string name,
+            SymbolBase returnType,
+            Scope innerScope,
+            ParserRuleContext context,
+            Scope scope)
             : base(name, context, scope)
         {
             ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
             InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
         }
-        
+
         /// <summary>
         /// Get function name from its definition context.
         /// </summary>
@@ -95,7 +92,7 @@ namespace Compiler.SymbolTable.Symbol
 
         public override void Resolve()
         {
-            ReturnType = ResolveType(_unresolvedReturnType) ?? ReturnType 
+            ReturnType = ResolveType(_unresolvedReturnType) ?? ReturnType
                 ?? throw new InvalidSyntaxException(
                     "Invalid function definition: can't resolve return type.");
         }

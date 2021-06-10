@@ -3,10 +3,7 @@ using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Table;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.SymbolTable.Symbol.Variable
@@ -32,10 +29,10 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
             TerminalNodeImpl[] terminals = GetTerminals(context);
 
-            Name      = GetName(terminals);
+            Name = GetName(terminals);
             IsMutable = CheckMutability(terminals);
             AccessMod = GetAccessModifier(context as ClassParamContext);
-            Type      = GetType(context, scope);
+            Type = GetType(context, scope);
         }
 
         /// <summary>
@@ -48,7 +45,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
             TerminalNodeImpl[] terminals = context.children
-                .Where(ch  => ch is TerminalNodeImpl)
+                .Where(ch => ch is TerminalNodeImpl)
                 .Select(ch => ch as TerminalNodeImpl)
                 .ToArray();
 
@@ -95,8 +92,8 @@ namespace Compiler.SymbolTable.Symbol.Variable
                 {
                     "var" => true,
                     "val" => false,
-                    null  => false,
-                    _     => throw new NotImplementedException(),
+                    null => false,
+                    _ => throw new NotImplementedException(),
                 };
             }
             catch (InvalidOperationException)
@@ -114,7 +111,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// and current symbol is ctor param, otherwise AccessModifier.None. </returns>
         private AccessModifier GetAccessModifier(ClassParamContext context)
         {
-           if (context is null) return AccessModifier.None;
+            if (context is null) return AccessModifier.None;
 
             TerminalNodeImpl[] terminals = GetTerminals(context);
             string def = terminals.SingleOrDefault(t => DefKeywords.Contains(t.GetText()))?.GetText();
@@ -122,10 +119,10 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
             return modifier switch
             {
-                null        => def is null ? AccessModifier.None : AccessModifier.Public,
-                "private"   => AccessModifier.Private,
+                null => def is null ? AccessModifier.None : AccessModifier.Public,
+                "private" => AccessModifier.Private,
                 "protected" => AccessModifier.Protected,
-                _           => throw new InvalidSyntaxException(
+                _ => throw new InvalidSyntaxException(
                                   "Invalid class ctor param declaration: access modifier expected."),
             };
         }
@@ -139,13 +136,13 @@ namespace Compiler.SymbolTable.Symbol.Variable
         private SymbolBase GetType(ParserRuleContext context, Scope scope)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
-            _ = scope   ?? throw new ArgumentNullException(nameof(scope));
+            _ = scope ?? throw new ArgumentNullException(nameof(scope));
 
             Type_Context type = context switch
             {
                 ClassParamContext cp => cp.paramType()?.type_(),
-                ParamContext p       => p.paramType()?.type_(),
-                _                    => throw new NotImplementedException(),
+                ParamContext p => p.paramType()?.type_(),
+                _ => throw new NotImplementedException(),
             };
 
             _ = type ?? throw new InvalidSyntaxException(

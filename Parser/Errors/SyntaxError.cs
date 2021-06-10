@@ -12,11 +12,11 @@ namespace Parser.Errors
         public RecognitionException Exception { get; }
 
         public SyntaxError(
-            IRecognizer recognizer, 
-            TSymbol offendingSymbol, 
-            int line, 
+            IRecognizer recognizer,
+            TSymbol offendingSymbol,
+            int line,
             int charPositionInLine,
-            string message, 
+            string message,
             RecognitionException exception)
         {
             Recognizer = recognizer;

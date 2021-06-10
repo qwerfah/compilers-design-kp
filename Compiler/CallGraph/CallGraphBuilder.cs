@@ -2,15 +2,11 @@
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol;
-using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Table;
-using Parser.Antlr.Grammar;
 using Parser.Antlr.TreeLookup.Impls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.CallGraph
@@ -90,7 +86,7 @@ namespace Compiler.CallGraph
 
             if (name is null) return null;
 
-            return (FunctionSymbol)_scope.GetSymbol(name, SymbolType.Function) 
+            return (FunctionSymbol)_scope.GetSymbol(name, SymbolType.Function)
                 ?? throw new InvalidSyntaxException($"Ivalid function call: no function with name {name}.");
         }
     }

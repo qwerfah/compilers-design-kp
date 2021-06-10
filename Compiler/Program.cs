@@ -1,20 +1,12 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
-using Antlr4.Runtime.Tree;
 using Compiler.CallGraph;
 using Compiler.Serialization;
-using Compiler.SymbolTable;
-using Compiler.SymbolTable.Symbol;
-using Compiler.SymbolTable.Symbol.Class;
-using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
 using Parser.Antlr.Grammar;
-using Parser.Antlr.TreeLookup.Impls;
 using Parser.ErrorListeners;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Compiler
 {
