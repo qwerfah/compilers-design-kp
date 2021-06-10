@@ -16,28 +16,19 @@ namespace Compiler.SymbolTable.Table
         /// </summary>
         public SymbolTable SymbolTable { get; } = new();
 
-        public TableBuilder()
-        {
-            LoadStandartTypes();
-        }
+        public TableBuilder() => LoadStandartTypes();
 
         /// <summary>
         /// Build symbol table from given parse tree.
         /// </summary>
         /// <param name="tree"> Parse tree. </param>
         /// <returns></returns>
-        public bool Build(IParseTree tree)
-        {
-            return Visit(tree);
-        }
+        public bool Build(IParseTree tree) => Visit(tree);
 
         /// <summary>
         /// Resolve all unresolved symbols in any symbol definition after first pass.
         /// </summary>
-        public void Resolve()
-        {
-            SymbolTable.Resolve();
-        }
+        public void Resolve() => SymbolTable.Resolve();
 
         /// <summary>
         /// Visitor method for class definition.
@@ -69,6 +60,17 @@ namespace Compiler.SymbolTable.Table
             SymbolTable.PopScope();
 
             return result;
+        }
+
+        /// <summary>
+        /// Visitor method for type alias definition.
+        /// </summary>
+        /// <param name="context"> Type alias definition context. </param>
+        /// <returns></returns>
+        public override bool VisitTypeDef([NotNull] TypeDefContext context)
+        {
+            SymbolTable.GetCurrentScope().Define(context);
+            return base.VisitTypeDef(context);
         }
 
         /// <summary>
@@ -108,7 +110,6 @@ namespace Compiler.SymbolTable.Table
         public override bool VisitParam([NotNull] ParamContext context)
         {
             SymbolTable.GetCurrentScope().Define(context);
-
             return base.VisitParam(context);
         }
 
@@ -121,7 +122,6 @@ namespace Compiler.SymbolTable.Table
         public override bool VisitPatVarDef([NotNull] PatVarDefContext context)
         {
             SymbolTable.GetCurrentScope().Define(context);
-
             return base.VisitPatVarDef(context);
         }
 
@@ -133,7 +133,6 @@ namespace Compiler.SymbolTable.Table
         public override bool VisitValDcl([NotNull] ValDclContext context)
         {
             SymbolTable.GetCurrentScope().Define(context);
-
             return base.VisitValDcl(context);
         }
 
@@ -145,7 +144,6 @@ namespace Compiler.SymbolTable.Table
         public override bool VisitVarDcl([NotNull] VarDclContext context)
         {
             SymbolTable.GetCurrentScope().Define(context);
-
             return base.VisitVarDcl(context);
         }
 

@@ -32,6 +32,8 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         public Scope InnerScope { get; set; }
 
+        private bool _isResolved = false;
+
         /// <summary>
         /// Contains name of first class/trait in extends-chain
         /// (that stated after "extends" keyword) if it wasn't resolved during first pass.
@@ -172,6 +174,11 @@ namespace Compiler.SymbolTable.Symbol.Class
             }
 
             Traits = traits;
+        }
+
+        private void ResolveParentSymbols()
+        {
+            //if (Parent.)
         }
     }
 }

@@ -45,6 +45,7 @@ namespace Compiler.Serialization
                 "Params:\n" + string.Join("\n", scope.ParamMap.Values.Select(c => c.ToString())) +
                 "\nClasses:\n" + string.Join("\n", scope.ClassMap.Values.Select(c => c.ToString())) +
                 "\nObjects:\n" + string.Join("\n", scope.ObjectMap.Values.Select(c => c.ToString())) +
+                "\nTypes:\n" + string.Join("\n", scope.TypeMap.Values.Select(c => c.ToString())) +
                 "\nTraits:\n" + string.Join("\n", scope.TraitMap.Values.Select(c => c.ToString())) +
                 "\nVariables:\n" + string.Join("\n", scope.VariableMap.Values.Select(c => c.ToString())) +
                 "\nFunctions:\n" + string.Join("\n", scope.FunctionMap.Values.Select(c => c.ToString()));

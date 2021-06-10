@@ -39,7 +39,7 @@ namespace Compiler.SymbolTable.Symbol
         public FunctionSymbol(FunDefContext context, Scope scope) : base(context, scope)
         {
             Name = GetName(context);
-            ReturnType = GetReturnType(context, scope);
+            ReturnType = GetReturnType(context);
         }
 
         public FunctionSymbol(
@@ -84,12 +84,12 @@ namespace Compiler.SymbolTable.Symbol
         /// <param name="context"> Function definition context. </param>
         /// <param name="scope"> Function definition scope. </param>
         /// <returns> Return type symbol or null if unable to resolve type at this moment. </returns>
-        private SymbolBase GetReturnType(FunDefContext context, Scope scope)
+        private SymbolBase GetReturnType(FunDefContext context)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
-            _ = scope ?? throw new ArgumentNullException(nameof(scope));
+            _ = Scope ?? throw new ArgumentNullException(nameof(Scope));
 
-            return GetType(context.type_(), scope, out _unresolvedReturnType);
+            return GetType(context.type_(), Scope, out _unresolvedReturnType);
         }
 
         public override void Resolve()

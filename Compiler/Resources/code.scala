@@ -1,4 +1,4 @@
-abstract class B {
+class B {
 	private def B_func2(): String = ???
 }
 
@@ -10,5 +10,5 @@ abstract class A(val n: Int, var t: Double) {
 		val a = A_Func1(b, c).B_func2()
 	}
 
-	class Cl
+	type B_type = B
 }

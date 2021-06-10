@@ -147,12 +147,18 @@ namespace Compiler.SymbolTable.Table
         {
             return type switch
             {
-                SymbolType.Class => ClassMap.ContainsKey(name) ? ClassMap[name] : EnclosingScope?.GetSymbol(name, type),
-                SymbolType.Object => ObjectMap.ContainsKey(name) ? ObjectMap[name] : EnclosingScope?.GetSymbol(name, type),
-                SymbolType.Trait => TraitMap.ContainsKey(name) ? TraitMap[name] : EnclosingScope?.GetSymbol(name, type),
-                SymbolType.Function => FunctionMap.ContainsKey(name) ? FunctionMap[name] : EnclosingScope?.GetSymbol(name, type),
-                SymbolType.Variable => VariableMap.ContainsKey(name) ? VariableMap[name] : EnclosingScope?.GetSymbol(name, type),
-                SymbolType.Type => TypeMap.ContainsKey(name) ? TypeMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Class => ClassMap.ContainsKey(name) 
+                    ? ClassMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Object => ObjectMap.ContainsKey(name) 
+                    ? ObjectMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Trait => TraitMap.ContainsKey(name) 
+                    ? TraitMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Function => FunctionMap.ContainsKey(name) 
+                    ? FunctionMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Variable => VariableMap.ContainsKey(name) 
+                    ? VariableMap[name] : EnclosingScope?.GetSymbol(name, type),
+                SymbolType.Type => TypeMap.ContainsKey(name) 
+                    ? TypeMap[name] : EnclosingScope?.GetSymbol(name, type),
                 _ => throw new NotImplementedException(),
             };
         }
@@ -166,6 +172,7 @@ namespace Compiler.SymbolTable.Table
             Resolve(ObjectMap);
             Resolve(FunctionMap);
             Resolve(VariableMap);
+            Resolve(TypeMap);
         }
 
         /// <summary>
@@ -183,7 +190,8 @@ namespace Compiler.SymbolTable.Table
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine($"Error at {symbol.Context.Start.Line}:{symbol.Context.Start.Column} - {e.Message}");
+                    Console.Error.WriteLine($"Error at " +
+                        $"{symbol.Context.Start.Line}:{symbol.Context.Start.Column} - {e.Message}");
                 }
             }
         }

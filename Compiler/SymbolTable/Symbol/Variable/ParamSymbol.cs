@@ -32,7 +32,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             Name = GetName(terminals);
             IsMutable = CheckMutability(terminals);
             AccessMod = GetAccessModifier(context as ClassParamContext);
-            Type = GetType(context, scope);
+            Type = GetType(context);
 
             if (AccessMod != AccessModifier.None)
             {
@@ -138,10 +138,9 @@ namespace Compiler.SymbolTable.Symbol.Variable
         /// <param name="context"> Class ctor param definition context </param>
         /// <param name="scope"> Scope of class ctor param definition (class inner scope). </param>
         /// <returns> Type symbol. </returns>
-        private SymbolBase GetType(ParserRuleContext context, Scope scope)
+        private SymbolBase GetType(ParserRuleContext context)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
-            _ = scope ?? throw new ArgumentNullException(nameof(scope));
 
             Type_Context type = context switch
             {
@@ -153,7 +152,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             _ = type ?? throw new InvalidSyntaxException(
                 "Invalid ctor/func param declaration: type expected.");
 
-            return GetType(type, scope, out _unresolvedTypeName);
+            return GetType(type, Scope, out _unresolvedTypeName);
         }
     }
 }
