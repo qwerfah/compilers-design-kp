@@ -145,7 +145,8 @@ namespace Compiler.SymbolTable.Table
         /// </summary>
         /// <param name="name"> Symbol name. </param>
         /// /// <param name="name"> Symbol name. </param>
-        /// <returns> Symbol with corresponding name in the nearest enclosing scope. </returns>
+        /// <returns> Symbol with corresponding name in the 
+        /// nearest enclosing scope or null if not found. </returns>
         public SymbolBase GetSymbol(string name, SymbolType type)
         {
             return type switch

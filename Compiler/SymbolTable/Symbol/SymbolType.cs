@@ -34,6 +34,10 @@ namespace Compiler.SymbolTable.Symbol
         /// <summary>
         /// Type name symbol.
         /// </summary>
-        Type
+        Type,
+        /// <summary>
+        /// Literal symbol.
+        /// </summary>
+        Literal
     }
 }

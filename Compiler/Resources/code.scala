@@ -1,12 +1,12 @@
-class A {
-	def A_Func1(a: Int, b: Double): Unit = ???
-	def A_Func2(): F = {
-		val a: Int = A_Func1(a, g).A_func2()
-		a.Func().a.Func().Func()
-		val b = c.f.l
-		val c = f.k().k
-		val d = f.k.k()
-	}
+abstract class B {
+	def B_func2(): String = ???
 }
 
-class B
+abstract class A {
+	val b: Int
+	var c: Double
+	def A_Func1(a: Int, b: Double): B = ???
+	def A_Func2(): String = {
+		val a = A_Func1(b, c).B_func2()
+	}
+}
