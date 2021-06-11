@@ -3,7 +3,7 @@ class B {
 	private def B_func2(g: Int): String = ???
 }
 
-abstract class A(val n: Int, var t: Double) {
+abstract class A(val n: Int, var t: B_type, m: String) {
 	val b: Int
 	var c: Double
 	private def A_Func1(a: Int, b: Double): B = ???

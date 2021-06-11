@@ -72,6 +72,14 @@ namespace Compiler.SymbolTable.Symbol
         public abstract void Resolve();
 
         /// <summary>
+        /// Perform actions after resolve.
+        /// Some actions require fully resolved type table to perform.
+        /// It is class ctors definition, function overloads resolution 
+        /// and defining function arguments as inner scope variables. 
+        /// </summary>
+        public virtual void PostResolve() { }
+
+        /// <summary>
         /// Resolve type by its name.
         /// Type may be represented by Class, Trait or Type.
         /// </summary>

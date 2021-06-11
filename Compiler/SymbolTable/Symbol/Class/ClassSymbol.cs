@@ -65,10 +65,11 @@ namespace Compiler.SymbolTable.Symbol.Class
                    $"{(Traits is { } ? string.Join(" ", Traits.Select(t => "with " + t.Name)) : string.Empty)}";
         }
 
-        public override void Resolve()
+        /// <summary>
+        /// Define ctor symbol in the class definition scope.
+        /// </summary>
+        public override void PostResolve()
         {
-            base.Resolve();
-            // Define ctor function for current class.
             Constructor = new(Name + "_ctor", AccessMod, this, InnerScope, Context, Scope);
             Scope.Define(Constructor);
         }

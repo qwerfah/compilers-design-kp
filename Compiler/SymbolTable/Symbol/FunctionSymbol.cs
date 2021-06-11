@@ -32,6 +32,9 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         private List<FunctionSymbol> _overloads = new();
 
+        /// <summary>
+        /// Contains all function overloads in current scope if exisit.
+        /// </summary>
         public IEnumerable<FunctionSymbol> Overloads
         {
             get
@@ -59,6 +62,15 @@ namespace Compiler.SymbolTable.Symbol
             _overloads.Add(this);
         }
 
+        /// <summary>
+        /// Constructs function symbol with given atttributes.
+        /// </summary>
+        /// <param name="name"> Function name. </param>
+        /// <param name="accessMod"> Symbol access modifier (if it is a class method). </param>
+        /// <param name="returnType"> Function return type. </param>
+        /// <param name="innerScope"> Function inner scope. </param>
+        /// <param name="context"> Expression definition context. </param>
+        /// <param name="scope"> Function definition scope. </param>
         public FunctionSymbol(
             string name,
             AccessModifier accessMod,
@@ -73,6 +85,11 @@ namespace Compiler.SymbolTable.Symbol
             _overloads.Add(this);
         }
 
+        /// <summary>
+        /// Add new overload to overload list.
+        /// </summary>
+        /// <param name="overload"> New current function overload 
+        /// with the same name and scope. </param>
         public void AddOverload(FunctionSymbol overload)
         {
             _ = overload ?? throw new ArgumentNullException(nameof(overload));
@@ -125,6 +142,9 @@ namespace Compiler.SymbolTable.Symbol
             return GetType(context.type_(), Scope, out _unresolvedReturnType);
         }
 
+        /// <summary>
+        /// Resolve overload return types.
+        /// </summary>
         public override void Resolve()
         {
             foreach (var overload in _overloads)
@@ -135,6 +155,19 @@ namespace Compiler.SymbolTable.Symbol
             }
         }
 
+        /// <summary>
+        /// Resolve overload signatures and arguments.
+        /// </summary>
+        public override void PostResolve()
+        {
+            ResolveOverloads();
+            ResolveArguments();
+        }
+
+        /// <summary>
+        /// Checking overload signatures.
+        /// If there are two overloads with same arguments, throws exeption.
+        /// </summary>
         public void ResolveOverloads()
         {
             var pairs = _overloads.SelectMany((x, i) => _overloads.Skip(i + 1),
@@ -149,6 +182,25 @@ namespace Compiler.SymbolTable.Symbol
                 {
                     throw new InvalidSyntaxException(
                         $"Invalid overload: two functions with name {Name} and same arguments.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Defines function arguments as inner scope variables.
+        /// Performs for each function overload.
+        /// </summary>
+        public void ResolveArguments()
+        {
+            foreach (var overload in _overloads)
+            {
+                foreach (var param in overload.InnerScope.ParamMap.Values)
+                {
+                    VariableSymbol symbol = new(
+                        param.Name, param.AccessMod, param.Context, param.IsMutable, param.Type);
+
+
+                    overload.InnerScope.Define(symbol);
                 }
             }
         }

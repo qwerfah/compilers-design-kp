@@ -107,7 +107,7 @@ namespace Compiler.SymbolTable.Table
 
             foreach (var scope in Scopes)
             {
-                scope.ResolveOverloads();
+                scope.PostResolve();
             }
         }
     }

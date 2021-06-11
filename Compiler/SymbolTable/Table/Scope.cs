@@ -182,15 +182,18 @@ namespace Compiler.SymbolTable.Table
             Resolve(ObjectMap);
             Resolve(FunctionMap);
             Resolve(VariableMap);
+            Resolve(ParamMap);
             Resolve(TypeMap);
         }
 
-        public void ResolveOverloads()
+        public void PostResolve()
         {
-            foreach (var func in FunctionMap.Values)
-            {
-                func.ResolveOverloads();
-            }
+            Resolve(ClassMap, true);
+            Resolve(ObjectMap, true);
+            Resolve(FunctionMap, true);
+            Resolve(VariableMap, true);
+            Resolve(ParamMap, true);
+            Resolve(TypeMap, true);
         }
 
         /// <summary>
@@ -198,13 +201,21 @@ namespace Compiler.SymbolTable.Table
         /// </summary>
         /// <typeparam name="TEntity"> Symbol type. </typeparam>
         /// <param name="dict"> Symbol dictionary. </param>
-        private void Resolve<TEntity>(Dictionary<string, TEntity> dict) where TEntity : SymbolBase
+        private void Resolve<TEntity>(Dictionary<string, TEntity> dict, bool post = false)
+            where TEntity : SymbolBase
         {
             foreach (var symbol in dict.Values)
             {
                 try
                 {
-                    symbol.Resolve();
+                    if (post)
+                    {
+                        symbol.PostResolve();
+                    }
+                    else
+                    {
+                        symbol.Resolve();
+                    }
                 }
                 catch (Exception e)
                 {
