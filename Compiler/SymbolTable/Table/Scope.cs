@@ -66,6 +66,8 @@ namespace Compiler.SymbolTable.Table
         /// </summary>
         public Dictionary<string, TypeSymbol> TypeMap = new();
 
+        public List<string> Errors { get; } = new();
+
         public Scope(ScopeType type, Scope enclosingScope = null)
         {
             Guid = Guid.NewGuid();
@@ -100,12 +102,12 @@ namespace Compiler.SymbolTable.Table
             }
             catch (ArgumentException)
             {
-                Console.Error.WriteLine(
+                Errors.Add(
                     $"Error at {context.Start.Line}:{context.Start.Column} - symbol with such name already defined.");
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine(
+                Errors.Add(
                     $"Error at {context.Start.Line}:{context.Start.Column} - {e.Message}");
             }
 
@@ -219,7 +221,7 @@ namespace Compiler.SymbolTable.Table
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine($"Error at " +
+                    Errors.Add($"Error at " +
                         $"{symbol.Context.Start.Line}:{symbol.Context.Start.Column} - {e.Message}");
                 }
             }

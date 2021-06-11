@@ -12,4 +12,7 @@ abstract class A(val n: Int, var t: B_type, m: String) {
 	}
 
 	type B_type = B
-}
+	type T1 = T2
+	type T2 = T3
+	type T3 = T1
+	}

@@ -41,6 +41,16 @@ namespace Compiler
             builder.Build(tree);
             builder.Resolve();
 
+            if (builder.Errors.Any())
+            {
+                foreach (var error in builder.Errors)
+                {
+                    Console.Error.WriteLine(error);
+                }
+
+                return;
+            }
+
             TableSerializer tableSerializer = new("table.dot");
             tableSerializer.ToDot(builder.SymbolTable);
             tableSerializer.Close();

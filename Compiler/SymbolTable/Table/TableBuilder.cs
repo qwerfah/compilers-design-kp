@@ -4,6 +4,7 @@ using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
 using Parser.Antlr.TreeLookup.Impls;
+using System.Collections.Generic;
 using System.Linq;
 using static Parser.Antlr.Grammar.ScalaParser;
 
@@ -29,6 +30,23 @@ namespace Compiler.SymbolTable.Table
         /// Resolve all unresolved symbols in any symbol definition after first pass.
         /// </summary>
         public void Resolve() => SymbolTable.Resolve();
+
+        /// <summary>
+        /// Contains errors that happen during building.
+        /// </summary>
+        public IEnumerable<string> Errors
+        {
+            get
+            {
+                foreach (var scope in SymbolTable.Scopes)
+                {
+                    foreach (var error in scope.Errors)
+                    {
+                        yield return error;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Visitor method for class definition.
