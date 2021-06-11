@@ -153,16 +153,21 @@ namespace Compiler.SymbolTable.Symbol
             }
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Get current function symbol instance string representation.
+        /// </summary>
+        /// <returns> Symbol string representation. </returns>
+        public string ToStringSingle()
         {
-            string result = string.Join("\n", _overloads.Except(new[] { this }).Select(f => f.ToString()));
-
-            return $"{result}\n" +
-                   $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
+            return $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
                    $"def {Name}" +
                    $"({string.Join(", ", InnerScope.ParamMap.Values.Select(p => p.Type.Name))}) " +
-                   $": {(ReturnType is { } ? ReturnType.Name : "None")}\n";
+                   $": {(ReturnType is { } ? ReturnType.Name : "None")}";
+        }
 
+        public override string ToString()
+        {
+            return string.Join("\n", _overloads.Select(f => f.ToStringSingle()));
         }
     }
 }
