@@ -55,6 +55,10 @@ namespace Compiler
             tableSerializer.ToDot(builder.SymbolTable);
             tableSerializer.Close();
 
+            ClassTreeSerializer classTreeSerializer = new("class_tree.dot");
+            classTreeSerializer.ToDot(builder.SymbolTable);
+            classTreeSerializer.Close();
+
             CallGraphBuilder callGraphbuilder = new(builder.SymbolTable);
             //callGraphbuilder.Build(builder.SymbolTable.Scopes.Last().FunctionMap.Values.Last());
         }

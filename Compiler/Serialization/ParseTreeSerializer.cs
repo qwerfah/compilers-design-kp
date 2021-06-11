@@ -64,8 +64,7 @@ namespace Compiler.Serialization
             {
                 DotNode child = ToDotRecursive(graph, tree.GetChild(i));
                 if (child is null) continue;
-                DotEdge edge = new(node, child);
-                graph.Elements.Add(edge);
+                graph.Elements.Add(new DotEdge(node, child));
             }
 
             return node;
