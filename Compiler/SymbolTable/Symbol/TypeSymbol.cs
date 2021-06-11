@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Table;
 using System;
 using System.Linq;
@@ -52,9 +53,41 @@ namespace Compiler.SymbolTable.Symbol
         {
             if (_unresolvedDefTypeName is null) return;
 
-            AliasingType = ResolveType(ref _unresolvedDefTypeName) 
+            AliasingType = ResolveType(ref _unresolvedDefTypeName)
                 ?? throw new InvalidSyntaxException(
                     "Invalid type definition: can't resolve aliasing type name.");
+        }
+
+        public override void PostResolve()
+        {
+            SymbolBase actualType = AliasingType;
+
+            do
+            {
+                actualType = actualType switch
+                {
+                    ClassSymbolBase classSymbol => classSymbol,
+                    TypeSymbol typeSymbol => typeSymbol.AliasingType,
+                    _ => throw new NotImplementedException(),
+                };
+
+                if (actualType == this)
+                {
+                    throw new InvalidSyntaxException(
+                        "Invalid type definition: cyclic type reference.");
+                }
+            }
+            while (actualType is not ClassSymbolBase);
+        }
+
+        /// <summary>
+        /// Get actual aliasing type (ClassSymbolBase).
+        /// </summary>
+        /// <returns> Type symbol. </returns>
+        public ClassSymbolBase GetActualType()
+        {
+            return AliasingType as ClassSymbolBase 
+                ?? ((TypeSymbol)AliasingType).GetActualType();
         }
 
         public override string ToString() => $"type {Name} = {AliasingType?.Name}";
