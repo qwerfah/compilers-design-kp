@@ -1,5 +1,6 @@
 class B {
 	private def B_func2(): String = ???
+	private def B_func2(g: Int): String = ???
 }
 
 abstract class A(val n: Int, var t: Double) {

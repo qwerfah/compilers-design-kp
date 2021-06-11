@@ -93,9 +93,11 @@ namespace Compiler.SymbolTable.Table
         /// <returns></returns>
         public override bool VisitFunDef([NotNull] FunDefContext context)
         {
-            FunctionSymbol symbol = (FunctionSymbol)SymbolTable.GetCurrentScope().Define(context);
+            Scope currentScope = SymbolTable.GetCurrentScope();
             Scope innerScope = SymbolTable.PushScope();
-            symbol.InnerScope = innerScope;
+            FunctionSymbol symbol = new(context, innerScope, currentScope);
+
+            currentScope.Define(symbol);
             bool result = base.VisitFunDef(context);
             SymbolTable.PopScope();
 

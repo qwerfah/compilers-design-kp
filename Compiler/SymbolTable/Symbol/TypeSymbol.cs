@@ -52,7 +52,7 @@ namespace Compiler.SymbolTable.Symbol
         {
             if (_unresolvedDefTypeName is null) return;
 
-            AliasingType = ResolveType(_unresolvedDefTypeName) 
+            AliasingType = ResolveType(ref _unresolvedDefTypeName) 
                 ?? throw new InvalidSyntaxException(
                     "Invalid type definition: can't resolve aliasing type name.");
         }

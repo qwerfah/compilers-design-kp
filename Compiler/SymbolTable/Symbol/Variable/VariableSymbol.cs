@@ -156,7 +156,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
         public override void Resolve()
         {
-            SymbolBase resolvedType = ResolveType(_unresolvedTypeName) ?? Type;
+            SymbolBase resolvedType = ResolveType(ref _unresolvedTypeName) ?? Type;
 
             if (Context is PatVarDefContext context)
             {

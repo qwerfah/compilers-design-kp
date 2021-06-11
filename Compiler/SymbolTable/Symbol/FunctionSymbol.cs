@@ -4,6 +4,7 @@ using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using static Parser.Antlr.Grammar.ScalaParser;
 
@@ -24,7 +25,20 @@ namespace Compiler.SymbolTable.Symbol
         /// Does not set during symbol istantiation because function 
         /// signature resolution precedes function body resolution.
         /// </summary>
-        public Scope InnerScope { get; set; }
+        public Scope InnerScope { get; private set; }
+
+        /// <summary>
+        /// Contains all function overloads in current scope if exisit.
+        /// </summary>
+        private List<FunctionSymbol> _overloads = new();
+
+        public IEnumerable<FunctionSymbol> Overloads
+        {
+            get
+            {
+                foreach (var overload in _overloads) yield return overload;
+            }
+        }
 
         /// <summary>
         /// Contains function return type name if it wasn't resolved during first pass.
@@ -36,10 +50,13 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         /// <param name="context"> Function definition context. </param>
         /// <param name="scope"></param>
-        public FunctionSymbol(FunDefContext context, Scope scope) : base(context, scope)
+        public FunctionSymbol(FunDefContext context, Scope innerScope, Scope scope) 
+            : base(context, scope)
         {
             Name = GetName(context);
             ReturnType = GetReturnType(context);
+            InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
+            _overloads.Add(this);
         }
 
         public FunctionSymbol(
@@ -53,6 +70,22 @@ namespace Compiler.SymbolTable.Symbol
         {
             ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
             InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
+            _overloads.Add(this);
+        }
+
+        public void AddOverload(FunctionSymbol overload)
+        {
+            _ = overload ?? throw new ArgumentNullException(nameof(overload));
+
+            if (Name == overload.Name && Scope == overload.Scope)
+            {
+                _overloads.Add(overload);
+            }
+            else
+            {
+                throw new InvalidSyntaxException(
+                    "Invalid overload: trying to add inccorect symbol as function overload.");
+            }
         }
 
         /// <summary>
@@ -94,16 +127,41 @@ namespace Compiler.SymbolTable.Symbol
 
         public override void Resolve()
         {
-            ReturnType = ResolveType(_unresolvedReturnType) ?? ReturnType
-                ?? throw new InvalidSyntaxException(
-                    "Invalid function definition: can't resolve return type.");
+            foreach (var overload in _overloads)
+            {
+                overload.ReturnType = ResolveType(ref _unresolvedReturnType) ?? ReturnType
+                    ?? throw new InvalidSyntaxException(
+                        "Invalid function definition: can't resolve return type.");
+            }
+        }
+
+        public void ResolveOverloads()
+        {
+            var pairs = _overloads.SelectMany((x, i) => _overloads.Skip(i + 1),
+                (x, y) => Tuple.Create(x, y));
+
+            foreach (var pair in pairs)
+            {
+                var argTypes1 = pair.Item1.InnerScope.ParamMap.Values.Select(p => p.Type);
+                var argTypes2 = pair.Item2.InnerScope.ParamMap.Values.Select(p => p.Type);
+
+                if (argTypes1.Except(argTypes2).Any())
+                {
+                    throw new InvalidSyntaxException(
+                        $"Invalid overload: two functions with name {Name} and same arguments.");
+                }
+            }
         }
 
         public override string ToString()
         {
-            return $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
-                   $"def {Name} " +
-                   $": {(ReturnType is { } ? ReturnType.Name : "None")}";
+            string result = string.Join("\n", _overloads.Except(new[] { this }).Select(f => f.ToString()));
+
+            return $"{result}\n" +
+                   $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
+                   $"def {Name}" +
+                   $"({string.Join(", ", InnerScope.ParamMap.Values.Select(p => p.Type.Name))}) " +
+                   $": {(ReturnType is { } ? ReturnType.Name : "None")}\n";
 
         }
     }

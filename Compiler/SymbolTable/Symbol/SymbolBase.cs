@@ -77,13 +77,15 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         /// <param name="typeName"> Type name (class/trait/type). </param>
         /// <returns> Type symbol if found or null if unable to resolve type. </returns>
-        protected SymbolBase ResolveType(string typeName)
+        protected SymbolBase ResolveType(ref string typeName)
         {
             if (typeName is null) return null;
 
             SymbolBase type = Scope.GetSymbol(typeName, SymbolType.Class)
                 ?? Scope.GetSymbol(typeName, SymbolType.Type)
                 ?? Scope.GetSymbol(typeName, SymbolType.Trait);
+
+            typeName = null;
 
             return type;
         }

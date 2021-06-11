@@ -69,10 +69,7 @@ namespace Compiler.SymbolTable.Table
         /// <summary>
         /// Extract top scope from stack.
         /// </summary>
-        public void PopScope()
-        {
-            _scopeStack.Pop();
-        }
+        public void PopScope() => _scopeStack.Pop();
 
         /// <summary>
         /// Get current top element of scope stack.
@@ -106,6 +103,11 @@ namespace Compiler.SymbolTable.Table
             foreach (var scope in Scopes)
             {
                 scope.Resolve();
+            }
+
+            foreach (var scope in Scopes)
+            {
+                scope.ResolveOverloads();
             }
         }
     }

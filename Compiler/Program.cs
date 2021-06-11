@@ -6,7 +6,9 @@ using Compiler.SymbolTable.Table;
 using Parser.Antlr.Grammar;
 using Parser.ErrorListeners;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Compiler
 {

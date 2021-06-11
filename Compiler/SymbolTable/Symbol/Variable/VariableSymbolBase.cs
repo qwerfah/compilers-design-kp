@@ -77,7 +77,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
         public override void Resolve()
         {
-            Type = ResolveType(_unresolvedTypeName) ?? Type
+            Type = ResolveType(ref _unresolvedTypeName) ?? Type
                 ?? throw new InvalidSyntaxException(
                     "Invalid variable definition/declaration: unable to resolve variable type.");
         }

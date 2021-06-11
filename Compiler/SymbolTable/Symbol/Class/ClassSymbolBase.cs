@@ -150,7 +150,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         private void ResolveParent()
         {
-            Parent = ResolveType(_unresolvedParent) ?? Parent
+            Parent = ResolveType(ref _unresolvedParent) ?? Parent
                 ?? throw new InvalidSyntaxException(
                     "Invalid class definition: unable to resolve parent type.");
         }
@@ -174,6 +174,7 @@ namespace Compiler.SymbolTable.Symbol.Class
             }
 
             Traits = traits;
+            _unresolvedTraits = null;
         }
 
         private void ResolveParentSymbols()

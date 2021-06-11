@@ -80,14 +80,17 @@ namespace Compiler.Serialization
                 graph.Elements.Add(edge);
             }
 
-            foreach (var symbol in scope.FunctionMap.Values)
+            foreach (var func in scope.FunctionMap.Values)
             {
-                DotNode child = ToDotRecursive(graph, symbol.InnerScope);
-                DotEdge edge = new(node, child)
+                foreach (var overload in func.Overloads)
                 {
-                    Label = symbol.Name,
-                };
-                graph.Elements.Add(edge);
+                    DotNode child = ToDotRecursive(graph, overload.InnerScope);
+                    DotEdge edge = new(node, child)
+                    {
+                        Label = overload.Name,
+                    };
+                    graph.Elements.Add(edge);
+                }
             }
 
             return node;
