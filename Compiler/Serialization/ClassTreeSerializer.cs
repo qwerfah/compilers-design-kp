@@ -67,12 +67,7 @@ namespace Compiler.Serialization
 
             if (symbol.Parent is not null)
             {
-                DotNode parent = symbol.Parent switch
-                {
-                    ClassSymbolBase classSymbol => ToDotRecursive(graph, classSymbol),
-                    TypeSymbol typeSymbol => ToDotRecursive(graph, typeSymbol.GetActualType()),
-                    _ => throw new NotImplementedException(),
-                };
+                DotNode parent = ToDotRecursive(graph, symbol.Parent);
 
                 if(!_edgeHashes.Contains(new(symbol.GetHashCode(), symbol.Parent.GetHashCode())))
                 {

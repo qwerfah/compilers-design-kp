@@ -136,11 +136,11 @@ namespace Compiler.SymbolTable.Table
                 case FunctionSymbol s: 
                     try
                     {
-                        FunctionMap.Add(symbol.Name, s);
+                        FunctionMap.Add(s.Name, s);
                     }
                     catch (ArgumentException)
                     {
-                        FunctionMap[symbol.Name].AddOverload(s);
+                        FunctionMap[s.Name].AddOverload(s);
                     }
                     break;
                 case VariableSymbol s: VariableMap.Add(s.Name, s); break;
@@ -160,9 +160,9 @@ namespace Compiler.SymbolTable.Table
         /// <param name="enclose"> If true, searching symbol also in enclosing scope. </param>
         /// <returns> Symbol with corresponding name in the 
         /// nearest enclosing scope or null if not found. </returns>
-        public SymbolBase GetSymbol(string name, SymbolType type, bool enclose = true)
+        public SymbolBase GetSymbol(string name, SymbolType type, bool enclose = true, IEnumerable<SymbolBase> args = null)
         {
-            return type switch
+            SymbolBase symbol = type switch
             {
                 SymbolType.Class => ClassMap.ContainsKey(name) 
                     ? ClassMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
@@ -170,14 +170,28 @@ namespace Compiler.SymbolTable.Table
                     ? ObjectMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Trait => TraitMap.ContainsKey(name) 
                     ? TraitMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
-                SymbolType.Function => FunctionMap.ContainsKey(name) 
-                    ? FunctionMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
+                SymbolType.Function => FunctionMap.ContainsKey(name)
+                    ? FunctionMap[name].GetOverload(args) : enclose ? EnclosingScope?.GetSymbol(name, type, true, args) : null,
                 SymbolType.Variable => VariableMap.ContainsKey(name) 
                     ? VariableMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Type => TypeMap.ContainsKey(name) 
                     ? TypeMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 _ => throw new NotImplementedException(),
             };
+
+            if (symbol is null && Owner is ClassSymbolBase classSymbol)
+            {
+                symbol = classSymbol.Parent?.InnerScope.GetSymbol(name, type, enclose, args);
+                symbol = symbol switch
+                {
+                    null => null,
+                    _ when (symbol.AccessMod == AccessModifier.Public) => symbol,
+                    _ when (symbol.AccessMod == AccessModifier.Protected) => symbol,
+                    _ => null,
+                };
+            }
+
+            return symbol;
         }
 
         /// <summary>

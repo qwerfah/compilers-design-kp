@@ -16,7 +16,20 @@ namespace Compiler.SymbolTable.Symbol
         /// <summary>
         /// Aliasing type symbol.
         /// </summary>
-        public SymbolBase AliasingType { get; private set; }
+        public SymbolBase _aliasingType;
+
+        /// <summary>
+        /// Aliasing class/object/trait symbol.
+        /// </summary>
+        public ClassSymbolBase AliasingType
+        {
+            get => _aliasingType switch
+            {
+                ClassSymbolBase classSymbol => classSymbol,
+                TypeSymbol typeSymbol => typeSymbol.AliasingType,
+                _ => throw new NotImplementedException(),
+            };
+        }
 
         /// <summary>
         /// Contains aliasing type name if it wasn't resolved during first pass.
@@ -31,7 +44,7 @@ namespace Compiler.SymbolTable.Symbol
         public TypeSymbol(TypeDefContext context, Scope scope) : base(context, scope)
         {
             Name = GetName();
-            AliasingType = GetAliasingType();
+            _aliasingType = GetAliasingType();
         }
 
         /// <summary>
@@ -53,21 +66,21 @@ namespace Compiler.SymbolTable.Symbol
         {
             if (_unresolvedDefTypeName is null) return;
 
-            AliasingType = ResolveType(ref _unresolvedDefTypeName)
+            _aliasingType = ResolveType(ref _unresolvedDefTypeName)
                 ?? throw new InvalidSyntaxException(
                     "Invalid type definition: can't resolve aliasing type name.");
         }
 
         public override void PostResolve()
         {
-            SymbolBase actualType = AliasingType;
+            SymbolBase actualType = _aliasingType;
 
             do
             {
                 actualType = actualType switch
                 {
                     ClassSymbolBase classSymbol => classSymbol,
-                    TypeSymbol typeSymbol => typeSymbol.AliasingType,
+                    TypeSymbol typeSymbol => typeSymbol._aliasingType,
                     _ => throw new NotImplementedException(),
                 };
 
@@ -78,16 +91,6 @@ namespace Compiler.SymbolTable.Symbol
                 }
             }
             while (actualType is not ClassSymbolBase);
-        }
-
-        /// <summary>
-        /// Get actual aliasing type (ClassSymbolBase).
-        /// </summary>
-        /// <returns> Type symbol. </returns>
-        public ClassSymbolBase GetActualType()
-        {
-            return AliasingType as ClassSymbolBase 
-                ?? ((TypeSymbol)AliasingType).GetActualType();
         }
 
         public override string ToString() => $"type {Name} = {AliasingType?.Name}";

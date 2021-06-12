@@ -19,7 +19,7 @@ namespace Compiler.SymbolTable.Symbol.Class
             : base(context.Parent as TmplDefContext, innerScope, scope)
         {
             Name = GetName(context);
-            (Parent, Traits) = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());
+            (_parent, Traits) = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());
         }
 
         public override string ToString()

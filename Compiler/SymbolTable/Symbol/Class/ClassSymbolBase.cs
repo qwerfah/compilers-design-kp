@@ -16,14 +16,29 @@ namespace Compiler.SymbolTable.Symbol.Class
     public abstract class ClassSymbolBase : SymbolBase
     {
         /// <summary>
-        /// Type symbol for parent class/trait (that stated after "extends" keyword).
+        /// Symbol for parent class/trait (that stated after "extends" keyword).
+        /// May be also typename alias.
         /// </summary>
-        public SymbolBase Parent { get; set; }
+        protected SymbolBase _parent;
+
+        /// <summary>
+        /// Class/object/trait parent symbol.
+        /// </summary>
+        public ClassSymbolBase Parent
+        {
+            get => _parent switch
+            {
+                null => null,
+                ClassSymbolBase classSymbol => classSymbol,
+                TypeSymbol typeSymbol => typeSymbol.AliasingType,
+                _ => throw new NotImplementedException(),
+            };
+        }
 
         /// <summary>
         /// Type symbols for traits in with-chain (that stated after "with" keywords).
         /// </summary>
-        public List<SymbolBase> Traits { get; set; }
+        public List<SymbolBase> Traits { get; protected set; }
 
         /// <summary>
         /// Class body scope.
@@ -70,6 +85,7 @@ namespace Compiler.SymbolTable.Symbol.Class
             : base(context, scope)
         {
             InnerScope = innerScope ?? throw  new ArgumentNullException(nameof(innerScope));
+            InnerScope.Owner = this;
         }
 
         /// <summary>
@@ -157,7 +173,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         private void ResolveParent()
         {
-            Parent = ResolveType(ref _unresolvedParent) ?? Parent
+            _parent = ResolveType(ref _unresolvedParent) ?? Parent
                 ?? throw new InvalidSyntaxException(
                     "Invalid class definition: unable to resolve parent type.");
         }
@@ -191,19 +207,17 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// <param name="name"> Class member name. </param>
         /// <param name="type"> Class member type. </param>
         /// <returns> Class member symbol. </returns>
-        public SymbolBase GetMember(string name, SymbolType type)
+        public SymbolBase GetMember(string name, SymbolType type, IEnumerable<SymbolBase> args = null)
         {
-            SymbolBase symbol = InnerScope.GetSymbol(name, type, false) ?? Parent switch
-            {
-                ClassSymbolBase classSymbol => classSymbol.GetMember(name, type),
-                TypeSymbol typeSymbol => typeSymbol.GetActualType().GetMember(name, type),
-                _ => throw new NotImplementedException(),
-            };
+            SymbolBase symbol = InnerScope.GetSymbol(name, type, false, args) 
+                ?? Parent?.GetMember(name, type, args);
 
-            return symbol.AccessMod == AccessModifier.Public
-                ? symbol
-                : throw new InvalidSyntaxException(
-                    "Invalid class member access: trying to access nonpublic member.");
+            return symbol switch
+            {
+                null => null,
+                _ when (symbol.AccessMod == AccessModifier.Public) => symbol,
+                _ => null,
+            };
         }
     }
 }

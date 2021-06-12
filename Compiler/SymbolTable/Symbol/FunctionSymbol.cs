@@ -107,6 +107,20 @@ namespace Compiler.SymbolTable.Symbol
         }
 
         /// <summary>
+        /// Get function overload with specified argument types.
+        /// </summary>
+        /// <param name="args"> Overload argument types. </param>
+        /// <returns> Corresponding overload. </returns>
+        public SymbolBase GetOverload(IEnumerable<SymbolBase> args)
+        {
+            _ = args ?? throw new ArgumentNullException(nameof(args));
+
+            return _overloads.SingleOrDefault(f =>
+                f.InnerScope.ParamMap.Count == args.Count()
+                && !f.InnerScope.ParamMap.Values.Select(p => p.Type).Except(args).Any());
+        }
+
+        /// <summary>
         /// Get function name from its definition context.
         /// </summary>
         /// <param name="context"> Function definition context. </param>
@@ -150,7 +164,8 @@ namespace Compiler.SymbolTable.Symbol
         {
             foreach (var overload in _overloads)
             {
-                overload.ReturnType = ResolveType(ref _unresolvedReturnType) ?? ReturnType
+                overload.ReturnType = ResolveType(ref overload._unresolvedReturnType) 
+                    ?? overload.ReturnType
                     ?? throw new InvalidSyntaxException(
                         "Invalid function definition: can't resolve return type.");
             }
@@ -179,7 +194,7 @@ namespace Compiler.SymbolTable.Symbol
                 var argTypes1 = pair.Item1.InnerScope.ParamMap.Values.Select(p => p.Type);
                 var argTypes2 = pair.Item2.InnerScope.ParamMap.Values.Select(p => p.Type);
 
-                if (argTypes1.Except(argTypes2).Any())
+                if (argTypes1 == argTypes2 && !argTypes1.Except(argTypes2).Any())
                 {
                     throw new InvalidSyntaxException(
                         $"Invalid overload: two functions with name {Name} and same arguments.");
@@ -221,10 +236,10 @@ namespace Compiler.SymbolTable.Symbol
 
             foreach (var overload in _overloads)
             {
-                if ((InnerScope.ParamMap.Values.Count == argTypes.Count)
-                    && (!InnerScope.ParamMap.Values.Select(p => p.Type).Except(argTypes).Any()))
+                if ((overload.InnerScope.ParamMap.Values.Count == argTypes.Count)
+                    && (!overload.InnerScope.ParamMap.Values.Select(p => p.Type).Except(argTypes).Any()))
                 {
-                    return ReturnType;
+                    return overload.ReturnType;
                 }
             }
 

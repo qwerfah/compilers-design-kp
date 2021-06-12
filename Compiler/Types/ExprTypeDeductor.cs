@@ -8,6 +8,7 @@ using Compiler.SymbolTable.Table;
 using Parser.Antlr.TreeLookup.Impls;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using static Parser.Antlr.Grammar.ScalaParser;
 
@@ -52,14 +53,14 @@ namespace Compiler.Types
                     SymbolType.Literal when (Symbols[i].Item1.First(), Symbols[i].Item1.Last()) is ('\"', '\"') =>
                         _scope.GetSymbol("String", SymbolType.Class),
                     SymbolType.Literal when (Symbols[i].Item1.First(), Symbols[i].Item1.Last()) is ('\'', '\'')
-                        && char.TryParse(Symbols[i].Item1, out _) =>
+                        && char.TryParse(string.Join("", Symbols[i].Item1.Skip(1).Take(Symbols[i].Item1.Length - 2)), out _) =>
                         _scope.GetSymbol("Char", SymbolType.Class),
                     SymbolType.Literal when bool.TryParse(Symbols[i].Item1, out _) =>
                         _scope.GetSymbol("Boolean", SymbolType.Class),
                     SymbolType.Literal when int.TryParse(Symbols[i].Item1, out _) =>
                         _scope.GetSymbol("Int", SymbolType.Class),
-                    SymbolType.Literal when double.TryParse(Symbols[i].Item1, out _) =>
-                        _scope.GetSymbol("String", SymbolType.Class),
+                    SymbolType.Literal when double.TryParse(Symbols[i].Item1, NumberStyles.Any, CultureInfo.InvariantCulture, out _) =>
+                        _scope.GetSymbol("Double", SymbolType.Class),
                     SymbolType.Variable => GetVariableType(Symbols[i].Item1, prevType),
                     SymbolType.Function => GetFunctionReturnType(Symbols[i], prevType),
                     _ => throw new NotImplementedException(),
@@ -81,7 +82,8 @@ namespace Compiler.Types
         /// <returns> Variable type. </returns>
         private SymbolBase GetVariableType(string name, SymbolBase prevType)
         {
-            VariableSymbolBase symbol = (VariableSymbolBase)(prevType is null ? _scope : (prevType as ClassSymbolBase).InnerScope)
+            VariableSymbolBase symbol = (VariableSymbolBase)
+                (prevType is null ? _scope : (prevType as ClassSymbolBase).InnerScope)
                 .GetSymbol(name, SymbolType.Variable);
             _ = symbol ?? throw new InvalidSyntaxException(
                     $"Invalid expression: undefined symbol {name}.");
@@ -97,13 +99,19 @@ namespace Compiler.Types
         /// <param name="symbol"> Contains partial function signature (name and argument types). </param>
         /// <param name="prevType"> Type of previously stated symbol in expression defintion. </param>
         /// <returns> Function return type. </returns>
-        private SymbolBase GetFunctionReturnType(Tuple<string, SymbolType, List<SymbolBase>> symbol, SymbolBase prevType)
+        private SymbolBase GetFunctionReturnType(
+            Tuple<string, SymbolType, 
+            List<SymbolBase>> symbol, 
+            SymbolBase prevType)
         {
             FunctionSymbol func = prevType switch
             {
-                null => (FunctionSymbol)_scope.GetSymbol(symbol.Item1, symbol.Item2),
-                ClassSymbolBase classSymbol => (FunctionSymbol)classSymbol.GetMember(symbol.Item1, symbol.Item2),
-                TypeSymbol typeSymbol => (FunctionSymbol)typeSymbol.GetActualType().GetMember(symbol.Item1, symbol.Item2),
+                null => (FunctionSymbol)_scope
+                    .GetSymbol(symbol.Item1, symbol.Item2, true, symbol.Item3),
+                ClassSymbolBase classSymbol => (FunctionSymbol)classSymbol
+                    .GetMember(symbol.Item1, symbol.Item2, symbol.Item3),
+                TypeSymbol typeSymbol => (FunctionSymbol)typeSymbol.AliasingType
+                    .GetMember(symbol.Item1, symbol.Item2, symbol.Item3),
                 _ => throw new NotImplementedException(),
             };
 
