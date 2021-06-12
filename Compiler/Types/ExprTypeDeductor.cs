@@ -82,13 +82,20 @@ namespace Compiler.Types
         /// <returns> Variable type. </returns>
         private SymbolBase GetVariableType(string name, SymbolBase prevType)
         {
-            VariableSymbolBase symbol = (VariableSymbolBase)
-                (prevType is null ? _scope : (prevType as ClassSymbolBase).InnerScope)
-                .GetSymbol(name, SymbolType.Variable);
-            _ = symbol ?? throw new InvalidSyntaxException(
+            return prevType switch
+            {
+                null => 
+                    ((VariableSymbol)_scope.GetSymbol(name, SymbolType.Variable))?.Type 
+                    ?? _scope.GetSymbol(name, SymbolType.Object),
+                ClassSymbolBase classSymbol => 
+                    ((VariableSymbol)classSymbol.GetMember(name, SymbolType.Variable))?.Type 
+                    ?? classSymbol.GetMember(name, SymbolType.Object),
+                TypeSymbol typeSymbol => 
+                    ((VariableSymbol)typeSymbol.AliasingType.GetMember(name, SymbolType.Variable))?.Type 
+                    ?? typeSymbol.AliasingType.GetMember(name, SymbolType.Object),
+                _ => throw new NotImplementedException(),
+            } ?? throw new InvalidSyntaxException(
                     $"Invalid expression: undefined symbol {name}.");
-
-            return symbol.Type;
         }
 
         /// <summary>

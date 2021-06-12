@@ -126,8 +126,9 @@ namespace Compiler.SymbolTable.Table
 
             if (!IsNameAvailable(symbol))
             {
-                throw new InvalidSyntaxException(
+                Errors.Add(
                     $"Symbol with name {symbol.Name} already defined in current scope.");
+                return null;
             }
 
             switch (symbol)

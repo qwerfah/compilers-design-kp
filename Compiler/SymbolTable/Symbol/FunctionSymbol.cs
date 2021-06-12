@@ -191,10 +191,10 @@ namespace Compiler.SymbolTable.Symbol
 
             foreach (var pair in pairs)
             {
-                var argTypes1 = pair.Item1.InnerScope.ParamMap.Values.Select(p => p.Type);
-                var argTypes2 = pair.Item2.InnerScope.ParamMap.Values.Select(p => p.Type);
+                var argTypes1 = pair.Item1.InnerScope.ParamMap.Values.Select(p => p.Type).ToArray();
+                var argTypes2 = pair.Item2.InnerScope.ParamMap.Values.Select(p => p.Type).ToArray();
 
-                if (argTypes1 == argTypes2 && !argTypes1.Except(argTypes2).Any())
+                if (argTypes1.Length == argTypes2.Length && !argTypes1.Except(argTypes2).Any())
                 {
                     throw new InvalidSyntaxException(
                         $"Invalid overload: two functions with name {Name} and same arguments.");
