@@ -37,7 +37,7 @@ namespace Compiler.Serialization
 
             DotGraph graph = new("ParseTree");
             ToDotRecursive(graph, tree);
-            _writer.Write(graph.Compile());
+            _writer.Write(graph.Compile(true));
         }
 
         /// <summary>

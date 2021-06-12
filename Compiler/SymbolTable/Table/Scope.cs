@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime;
+using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
@@ -82,7 +83,7 @@ namespace Compiler.SymbolTable.Table
         }
 
         /// <summary>
-        /// Define new variable/param/type symbol from parse tree node context for current scope.
+        /// Define new symbol without inner scope from parse tree node context for current scope.
         /// </summary>
         /// <param name="context"> Parse tree node context. </param>
         public SymbolBase Define(ParserRuleContext context)
@@ -106,11 +107,6 @@ namespace Compiler.SymbolTable.Table
 
                 return Define(symbol);
             }
-            catch (ArgumentException)
-            {
-                Errors.Add(
-                    $"Error at {context.Start.Line}:{context.Start.Column} - symbol with such name already defined.");
-            }
             catch (Exception e)
             {
                 Errors.Add(
@@ -127,6 +123,12 @@ namespace Compiler.SymbolTable.Table
         public SymbolBase Define(SymbolBase symbol)
         {
             _ = symbol ?? throw new ArgumentNullException(nameof(symbol));
+
+            if (!IsNameAvailable(symbol))
+            {
+                throw new InvalidSyntaxException(
+                    $"Symbol with name {symbol.Name} already defined in current scope.");
+            }
 
             switch (symbol)
             {
@@ -153,25 +155,57 @@ namespace Compiler.SymbolTable.Table
         }
 
         /// <summary>
+        /// Check if symbol name doesn't conflict with other symbol names in current scope.
+        /// In different scopes symbols can have nay names.
+        /// </summary>
+        /// <param name="symbol"> Symbol with name to check. </param>
+        /// <returns> True if symbol name doesn't conflict with 
+        /// others in current scope, otherwise false. </returns>
+        private bool IsNameAvailable(SymbolBase symbol)
+        {
+            _ = symbol ?? throw new ArgumentNullException(nameof(symbol));
+            string name = symbol?.Name ?? throw new ArgumentNullException(nameof(symbol));
+
+            return symbol switch
+            {
+                ClassSymbol => !ClassMap.ContainsKey(name) && !TraitMap.ContainsKey(name) && !TypeMap.ContainsKey(name),
+                ObjectSymbol => !ObjectMap.ContainsKey(name) && !VariableMap.ContainsKey(name),
+                TraitSymbol => !TraitMap.ContainsKey(name) && !ClassMap.ContainsKey(name) && !TypeMap.ContainsKey(name),
+                FunctionSymbol => true, // Overloads are allowed
+                VariableSymbol => !VariableMap.ContainsKey(name),
+                ParamSymbol => !ParamMap.ContainsKey(name),
+                TypeSymbol => !TypeMap.ContainsKey(name) && !ClassMap.ContainsKey(name) && !TraitMap.ContainsKey(name),
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        /// <summary>
         /// Looking for symbol by name in current and all enclousing scopes.
+        /// If scope is class scope, search performs also in class parent inner scope.
         /// </summary>
         /// <param name="name"> Symbol name. </param>
         /// <param name="name"> Symbol name. </param>
         /// <param name="enclose"> If true, searching symbol also in enclosing scope. </param>
         /// <returns> Symbol with corresponding name in the 
         /// nearest enclosing scope or null if not found. </returns>
-        public SymbolBase GetSymbol(string name, SymbolType type, bool enclose = true, IEnumerable<SymbolBase> args = null)
+        public SymbolBase GetSymbol(string name,
+                                    SymbolType type,
+                                    bool enclose = true,
+                                    IEnumerable<SymbolBase> args = null)
         {
             SymbolBase symbol = type switch
             {
-                SymbolType.Class => ClassMap.ContainsKey(name) 
+                SymbolType.Class => ClassMap.ContainsKey(name)
                     ? ClassMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Object => ObjectMap.ContainsKey(name) 
                     ? ObjectMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Trait => TraitMap.ContainsKey(name) 
                     ? TraitMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Function => FunctionMap.ContainsKey(name)
-                    ? FunctionMap[name].GetOverload(args) : enclose ? EnclosingScope?.GetSymbol(name, type, true, args) : null,
+                    ? FunctionMap[name].GetOverload(args) 
+                    : enclose 
+                        ? EnclosingScope?.GetSymbol(name, type, true, args) 
+                        : null,
                 SymbolType.Variable => VariableMap.ContainsKey(name) 
                     ? VariableMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Type => TypeMap.ContainsKey(name) 
@@ -195,7 +229,7 @@ namespace Compiler.SymbolTable.Table
         }
 
         /// <summary>
-        /// Resolve all unresolved symbols current scope.
+        /// Resolve all unresolved symbols in current scope.
         /// </summary>
         public void Resolve()
         {
@@ -207,6 +241,9 @@ namespace Compiler.SymbolTable.Table
             Resolve(TypeMap);
         }
 
+        /// <summary>
+        /// Perform post-resolve actions for all symbols in current scope.
+        /// </summary>
         public void PostResolve()
         {
             Resolve(ClassMap, true);

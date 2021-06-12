@@ -33,7 +33,7 @@ namespace Compiler.Serialization
                 ?? throw new ArgumentException("No any scopes in symbol table.");
 
             ToDotRecursive(graph, scope);
-            _writer.Write(graph.Compile());
+            _writer.Write(graph.Compile(true));
         }
 
         public DotNode ToDotRecursive(DotGraph graph, Scope scope)

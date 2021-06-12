@@ -50,7 +50,7 @@ namespace Compiler
                     Console.Error.WriteLine(error);
                 }
 
-                return;
+                //return;
             }
 
             TableSerializer tableSerializer = new("table.dot");
