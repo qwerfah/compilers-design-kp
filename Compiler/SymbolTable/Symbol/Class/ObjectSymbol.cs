@@ -15,8 +15,8 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         /// <param name="context"> Object definition context. </param>
         /// <param name="scope"> Object definition scope. </param>
-        public ObjectSymbol(ObjectDefContext context, Scope scope)
-            : base(context.Parent as TmplDefContext, scope)
+        public ObjectSymbol(ObjectDefContext context, Scope innerScope, Scope scope)
+            : base(context.Parent as TmplDefContext, innerScope, scope)
         {
             Name = GetName(context);
             (Parent, Traits) = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());

@@ -30,9 +30,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// Does not set during symbol istantiation because class
         /// signature resolution precedes class body resolution.
         /// </summary>
-        public Scope InnerScope { get; set; }
-
-        private bool _isResolved = false;
+        public Scope InnerScope { get; }
 
         /// <summary>
         /// Contains name of first class/trait in extends-chain
@@ -50,9 +48,16 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         /// <param name="name"> Class/object/template/trait name. </param>
         /// <param name="scope"> Scope of class/object/template/trait definition. </param>
-        public ClassSymbolBase(string name, AccessModifier accessMod, ParserRuleContext context, Scope scope = null)
+        public ClassSymbolBase(
+            string name, 
+            AccessModifier accessMod, 
+            ParserRuleContext context, 
+            Scope innerScope, 
+            Scope scope)
             : base(name, accessMod, context, scope)
         {
+            InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
+            InnerScope.Owner = this;
         }
 
         /// <summary>
@@ -61,8 +66,10 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         /// <param name="context"> Class/object/template/trait definition context. </param>
         /// <param name="scope"> Scope of class/object/template/trait definition. </param>
-        public ClassSymbolBase(ParserRuleContext context, Scope scope) : base(context, scope)
+        public ClassSymbolBase(ParserRuleContext context, Scope innerScope, Scope scope) 
+            : base(context, scope)
         {
+            InnerScope = innerScope ?? throw  new ArgumentNullException(nameof(innerScope));
         }
 
         /// <summary>
@@ -177,9 +184,26 @@ namespace Compiler.SymbolTable.Symbol.Class
             _unresolvedTraits = null;
         }
 
-        private void ResolveParentSymbols()
+        /// <summary>
+        /// Imitate access to class member through its instance.
+        /// In the case only public members of this class or its parents is accessable.
+        /// </summary>
+        /// <param name="name"> Class member name. </param>
+        /// <param name="type"> Class member type. </param>
+        /// <returns> Class member symbol. </returns>
+        public SymbolBase GetMember(string name, SymbolType type)
         {
-            //if (Parent.)
+            SymbolBase symbol = InnerScope.GetSymbol(name, type, false) ?? Parent switch
+            {
+                ClassSymbolBase classSymbol => classSymbol.GetMember(name, type),
+                TypeSymbol typeSymbol => typeSymbol.GetActualType().GetMember(name, type),
+                _ => throw new NotImplementedException(),
+            };
+
+            return symbol.AccessMod == AccessModifier.Public
+                ? symbol
+                : throw new InvalidSyntaxException(
+                    "Invalid class member access: trying to access nonpublic member.");
         }
     }
 }

@@ -28,21 +28,15 @@ namespace Compiler.SymbolTable.Symbol.Class
         public ClassSymbol(
             string name,
             AccessModifier accessMod,
-            ParserRuleContext context = null,
+            ParserRuleContext context,
+            Scope innerScope,
+            Scope scope,
             SymbolBase parent = null,
-            List<SymbolBase> traits = null,
-            Scope scope = null)
-            : base(name, accessMod, context, scope)
+            List<SymbolBase> traits = null)
+            : base(name, accessMod, context, innerScope, scope)
         {
-            if (name is null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            Name = name;
             Parent = parent;
             Traits = traits;
-            Scope = scope;
         }
 
         /// <summary>
@@ -50,8 +44,8 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// </summary>
         /// <param name="context"> Class definition context. </param>
         /// <param name="scope"> Class definition scope. </param>
-        public ClassSymbol(ClassDefContext context, Scope scope = null)
-            : base(context.Parent as TmplDefContext, scope)
+        public ClassSymbol(ClassDefContext context, Scope innerScope, Scope scope)
+            : base(context.Parent as TmplDefContext, innerScope, scope)
         {
             Name = GetName(context);
             (Parent, Traits) = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());

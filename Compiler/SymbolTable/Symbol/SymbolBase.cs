@@ -38,7 +38,7 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         public Scope Scope { get; set; }
 
-        public SymbolBase(string name, AccessModifier accessMod, ParserRuleContext context, Scope scope = null)
+        public SymbolBase(string name, AccessModifier accessMod, ParserRuleContext context, Scope scope)
         {
             if (name is null)
             {
@@ -49,7 +49,7 @@ namespace Compiler.SymbolTable.Symbol
             Context = context ?? throw new ArgumentNullException(nameof(context));
             Name = name ?? throw new ArgumentNullException(nameof(name));
             AccessMod = accessMod;
-            Scope = scope;
+            Scope = scope ?? throw new ArgumentNullException(nameof(scope));
         }
 
         /// <summary>

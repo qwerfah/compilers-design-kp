@@ -99,23 +99,18 @@ namespace Compiler.Types
         /// <returns> Function return type. </returns>
         private SymbolBase GetFunctionReturnType(Tuple<string, SymbolType, List<SymbolBase>> symbol, SymbolBase prevType)
         {
-            FunctionSymbol func = (FunctionSymbol)(prevType is null ? _scope : (prevType as ClassSymbolBase).InnerScope)
-                .GetSymbol(symbol.Item1, symbol.Item2);
+            FunctionSymbol func = prevType switch
+            {
+                null => (FunctionSymbol)_scope.GetSymbol(symbol.Item1, symbol.Item2),
+                ClassSymbolBase classSymbol => (FunctionSymbol)classSymbol.GetMember(symbol.Item1, symbol.Item2),
+                TypeSymbol typeSymbol => (FunctionSymbol)typeSymbol.GetActualType().GetMember(symbol.Item1, symbol.Item2),
+                _ => throw new NotImplementedException(),
+            };
+
             _ = func ?? throw new InvalidSyntaxException(
                     $"Invalid expression: undefined symbol {symbol.Item1}.");
 
-            if (func.InnerScope.ParamMap.Count == symbol.Item3.Count)
-            {
-                return !func.InnerScope.ParamMap.Values.Select(v => v.Type).Except(symbol.Item3).Any()
-                    ? func.ReturnType
-                    : throw new InvalidSyntaxException(
-                        $"Invalid expression: argument type mismatch in function {func.Name}.");
-            }
-            else
-            {
-                throw new InvalidSyntaxException(
-                    $"Invalid expression: invalid number of arguments for function {func.Name}.");
-            }
+            return func.Apply(symbol.Item3);
         }
 
         /// <summary>

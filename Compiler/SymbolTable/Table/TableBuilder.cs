@@ -4,6 +4,7 @@ using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
 using Parser.Antlr.TreeLookup.Impls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Parser.Antlr.Grammar.ScalaParser;
@@ -55,13 +56,15 @@ namespace Compiler.SymbolTable.Table
         /// <returns></returns>
         public override bool VisitClassDef([NotNull] ClassDefContext context)
         {
-            ClassSymbol symbol = (ClassSymbol)SymbolTable.GetCurrentScope().Define(context);
+            Scope currentScope = SymbolTable.GetCurrentScope();
             Scope innerScope = SymbolTable.PushScope();
-            symbol.InnerScope = innerScope;
-            bool result = base.VisitClassDef(context);
+            ClassSymbol symbol = new(context, innerScope, currentScope);
+
+            currentScope.Define(symbol);
+            base.VisitClassDef(context);
             SymbolTable.PopScope();
 
-            return result;
+            return default;
         }
 
         /// <summary>
@@ -71,13 +74,15 @@ namespace Compiler.SymbolTable.Table
         /// <returns></returns>
         public override bool VisitObjectDef([NotNull] ObjectDefContext context)
         {
-            ObjectSymbol symbol = (ObjectSymbol)SymbolTable.GetCurrentScope().Define(context);
+            Scope currentScope = SymbolTable.GetCurrentScope();
             Scope innerScope = SymbolTable.PushScope();
-            symbol.InnerScope = innerScope;
-            bool result = base.VisitObjectDef(context);
+            ObjectSymbol symbol = new(context, innerScope, currentScope);
+
+            currentScope.Define(symbol);
+            base.VisitObjectDef(context);
             SymbolTable.PopScope();
 
-            return result;
+            return default;
         }
 
         /// <summary>
@@ -116,10 +121,10 @@ namespace Compiler.SymbolTable.Table
             FunctionSymbol symbol = new(context, innerScope, currentScope);
 
             currentScope.Define(symbol);
-            bool result = base.VisitFunDef(context);
+            base.VisitFunDef(context);
             SymbolTable.PopScope();
 
-            return result;
+            return default;
         }
 
         /// <summary>
@@ -173,23 +178,38 @@ namespace Compiler.SymbolTable.Table
         public void LoadStandartTypes()
         {
             Scope global = SymbolTable.Scopes.First();
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Any", AccessModifier.None, new()));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyVal", AccessModifier.None, new(), global.ClassMap["Any"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("AnyRef", AccessModifier.None, new(), global.ClassMap["Any"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Unit", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Boolean", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Char", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Byte", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Short", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Int", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Long", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Float", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("Double", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-            SymbolTable.Scopes.First().Define(new ClassSymbol("String", AccessModifier.None, new(), global.ClassMap["AnyVal"]));
-
-            foreach (var symbol in global.ClassMap.Values)
+            Tuple<string, string>[] types = new Tuple<string, string>[]
             {
-                symbol.InnerScope = SymbolTable.PushScope();
+                new("Any", null),
+                new("AnyVal", "Any"),
+                new("AnyRef", "Any"),
+                new("Unit", "AnyVal"),
+                new("Boolean", "AnyVal"),
+                new("Char", "AnyVal"),
+                new("Byte", "AnyVal"),
+                new("Short", "AnyVal"),
+                new("Int", "AnyVal"),
+                new("Long", "AnyVal"),
+                new("Float", "AnyVal"),
+                new("Double", "AnyVal"),
+                new("String", "AnyVal")
+            };
+
+            foreach (var type in types)
+            {
+                Scope innerScope = SymbolTable.PushScope();
+
+                ClassSymbol symbol = new(
+                    type.Item1, 
+                    AccessModifier.None, 
+                    new(), 
+                    innerScope,
+                    global,
+                    type.Item2 is not null 
+                        ? global.ClassMap[type.Item2] 
+                        : null);
+
+                global.Define(symbol);
                 SymbolTable.PopScope();
             }
         }

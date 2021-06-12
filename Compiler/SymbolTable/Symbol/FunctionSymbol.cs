@@ -25,7 +25,7 @@ namespace Compiler.SymbolTable.Symbol
         /// Does not set during symbol istantiation because function 
         /// signature resolution precedes function body resolution.
         /// </summary>
-        public Scope InnerScope { get; private set; }
+        public Scope InnerScope { get; }
 
         /// <summary>
         /// Contains all function overloads in current scope if exisit.
@@ -53,13 +53,14 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         /// <param name="context"> Function definition context. </param>
         /// <param name="scope"></param>
-        public FunctionSymbol(FunDefContext context, Scope innerScope, Scope scope) 
+        public FunctionSymbol(FunDefContext context, Scope innerScope, Scope scope = null) 
             : base(context, scope)
         {
             Name = GetName(context);
             ReturnType = GetReturnType(context);
             InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
             _overloads.Add(this);
+            InnerScope.Owner = this;
         }
 
         /// <summary>
@@ -197,12 +198,38 @@ namespace Compiler.SymbolTable.Symbol
                 foreach (var param in overload.InnerScope.ParamMap.Values)
                 {
                     VariableSymbol symbol = new(
-                        param.Name, param.AccessMod, param.Context, param.IsMutable, param.Type);
-
+                        param.Name, 
+                        param.AccessMod, 
+                        param.Context, 
+                        param.IsMutable, 
+                        param.Type, param.Scope);
 
                     overload.InnerScope.Define(symbol);
                 }
             }
+        }
+
+        /// <summary>
+        /// Imitate function application to given types.
+        /// </summary>
+        /// <param name="argTypes"></param>
+        /// <returns> Function overload return type 
+        /// if argument types matches with any overload. </returns>
+        public SymbolBase Apply(List<SymbolBase> argTypes)
+        {
+            _ = argTypes ?? throw new ArgumentNullException(nameof(argTypes));
+
+            foreach (var overload in _overloads)
+            {
+                if ((InnerScope.ParamMap.Values.Count == argTypes.Count)
+                    && (!InnerScope.ParamMap.Values.Select(p => p.Type).Except(argTypes).Any()))
+                {
+                    return ReturnType;
+                }
+            }
+
+            throw new InvalidSyntaxException(
+                $"Invalid expression: argument type mismatch for function {Name}."); ;
         }
 
         /// <summary>

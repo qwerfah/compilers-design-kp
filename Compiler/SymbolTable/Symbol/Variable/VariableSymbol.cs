@@ -36,8 +36,9 @@ namespace Compiler.SymbolTable.Symbol.Variable
             AccessModifier accessMod,
             ParserRuleContext context,
             bool isMutable,
-            SymbolBase type)
-            : base(name, accessMod, context, isMutable, type)
+            SymbolBase type,
+            Scope scope)
+            : base(name, accessMod, context, isMutable, type, scope)
         {
         }
 
@@ -108,7 +109,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
             for (int i = 2; i < ids.ChildCount; i += 2)
             {
                 string name = ids.GetChild(i).GetText();
-                Scope.Define(new VariableSymbol(name, AccessMod, Context, IsMutable, Type));
+                Scope.Define(new VariableSymbol(name, AccessMod, Context, IsMutable, Type, Scope));
             }
 
             return ids.GetChild(0).GetText();

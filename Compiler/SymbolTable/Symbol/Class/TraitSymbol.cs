@@ -7,7 +7,8 @@ namespace Compiler.SymbolTable.Symbol.Class
 {
     public class TraitSymbol : ClassSymbolBase
     {
-        public TraitSymbol(TraitDefContext context, Scope scope) : base(context, scope)
+        public TraitSymbol(TraitDefContext context, Scope innerScope, Scope scope) 
+            : base(context, innerScope, scope)
         {
 
         }

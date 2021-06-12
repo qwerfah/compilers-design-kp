@@ -32,6 +32,12 @@ namespace Compiler.SymbolTable.Table
         public Scope EnclosingScope { get; set; }
 
         /// <summary>
+        /// Contains symbol (class/object/trait/function) that current scope belongs to.
+        /// For global scope contains null.
+        /// </summary>
+        public SymbolBase Owner { get; set; }
+
+        /// <summary>
         /// Class symbol map for current scope.
         /// </summary>
         public Dictionary<string, ClassSymbol> ClassMap = new();
@@ -76,7 +82,7 @@ namespace Compiler.SymbolTable.Table
         }
 
         /// <summary>
-        /// Define new variable symbol from parse tree node context for current scope.
+        /// Define new variable/param/type symbol from parse tree node context for current scope.
         /// </summary>
         /// <param name="context"> Parse tree node context. </param>
         public SymbolBase Define(ParserRuleContext context)
@@ -87,9 +93,9 @@ namespace Compiler.SymbolTable.Table
             {
                 SymbolBase symbol = context switch
                 {
-                    ClassDefContext => new ClassSymbol(context as ClassDefContext, this),
-                    ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, this),
-                    FunDefContext => new FunctionSymbol(context as FunDefContext, null, this),
+                    // ClassDefContext => new ClassSymbol(context as ClassDefContext, null, this),
+                    // ObjectDefContext => new ObjectSymbol(context as ObjectDefContext, null, this),
+                    // FunDefContext => new FunctionSymbol(context as FunDefContext, null, this),
                     ParserRuleContext c when (c is ParamContext || c is ClassParamContext) =>
                         new ParamSymbol(context, this),
                     ParserRuleContext c when (c is ValDclContext || c is VarDclContext || c is PatVarDefContext) =>
@@ -115,14 +121,12 @@ namespace Compiler.SymbolTable.Table
         }
 
         /// <summary>
-        /// Define new variable symbol from its instance for current scope.
+        /// Define new symbol of any type from its instance for current scope.
         /// </summary>
         /// <param name="symbol"> Symbol instance to define. </param>
         public SymbolBase Define(SymbolBase symbol)
         {
             _ = symbol ?? throw new ArgumentNullException(nameof(symbol));
-
-            symbol.Scope = this;
 
             switch (symbol)
             {
@@ -152,25 +156,26 @@ namespace Compiler.SymbolTable.Table
         /// Looking for symbol by name in current and all enclousing scopes.
         /// </summary>
         /// <param name="name"> Symbol name. </param>
-        /// /// <param name="name"> Symbol name. </param>
+        /// <param name="name"> Symbol name. </param>
+        /// <param name="enclose"> If true, searching symbol also in enclosing scope. </param>
         /// <returns> Symbol with corresponding name in the 
         /// nearest enclosing scope or null if not found. </returns>
-        public SymbolBase GetSymbol(string name, SymbolType type)
+        public SymbolBase GetSymbol(string name, SymbolType type, bool enclose = true)
         {
             return type switch
             {
                 SymbolType.Class => ClassMap.ContainsKey(name) 
-                    ? ClassMap[name] : EnclosingScope?.GetSymbol(name, type),
+                    ? ClassMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Object => ObjectMap.ContainsKey(name) 
-                    ? ObjectMap[name] : EnclosingScope?.GetSymbol(name, type),
+                    ? ObjectMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Trait => TraitMap.ContainsKey(name) 
-                    ? TraitMap[name] : EnclosingScope?.GetSymbol(name, type),
+                    ? TraitMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Function => FunctionMap.ContainsKey(name) 
-                    ? FunctionMap[name] : EnclosingScope?.GetSymbol(name, type),
+                    ? FunctionMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Variable => VariableMap.ContainsKey(name) 
-                    ? VariableMap[name] : EnclosingScope?.GetSymbol(name, type),
+                    ? VariableMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Type => TypeMap.ContainsKey(name) 
-                    ? TypeMap[name] : EnclosingScope?.GetSymbol(name, type),
+                    ? TypeMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 _ => throw new NotImplementedException(),
             };
         }
