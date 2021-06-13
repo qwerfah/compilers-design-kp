@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol;
@@ -110,7 +111,8 @@ namespace Compiler.Types
             };
 
             _ = func ?? throw new InvalidSyntaxException(
-                    $"Invalid expression: undefined symbol {name}.");
+                    $"Invalid expression: {prevType?.Name ?? _scope.Owner.Name} does not have member " +
+                    $"{name}({string.Join(", ", args.Select(a => a.Name))}).");
 
             return func.Apply(args);
         }
@@ -140,7 +142,7 @@ namespace Compiler.Types
                 // Get function name
                 string name = (context switch
                 {
-                    _ when context.simpleExpr1().stableId() is { } id => id.children,
+                    _ when context.simpleExpr1()?.stableId() is { } id => id.children,
                     _ when context.simpleExpr1() is { } expr => expr.children,
                     _ => throw new NotImplementedException(),
                 })
@@ -153,12 +155,16 @@ namespace Compiler.Types
                 // Get callable symbol if exists
                 SymbolBase symbol = context switch
                 {
-                    _ when context.simpleExpr1().stableId() is { } id => VisitChildren(id),
-                    _ when context.simpleExpr1() is { } expr => VisitChildren(expr),
+                    _ when context.simpleExpr1()?.stableId() is { } id => Visit(id.children.SingleOrDefault(ch => ch is ParserRuleContext)),
+                    _ when context.simpleExpr1() is { } expr => Visit(expr.children.SingleOrDefault(ch => ch is ParserRuleContext)),
                     _ => throw new NotImplementedException(),
                 };
 
                 return GetFunctionReturnType(name, argTypes, symbol);
+            }
+            else if (context.exprs() is { } exprs)
+            {
+                return new ExprTypeDeductor().Deduct(exprs.expr().SingleOrDefault(), _scope);
             }
 
             return base.VisitSimpleExpr1(context);
