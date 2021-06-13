@@ -13,7 +13,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
     /// Represents local variable or class field definition or declaration.
     /// Symbol may be constructed only from ValDclContext, VarDclContex and PatVarDefContext. 
     /// </summary>
-    class VariableSymbol : VariableSymbolBase
+    public class VariableSymbol : VariableSymbolBase
     {
         public VariableSymbol(ParserRuleContext context, Scope scope)
             : base(context, scope)
@@ -39,6 +39,16 @@ namespace Compiler.SymbolTable.Symbol.Variable
             SymbolBase type,
             Scope scope)
             : base(name, accessMod, context, isMutable, type, scope)
+        {
+        }
+
+        public VariableSymbol(ParamSymbol symbol) : 
+            base(symbol.Name,
+                 symbol.AccessMod, 
+                 symbol.Context, 
+                 symbol.IsMutable, 
+                 symbol.Type, 
+                 symbol.Scope)
         {
         }
 
@@ -165,13 +175,14 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
                 Type = (resolvedType, deductedType) switch
                 {
-                    (null, null) => throw new InvalidSyntaxException("Invalid variable definition: can't define variable type."),
-                    ({ }, null) => resolvedType,
-                    (null, { }) => deductedType,
-                    ({ }, { }) => (resolvedType == deductedType)
+                    (null, null) => throw new InvalidSyntaxException(
+                        "Invalid variable definition: can't define variable type."),
+                    ({ },  null) => resolvedType,
+                    (null,  { }) => deductedType,
+                    ({ },   { }) => (resolvedType == deductedType)
                         ? resolvedType
                         : throw new InvalidSyntaxException(
-                            "Invalid variable definition: specified variable type does not match with deducted type."),
+                            "Invalid variable definition: specified type does not match with deducted type."),
                 };
             }
         }
@@ -192,7 +203,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
 
             if (expr is null) return null;
 
-            return new ExprTypeDeductor().Deduct(expr.expr1(), Scope)
+            return new ExprTypeDeductor().Deduct(expr, Scope)
                 ?? throw new InvalidSyntaxException(
                     "Invalid variable definition: expected prefix, infix or postfix expression.");
         }

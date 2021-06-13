@@ -1,26 +1,11 @@
-class B {
-	protected def B_func2(): Boolean = ???
-	private def B_func2(g: Double): AnyVal = ???
-
-	private object B {
-		protected def obj(j: Int): Long = ???
-		def obj(): Byte = ???
-	}
-
-}
-
-
-abstract class A(val n: Int, m: String) extends B {
+abstract class A {
 	val b = 100
 	var c = 'g'
 
-	private def A_Func1(a: Int, b: Double): Unit = ???
-	protected def A_Func1(b: Double): B = ???
+	def func(j: Int): A = ???
+	def func(j: Char): AnyRef = ???
 
-
-
-	def A_Func2(): String = {
-		val a = B.obj()
+	def A_Func2(v: A): String = {
+		val a = v.func(b).func(b \ c)
 	}
-
 }

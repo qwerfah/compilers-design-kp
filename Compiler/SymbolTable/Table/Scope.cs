@@ -61,12 +61,12 @@ namespace Compiler.SymbolTable.Table
         /// <summary>
         /// Varialbe symbol map for current scope.
         /// </summary>
-        public Dictionary<string, VariableSymbolBase> VariableMap = new();
+        public Dictionary<string, VariableSymbol> VariableMap = new();
 
         /// <summary>
         /// Param symbol map for current scope.
         /// </summary>
-        public Dictionary<string, VariableSymbolBase> ParamMap = new();
+        public Dictionary<string, ParamSymbol> ParamMap = new();
 
         /// <summary>
         /// Type symbol map for current scope.

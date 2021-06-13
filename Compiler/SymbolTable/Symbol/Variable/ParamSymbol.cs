@@ -11,7 +11,7 @@ namespace Compiler.SymbolTable.Symbol.Variable
     /// <summary>
     /// Represents class constructor or function argument that may be also class field.
     /// </summary>
-    class ParamSymbol : VariableSymbolBase
+    public class ParamSymbol : VariableSymbolBase
     {
         /// <summary>
         /// Constructs new symbol instance for ctor/func param from its definition.
@@ -33,6 +33,19 @@ namespace Compiler.SymbolTable.Symbol.Variable
             IsMutable = CheckMutability(terminals);
             AccessMod = GetAccessModifier(context as ClassParamContext);
             Type = GetType(context);
+
+            Scope.Define(new VariableSymbol(this));
+        }
+
+        public ParamSymbol(
+            string name,
+            AccessModifier accessMod,
+            bool isMutable,
+            SymbolBase type,
+            ParserRuleContext context,
+            Scope scope) : base(name, accessMod, context, isMutable, type, scope)
+        {
+            Scope.Define(new VariableSymbol(this));
         }
 
         /// <summary>

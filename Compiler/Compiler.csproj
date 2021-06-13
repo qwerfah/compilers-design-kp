@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Parser\Parser.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\Std\" />
+  </ItemGroup>
+
 </Project>

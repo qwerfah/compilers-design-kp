@@ -177,7 +177,7 @@ namespace Compiler.SymbolTable.Symbol
         public override void PostResolve()
         {
             ResolveOverloads();
-            ResolveArguments();
+            // ResolveArguments();
         }
 
         /// <summary>
@@ -217,7 +217,8 @@ namespace Compiler.SymbolTable.Symbol
                         param.AccessMod, 
                         param.Context, 
                         param.IsMutable, 
-                        param.Type, param.Scope);
+                        param.Type, 
+                        param.Scope);
 
                     overload.InnerScope.Define(symbol);
                 }
@@ -230,13 +231,13 @@ namespace Compiler.SymbolTable.Symbol
         /// <param name="argTypes"></param>
         /// <returns> Function overload return type 
         /// if argument types matches with any overload. </returns>
-        public SymbolBase Apply(List<SymbolBase> argTypes)
+        public SymbolBase Apply(IEnumerable<SymbolBase> argTypes)
         {
             _ = argTypes ?? throw new ArgumentNullException(nameof(argTypes));
 
             foreach (var overload in _overloads)
             {
-                if ((overload.InnerScope.ParamMap.Values.Count == argTypes.Count)
+                if ((overload.InnerScope.ParamMap.Values.Count == argTypes.Count())
                     && (!overload.InnerScope.ParamMap.Values.Select(p => p.Type).Except(argTypes).Any()))
                 {
                     return overload.ReturnType;

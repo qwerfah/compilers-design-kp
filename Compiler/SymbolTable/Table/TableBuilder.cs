@@ -178,39 +178,42 @@ namespace Compiler.SymbolTable.Table
         public void LoadStandartTypes()
         {
             Scope global = SymbolTable.Scopes.First();
-            Tuple<string, string>[] types = new Tuple<string, string>[]
-            {
-                new("Any", null),
-                new("AnyVal", "Any"),
-                new("AnyRef", "Any"),
-                new("Unit", "AnyVal"),
-                new("Boolean", "AnyVal"),
-                new("Char", "AnyVal"),
-                new("Byte", "AnyVal"),
-                new("Short", "AnyVal"),
-                new("Int", "AnyVal"),
-                new("Long", "AnyVal"),
-                new("Float", "AnyVal"),
-                new("Double", "AnyVal"),
-                new("String", "AnyVal")
-            };
 
-            foreach (var type in types)
+            foreach (var type in StandartTypes.Types)
             {
                 Scope innerScope = SymbolTable.PushScope();
 
                 ClassSymbol symbol = new(
-                    type.Item1, 
-                    AccessModifier.None, 
-                    new(), 
+                    type.Item1,
+                    AccessModifier.None,
+                    new(),
                     innerScope,
                     global,
-                    type.Item2 is not null 
-                        ? global.ClassMap[type.Item2] 
+                    type.Item2 is not null
+                        ? global.ClassMap[type.Item2]
                         : null);
 
                 global.Define(symbol);
                 SymbolTable.PopScope();
+            }
+
+            foreach (var method in StandartTypes.Methods)
+            {
+                Scope classScope = global.ClassMap[method.Class].InnerScope;
+                Scope funcScope = new Scope(ScopeType.Local, classScope);
+                SymbolBase returnType = global.ClassMap[method.Signature.Returns];
+                FunctionSymbol func = new(method.Signature.Func, AccessModifier.Public, 
+                    returnType, funcScope, new(), classScope);
+
+                SymbolTable.Scopes.Add(funcScope);
+                classScope.Define(func);
+
+                foreach (var arg in method.Signature.Args)
+                {
+                    SymbolBase type = global.ClassMap[arg];
+                    ParamSymbol param = new("x", AccessModifier.None, false, type, new(), funcScope);
+                    funcScope.Define(param);
+                }
             }
         }
     }
