@@ -54,7 +54,7 @@ namespace Compiler
             }
 
             TableSerializer tableSerializer = new("table.dot");
-            tableSerializer.ToDot(builder.SymbolTable);
+            tableSerializer.ToDot(builder.SymbolTable, true);
             tableSerializer.Close();
 
             ClassTreeSerializer classTreeSerializer = new("class_tree.dot");

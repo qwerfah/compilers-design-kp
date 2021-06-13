@@ -11,6 +11,8 @@ namespace Compiler.Serialization
 {
     public class TableSerializer : SerializerBase
     {
+        private bool _isMinimal; 
+
         public TableSerializer(string filename)
         {
             try
@@ -23,10 +25,12 @@ namespace Compiler.Serialization
             }
         }
 
-        public void ToDot(SymbolTable.Table.SymbolTable table)
+        public void ToDot(SymbolTable.Table.SymbolTable table, bool isMinimal = false)
         {
             _ = table ?? throw new ArgumentNullException(nameof(table));
             _ = _writer ?? throw new ArgumentNullException("File not opened.");
+
+            _isMinimal = isMinimal;
 
             DotGraph graph = new("SymbolTable");
             Scope scope = table.Scopes.FirstOrDefault()
@@ -41,14 +45,18 @@ namespace Compiler.Serialization
             _ = graph ?? throw new ArgumentNullException(nameof(graph));
             if (scope is null) return null;
 
-            string label =
-                "Params:\n" + string.Join("\n", scope.ParamMap.Values.Select(c => c.ToString())) +
-                "\nClasses:\n" + string.Join("\n", scope.ClassMap.Values.Select(c => c.ToString())) +
-                "\nObjects:\n" + string.Join("\n", scope.ObjectMap.Values.Select(c => c.ToString())) +
-                "\nTypes:\n" + string.Join("\n", scope.TypeMap.Values.Select(c => c.ToString())) +
-                "\nTraits:\n" + string.Join("\n", scope.TraitMap.Values.Select(c => c.ToString())) +
-                "\nVariables:\n" + string.Join("\n", scope.VariableMap.Values.Select(c => c.ToString())) +
-                "\nFunctions:\n" + string.Join("\n", scope.FunctionMap.Values.Select(c => c.ToString()));
+            bool isMinimal = _isMinimal 
+                && StandartTypes.Types.Select(t => t.Name).Contains(scope.Owner?.Name ?? "");
+
+            string label = isMinimal
+                ? scope.Owner.Name
+                : "Params:\n" + string.Join("\n", scope.ParamMap.Values.Select(c => c.ToString())) +
+                  "\nClasses:\n" + string.Join("\n", scope.ClassMap.Values.Select(c => c.ToString())) +
+                  "\nObjects:\n" + string.Join("\n", scope.ObjectMap.Values.Select(c => c.ToString())) +
+                  "\nTypes:\n" + string.Join("\n", scope.TypeMap.Values.Select(c => c.ToString())) +
+                  "\nTraits:\n" + string.Join("\n", scope.TraitMap.Values.Select(c => c.ToString())) +
+                  "\nVariables:\n" + string.Join("\n", scope.VariableMap.Values.Select(c => c.ToString())) +
+                  "\nFunctions:\n" + string.Join("\n", scope.FunctionMap.Values.Select(c => c.ToString()));
 
             DotNode node = new(scope.GetHashCode().ToString())
             {
@@ -58,18 +66,8 @@ namespace Compiler.Serialization
 
             graph.Elements.Add(node);
 
-            /*
-            foreach (var symbol in scope.ClassMap.Values)
-            {
-                DotNode child = ToDotRecursive(graph, symbol.InnerScope);
-                DotEdge edge = new(node, child)
-                {
-                    Label = symbol.Name,
-                };
-                graph.Elements.Add(edge);
-            }
-            */
-
+            if (isMinimal) return node;
+            
             foreach (var symbol in scope.ObjectMap.Values)
             {
                 DotNode child = ToDotRecursive(graph, symbol.InnerScope);
@@ -87,7 +85,7 @@ namespace Compiler.Serialization
                     DotNode child = ToDotRecursive(graph, overload.InnerScope);
                     DotEdge edge = new(node, child)
                     {
-                        Label = overload.Name,
+                        Label = overload.InnerScope.Owner.Name,
                     };
                     graph.Elements.Add(edge);
                 }

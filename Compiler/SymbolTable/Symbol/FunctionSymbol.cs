@@ -60,7 +60,7 @@ namespace Compiler.SymbolTable.Symbol
             ReturnType = GetReturnType(context);
             InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
             _overloads.Add(this);
-            InnerScope.Owner = this;
+            InnerScope.Owner = InnerScope.Owner ?? this;
         }
 
         /// <summary>
@@ -83,6 +83,7 @@ namespace Compiler.SymbolTable.Symbol
         {
             ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
             InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
+            InnerScope.Owner = InnerScope.Owner ?? this;
             _overloads.Add(this);
         }
 
