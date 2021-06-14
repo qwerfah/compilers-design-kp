@@ -101,7 +101,7 @@ namespace Compiler.Types
         {
             FunctionSymbol func = prevType switch
             {
-                null => (FunctionSymbol)_scope
+                null or { } when IsScopeBelongsToSymbol(prevType, _scope) => (FunctionSymbol)_scope
                     .GetSymbol(name, SymbolType.Function, true, args),
                 ClassSymbolBase classSymbol => (FunctionSymbol)classSymbol
                     .GetMember(name, SymbolType.Function, args),
@@ -117,6 +117,17 @@ namespace Compiler.Types
             return func.Apply(args);
         }
 
+        private bool IsScopeBelongsToSymbol(SymbolBase symbol, Scope scope)
+        {
+            while (scope?.Owner is { })
+            {
+                if (symbol.Name == scope.Owner.Name) return true;
+                scope = scope.EnclosingScope;
+            }
+
+            return false;
+        }
+
         public override SymbolBase VisitInfixExpr([NotNull] InfixExprContext context)
         {
             return new InfixExprTypeDeductor().Deduct(context, _scope);
@@ -129,39 +140,34 @@ namespace Compiler.Types
         /// <returns></returns>
         public override SymbolBase VisitSimpleExpr1([NotNull] SimpleExpr1Context context)
         {
+            // If node is function call
             if (context.argumentExprs() is { } argExprs)
             {
                 // Get function argument types
                 List<SymbolBase> argTypes = argExprs.args()?.exprs()?.expr()
                    ?.Select(arg => new ExprTypeDeductor().Deduct(arg, _scope))
-                   ?.ToList();
-
-                _ = argTypes ?? throw new InvalidSyntaxException(
-                    "Invalid prefix expression: function arguments list expected.");
-
-                // Get function name
-                string name = (context switch
+                   ?.ToList()
+                   ?? throw new InvalidSyntaxException(
+                       "Invalid prefix expression: function arguments list expected.");
+                // Get node children that contain terminal
+                IList<IParseTree> children = context switch
                 {
                     _ when context.simpleExpr1()?.stableId() is { } id => id.children,
                     _ when context.simpleExpr1() is { } expr => expr.children,
                     _ => throw new NotImplementedException(),
-                })
-                ?.SingleOrDefault(ch => ch is TerminalNodeImpl t && !".()".Contains(t.GetText()))
-                ?.GetText();
-
-                _ = name ?? throw new InvalidSyntaxException(
-                    "Invalid prefix expression: function name expected.");
-
-                // Get callable symbol if exists
-                SymbolBase symbol = context switch
-                {
-                    _ when context.simpleExpr1()?.stableId() is { } id => Visit(id.children.SingleOrDefault(ch => ch is ParserRuleContext)),
-                    _ when context.simpleExpr1() is { } expr => Visit(expr.children.SingleOrDefault(ch => ch is ParserRuleContext)),
-                    _ => throw new NotImplementedException(),
                 };
+                // Get function name
+                string name = children?
+                    .SingleOrDefault(ch => ch is TerminalNodeImpl t && !".()".Contains(t.GetText()))
+                    ?.GetText() 
+                    ?? throw new InvalidSyntaxException(
+                        "Invalid prefix expression: function name expected.");
+                // Get callable symbol if exists
+                SymbolBase symbol = Visit(children.SingleOrDefault(ch => ch is ParserRuleContext));
 
                 return GetFunctionReturnType(name, argTypes, symbol);
             }
+            // If node is expression in parentheses
             else if (context.exprs() is { } exprs)
             {
                 return new ExprTypeDeductor().Deduct(exprs.expr().SingleOrDefault(), _scope);
