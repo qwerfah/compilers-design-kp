@@ -128,6 +128,25 @@ namespace Compiler.SymbolTable.Table
         }
 
         /// <summary>
+        /// Visitor method for function declaration.
+        /// Function may be class method or embedded in other function.
+        /// </summary>
+        /// <param name="context"> Function declaration tree node context. </param>
+        /// <returns></returns>
+        public override bool VisitFunDcl([NotNull] FunDclContext context)
+        {
+            Scope currentScope = SymbolTable.GetCurrentScope();
+            Scope innerScope = SymbolTable.PushScope();
+            FunctionSymbol symbol = new(context, innerScope, currentScope);
+
+            currentScope.Define(symbol);
+            base.VisitFunDcl(context);
+            SymbolTable.PopScope();
+
+            return default;
+        }
+
+        /// <summary>
         /// Visitor method for function argument definition.
         /// </summary>
         /// <param name="context"> Function argument definiton tree node context </param>

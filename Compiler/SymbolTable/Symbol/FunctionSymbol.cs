@@ -53,9 +53,14 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         /// <param name="context"> Function definition context. </param>
         /// <param name="scope"></param>
-        public FunctionSymbol(FunDefContext context, Scope innerScope, Scope scope = null) 
+        public FunctionSymbol(ParserRuleContext context, Scope innerScope, Scope scope = null) 
             : base(context, scope)
         {
+            if (context is not (FunDefContext or FunDclContext))
+            {
+                throw new ArgumentException("Function definition or declaration expected.");
+            }
+
             Name = GetName(context);
             ReturnType = GetReturnType(context);
             InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
@@ -126,14 +131,19 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         /// <param name="context"> Function definition context. </param>
         /// <returns> Function name. </returns>
-        private string GetName(FunDefContext context)
+        private string GetName(ParserRuleContext context)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            TerminalNodeImpl[] terminals = context.funSig()?.children
-                ?.Where(ch => ch is TerminalNodeImpl)
-                ?.Select(ch => ch as TerminalNodeImpl)
-                ?.ToArray();
+            TerminalNodeImpl[] terminals = (context switch
+            {
+                FunDclContext dcl => dcl.funSig()?.children,
+                FunDefContext def => def.funSig()?.children,
+                _ => throw new NotImplementedException(),
+            })
+            ?.Where(ch => ch is TerminalNodeImpl)
+            ?.Select(ch => ch as TerminalNodeImpl)
+            ?.ToArray();
 
             if (terminals is null || terminals.Length != 1)
             {
@@ -150,12 +160,20 @@ namespace Compiler.SymbolTable.Symbol
         /// <param name="context"> Function definition context. </param>
         /// <param name="scope"> Function definition scope. </param>
         /// <returns> Return type symbol or null if unable to resolve type at this moment. </returns>
-        private SymbolBase GetReturnType(FunDefContext context)
+        private SymbolBase GetReturnType(ParserRuleContext context)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
             _ = Scope ?? throw new ArgumentNullException(nameof(Scope));
 
-            return GetType(context.type_(), Scope, out _unresolvedReturnType);
+            Type_Context type = context switch
+            {
+                FunDclContext dcl => dcl.type_(),
+                FunDefContext def => def.type_(),
+                _ => throw new NotImplementedException(),
+            } ?? throw new InvalidSyntaxException(
+                "Invalid function signature: procedure syntax is depricated.");
+
+            return GetType(type, Scope, out _unresolvedReturnType);
         }
 
         /// <summary>
