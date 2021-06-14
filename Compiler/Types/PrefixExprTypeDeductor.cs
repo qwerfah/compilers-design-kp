@@ -27,6 +27,12 @@ namespace Compiler.Types
         private Scope _scope;
 
         /// <summary>
+        /// Contains all functions that call in current expression.
+        /// Uses in call graph builder
+        /// </summary>
+        public List<FunctionSymbol> Calls { get; } = new();
+
+        /// <summary>
         /// Deduct prefix expression type according to expression definition context.
         /// </summary>
         /// <param name="context"> Prefix expression definition context. </param>
@@ -64,7 +70,8 @@ namespace Compiler.Types
 
         /// <summary>
         /// Get type for variable with specified name. 
-        /// Variable is expected to be defined in inner scope of precedence symbol type. 
+        /// Variable is expected to be defined in inner scope 
+        /// of precedence symbol type or in scope of parsed expression. 
         /// </summary>
         /// <param name="name"> Variable name. </param>
         /// <param name="prevType"> Precedence symbol type. </param>
@@ -89,12 +96,13 @@ namespace Compiler.Types
 
         /// <summary>
         /// Get return type for function with specified signature.
-        /// Function expected to be defined in inner 
-        /// scope of previously stated symbol in expression.
+        /// Function expected to be defined in inner scope of previously 
+        /// stated symbol in expression or in scope of parsed expression.
         /// </summary>
-        /// <param name="symbol"> Contains partial function signature (name and argument types). </param>
-        /// <param name="prevType"> Type of previously stated symbol in expression defintion. </param>
-        /// <returns> Function return type. </returns>
+        /// <param name="name"> Function name. </param>
+        /// <param name="args"> Argument types. </param>
+        /// <param name="prevType"> Type symbol that function call refers to. </param>
+        /// <returns> Function return type symbol. </returns>
         private SymbolBase GetFunctionReturnType(string name,
                                                  IEnumerable<SymbolBase> args,
                                                  SymbolBase prevType)
@@ -114,6 +122,8 @@ namespace Compiler.Types
                     $"Invalid expression: {prevType?.Name ?? _scope.Owner.Name} does not have member " +
                     $"{name}({string.Join(", ", args.Select(a => a.Name))}).");
 
+            Calls.Add(func);
+
             return func.Apply(args);
         }
 
@@ -128,16 +138,27 @@ namespace Compiler.Types
             return false;
         }
 
+        /// <summary>
+        /// Extract infix expression result type from 
+        /// its definition using InfixExprTypeDeductor.
+        /// </summary>
+        /// <param name="context"> Infix expression context. </param>
+        /// <returns> Infix expression result type. </returns>
         public override SymbolBase VisitInfixExpr([NotNull] InfixExprContext context)
         {
-            return new InfixExprTypeDeductor().Deduct(context, _scope);
+            InfixExprTypeDeductor deductor = new();
+            SymbolBase symbol = deductor.Deduct(context, _scope);
+
+            Calls.AddRange(deductor.Calls);
+
+            return symbol;
         }
 
         /// <summary>
-        /// Extract symbol name from expression definition.
+        /// Extract simple expression result type from expression definition.
         /// </summary>
-        /// <param name="context"> Exression definition context. </param>
-        /// <returns></returns>
+        /// <param name="context"> Simple exression definition context. </param>
+        /// <returns> Simple expression result type. </returns>
         public override SymbolBase VisitSimpleExpr1([NotNull] SimpleExpr1Context context)
         {
             // If node is function call
@@ -145,10 +166,17 @@ namespace Compiler.Types
             {
                 // Get function argument types
                 List<SymbolBase> argTypes = argExprs.args()?.exprs()?.expr()
-                   ?.Select(arg => new ExprTypeDeductor().Deduct(arg, _scope))
+                   ?.Select(arg => 
+                   {
+                       ExprTypeDeductor deductor = new();
+                       SymbolBase symbol = deductor.Deduct(arg, _scope);
+                       Calls.AddRange(deductor.Calls);
+                       return symbol;
+                   })
                    ?.ToList()
                    ?? throw new InvalidSyntaxException(
                        "Invalid prefix expression: function arguments list expected.");
+
                 // Get node children that contain terminal
                 IList<IParseTree> children = context switch
                 {
@@ -156,12 +184,14 @@ namespace Compiler.Types
                     _ when context.simpleExpr1() is { } expr => expr.children,
                     _ => throw new NotImplementedException(),
                 };
+
                 // Get function name
                 string name = children?
                     .SingleOrDefault(ch => ch is TerminalNodeImpl t && !".()".Contains(t.GetText()))
                     ?.GetText() 
                     ?? throw new InvalidSyntaxException(
                         "Invalid prefix expression: function name expected.");
+
                 // Get callable symbol if exists
                 SymbolBase symbol = Visit(children.SingleOrDefault(ch => ch is ParserRuleContext));
 
@@ -170,17 +200,22 @@ namespace Compiler.Types
             // If node is expression in parentheses
             else if (context.exprs() is { } exprs)
             {
-                return new ExprTypeDeductor().Deduct(exprs.expr().SingleOrDefault(), _scope);
+                ExprTypeDeductor deductor = new();
+                SymbolBase symbol = deductor.Deduct(exprs.expr().SingleOrDefault(), _scope);
+
+                Calls.AddRange(deductor.Calls);
+
+                return symbol;
             }
 
             return base.VisitSimpleExpr1(context);
         }
 
         /// <summary>
-        /// Get symbol name from identifier nonterminal.
+        /// Get symbol type from identifier context.
         /// </summary>
         /// <param name="context"> Identifier context. </param>
-        /// <returns></returns>
+        /// <returns> Symbol type. </returns>
         public override SymbolBase VisitStableId([NotNull] StableIdContext context)
         {
             SymbolBase symbol = base.VisitStableId(context);
@@ -195,6 +230,11 @@ namespace Compiler.Types
             return GetVariableType(name, symbol);
         }
 
+        /// <summary>
+        /// Get literal type from its context.
+        /// </summary>
+        /// <param name="context"> Literal context. </param>
+        /// <returns> Litaral type. </returns>
         public override SymbolBase VisitLiteral([NotNull] LiteralContext context)
         {
             return GetLiteralType(context.GetText());
@@ -204,7 +244,7 @@ namespace Compiler.Types
         /// Do nothing to prevent type deduction for function argument expression subtrees.
         /// </summary>
         /// <param name="context"> Argument expression context. </param>
-        /// <returns></returns>
+        /// <returns> Default value. </returns>
         public override SymbolBase VisitArgumentExprs([NotNull] ArgumentExprsContext context)
         {
             return default;

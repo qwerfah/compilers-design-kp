@@ -15,6 +15,12 @@ namespace Compiler.Types
 {
     class InfixExprTypeDeductor : ScalaBaseVisitor<SymbolBase>
     {
+        /// <summary>
+        /// Contains all functions that call in current expression.
+        /// Uses in call graph builder
+        /// </summary>
+        public List<FunctionSymbol> Calls { get; } = new();
+
         public SymbolBase Deduct(InfixExprContext context, Scope scope)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
@@ -45,11 +51,18 @@ namespace Compiler.Types
                 _ = func ?? throw new InvalidSyntaxException(
                    $"Invalid expression: undefined symbol {name}.");
 
+                Calls.Add(func);
+
                 return func.Apply(new[] { rhs });
             }
             else if (context.prefixExpr() is { } prefixExpr)
             {
-                return new PrefixExprTypeDeductor().Deduct(prefixExpr, scope);
+                PrefixExprTypeDeductor deductor = new();
+                SymbolBase symbol = deductor.Deduct(prefixExpr, scope);
+
+                Calls.AddRange(deductor.Calls);
+
+                return symbol;
             }
 
             throw new InvalidSyntaxException("Invalid expression: infix expression expected.");
