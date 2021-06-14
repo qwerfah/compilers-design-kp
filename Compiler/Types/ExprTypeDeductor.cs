@@ -24,7 +24,18 @@ namespace Compiler.Types
             _ = context ?? throw new ArgumentNullException(nameof(context));
             _ = scope ?? throw new ArgumentNullException(nameof(scope));
 
-            if (context.expr1()?.postfixExpr()?.infixExpr()?.prefixExpr() is { } prefixExpr)
+            if (context.expr1()?.postfixExpr()?.infixExpr()
+                ?.prefixExpr()?.simpleExpr()?.blockExpr() is { } blockExpr)
+            {
+                BlockExprTypeDeductor deductor = new();
+                SymbolBase symbol = deductor.Deduct(blockExpr, scope);
+
+                Calls.AddRange(deductor.Calls);
+
+                return symbol;
+            }
+            if (context.expr1()?.postfixExpr()?.infixExpr()?.prefixExpr() 
+                is { } prefixExpr)
             {
                 PrefixExprTypeDeductor deductor = new();
                 SymbolBase symbol = deductor.Deduct(prefixExpr, scope);

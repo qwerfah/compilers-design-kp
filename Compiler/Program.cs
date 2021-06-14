@@ -2,6 +2,7 @@
 using Antlr4.Runtime.Atn;
 using Compiler.CallGraph;
 using Compiler.Serialization;
+using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Table;
 using Parser.Antlr.Grammar;
 using Parser.ErrorListeners;
@@ -39,13 +40,13 @@ namespace Compiler
             treeSerializer.ToDot(tree);
             treeSerializer.Close();
 
-            TableBuilder builder = new();
-            builder.Build(tree);
-            builder.Resolve();
+            TableBuilder tableBuilder = new();
+            tableBuilder.Build(tree);
+            tableBuilder.Resolve();
 
-            if (builder.Errors.Any())
+            if (tableBuilder.Errors.Any())
             {
-                foreach (var error in builder.Errors)
+                foreach (var error in tableBuilder.Errors)
                 {
                     Console.Error.WriteLine(error);
                 }
@@ -54,15 +55,19 @@ namespace Compiler
             }
 
             TableSerializer tableSerializer = new("table.dot");
-            tableSerializer.ToDot(builder.SymbolTable, true);
+            tableSerializer.ToDot(tableBuilder.SymbolTable, true);
             tableSerializer.Close();
 
             ClassTreeSerializer classTreeSerializer = new("class_tree.dot");
-            classTreeSerializer.ToDot(builder.SymbolTable);
+            classTreeSerializer.ToDot(tableBuilder.SymbolTable);
             classTreeSerializer.Close();
 
-            CallGraphBuilder callGraphbuilder = new(builder.SymbolTable);
-            //callGraphbuilder.Build(builder.SymbolTable.Scopes.Last().FunctionMap.Values.Last());
+            CallGraphBuilder callGraphbuilder = new();
+            callGraphbuilder.Build((FunctionSymbol)tableBuilder.SymbolTable.GetSymbol("A_Func2", SymbolType.Function));
+
+            CallGraphSerializer callGraphSerializer = new("call_graph.dot");
+            callGraphSerializer.ToDot(callGraphbuilder.Graph);
+            callGraphSerializer.Close();
         }
     }
 }

@@ -3,6 +3,10 @@ using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Table;
+using Compiler.Types;
+using DotNetGraph;
+using DotNetGraph.Edge;
+using DotNetGraph.Node;
 using Parser.Antlr.TreeLookup.Impls;
 using System;
 using System.Collections.Generic;
@@ -16,78 +20,50 @@ namespace Compiler.CallGraph
     /// standart ANTLR parse tree visitor implemetnation.
     /// Uses symbol table to build call graph from parse tree.
     /// </summary>
-    public class CallGraphBuilder : ScalaBaseVisitor<List<CallGraphNode>>
+    public class CallGraphBuilder
     {
-        private Scope _scope;
-        /// <summary>
-        /// Symbol table for specified parse tree.
-        /// </summary>
-        private readonly SymbolTable.Table.SymbolTable _symbolTable;
-
-        public CallGraphBuilder(SymbolTable.Table.SymbolTable symbolTable)
-        {
-            _ = symbolTable ?? throw new ArgumentNullException(nameof(symbolTable));
-
-            _symbolTable = symbolTable;
-        }
+        public CallGraphNode Graph { get; private set; }
 
         /// <summary>
-        /// Build call graph from given parse tree.
+        /// Build call graph for given function symbol.
         /// </summary>
-        /// <param name="tree"> Parse tree. </param>
+        /// <param name="symbol"> Function symbol. </param>
         /// <returns></returns>
-        public CallGraphNode Build(FunctionSymbol symbol)
+        public void Build(FunctionSymbol symbol)
         {
-            CallGraphNode root = new(symbol);
-            _scope = symbol.InnerScope;
+            _ = symbol ?? throw new ArgumentNullException(nameof(symbol));
 
-            root.Children.AddRange(Visit(symbol.Context));
+            Graph = new CallGraphNode { Function = symbol };
 
-            return root;
+            Build(Graph);
         }
-
-        /// <summary>
-        /// Get function symbol from function call, build 
-        /// call graph for this function and include it in result. 
-        /// </summary>
-        /// <param name="context"> Function call context. </param>
-        /// <returns> List of childrens. </returns>
-        public override List<CallGraphNode> VisitSimpleExpr1([NotNull] SimpleExpr1Context context)
+        
+        private void Build(CallGraphNode node)
         {
-            CallGraphNode node = Build(GetFunctionSymbol(context));
-            List<CallGraphNode> nodes = base.VisitSimpleExpr1(context);
-
-            if (node is { })
+            // If function symbol is function definition
+            if (node.Function.Context is FunDefContext funDef && funDef.expr() is { } expr)
             {
-                nodes = nodes ?? new();
-                nodes.Add(node);
+                ExprTypeDeductor deductor = new();
+
+                try
+                {
+                    deductor.Deduct(expr, node.Function.InnerScope);
+                    node.Calls = deductor.Calls.Select(c => new CallGraphNode { Function = c }).ToList();
+
+                    foreach (var call in node.Calls)
+                    {
+                        if (call.Function.Guid != node.Function.Guid)
+                        
+                            Build(call);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(
+                        $"Error at {node.Function.Context.Start.Line}:" +
+                        $"{node.Function.Context.Start.Column} - {e.Message}");
+                }
             }
-
-            return nodes;
-        }
-
-        /// <summary>
-        /// Get function symbol from call context.
-        /// </summary>
-        /// <param name="context"> Function call context. </param>
-        /// <returns> Function symbol if stated in call context, otherwise null. </returns>
-        private FunctionSymbol GetFunctionSymbol(SimpleExpr1Context context)
-        {
-            _ = context ?? throw new ArgumentNullException(nameof(context));
-
-            TerminalNodeImpl[] terminals = context.children
-                .Where(ch => ch is TerminalNodeImpl)
-                .Select(ch => ch as TerminalNodeImpl)
-                .ToArray();
-
-            string name = (terminals is null || !terminals.Any())
-                ? context.stableId()?.GetText()
-                : terminals.SingleOrDefault(t => t.GetText() != ".").GetText();
-
-            if (name is null) return null;
-
-            return (FunctionSymbol)_scope.GetSymbol(name, SymbolType.Function)
-                ?? throw new InvalidSyntaxException($"Ivalid function call: no function with name {name}.");
         }
     }
 }

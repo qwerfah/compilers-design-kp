@@ -13,7 +13,7 @@ using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.Types
 {
-    class InfixExprTypeDeductor : ScalaBaseVisitor<SymbolBase>
+    class InfixExprTypeDeductor
     {
         /// <summary>
         /// Contains all functions that call in current expression.

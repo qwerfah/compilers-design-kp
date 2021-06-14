@@ -203,7 +203,9 @@ namespace Compiler.SymbolTable.Table
                 SymbolType.Trait => TraitMap.ContainsKey(name) 
                     ? TraitMap[name] : enclose ? EnclosingScope?.GetSymbol(name, type) : null,
                 SymbolType.Function => FunctionMap.ContainsKey(name)
-                    ? FunctionMap[name].GetOverload(args) 
+                    ? args is { } 
+                        ? FunctionMap[name].GetOverload(args) 
+                        : FunctionMap[name]
                     : enclose 
                         ? EnclosingScope?.GetSymbol(name, type, true, args) 
                         : null,

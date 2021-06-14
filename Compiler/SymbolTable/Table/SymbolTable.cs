@@ -1,4 +1,5 @@
 ﻿using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,13 +87,20 @@ namespace Compiler.SymbolTable.Table
         }
 
         /// <summary>
-        /// Get scope in stack by its unique identifier.
+        /// Get symbol from any scope in scope list.
         /// </summary>
-        /// <param name="guid"> Scope identifier. </param>
-        /// <returns> Scope instance with specified identifier. </returns>
-        public Scope GetScope(Guid guid)
+        /// <param name="name"> Symbol name. </param>
+        /// <param name="type"> Symbol type. </param>
+        /// <returns> Symbol instance. </returns>
+        public SymbolBase GetSymbol(string name, SymbolType type)
         {
-            return _scopeStack.SingleOrDefault(s => s.Guid == guid);
+            foreach (var scope in Scopes)
+            {
+                SymbolBase symbol = scope.GetSymbol(name, type);
+                if (symbol is { }) return symbol;
+            }
+
+            return default;
         }
 
         /// <summary>

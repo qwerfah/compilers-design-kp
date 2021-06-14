@@ -109,7 +109,9 @@ namespace Compiler.Types
         {
             FunctionSymbol func = prevType switch
             {
-                null or { } when IsScopeBelongsToSymbol(prevType, _scope) => (FunctionSymbol)_scope
+                null => (FunctionSymbol)_scope
+                    .GetSymbol(name, SymbolType.Function, true, args),
+                { } when IsScopeBelongsToSymbol(prevType, _scope) => (FunctionSymbol)_scope
                     .GetSymbol(name, SymbolType.Function, true, args),
                 ClassSymbolBase classSymbol => (FunctionSymbol)classSymbol
                     .GetMember(name, SymbolType.Function, args),
@@ -193,7 +195,11 @@ namespace Compiler.Types
                         "Invalid prefix expression: function name expected.");
 
                 // Get callable symbol if exists
-                SymbolBase symbol = Visit(children.SingleOrDefault(ch => ch is ParserRuleContext));
+                SymbolBase symbol = children.SingleOrDefault(ch => ch is ParserRuleContext) switch
+                {
+                    null => null,
+                    { } child => Visit(child),
+                };
 
                 return GetFunctionReturnType(name, argTypes, symbol);
             }
