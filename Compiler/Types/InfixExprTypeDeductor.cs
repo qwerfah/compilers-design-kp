@@ -19,14 +19,16 @@ namespace Compiler.Types
         /// Contains all functions that call in current expression.
         /// Uses in call graph builder
         /// </summary>
-        public List<FunctionSymbol> Calls { get; } = new();
+        public HashSet<FunctionSymbol> Calls { get; private set; } = new();
 
         public SymbolBase Deduct(InfixExprContext context, Scope scope)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
             _ = scope ?? throw new ArgumentNullException(nameof(scope));
 
-            if ((context.ChildCount == 3) && (context.infixExpr() is { } exprs) && (exprs.Length == 2))
+            if ((context.ChildCount == 3) 
+                && (context.infixExpr() is { } exprs) 
+                && (exprs.Length == 2))
             {
                 SymbolBase lhs = Deduct(exprs[0], scope);
                 SymbolBase rhs = Deduct(exprs[1], scope);
@@ -60,12 +62,13 @@ namespace Compiler.Types
                 PrefixExprTypeDeductor deductor = new();
                 SymbolBase symbol = deductor.Deduct(prefixExpr, scope);
 
-                Calls.AddRange(deductor.Calls);
+                Calls = Calls.Union(deductor.Calls).ToHashSet();
 
                 return symbol;
             }
 
-            throw new InvalidSyntaxException("Invalid expression: infix expression expected.");
+            throw new InvalidSyntaxException(
+                "Invalid expression: infix expression expected.");
         }
     }
 }

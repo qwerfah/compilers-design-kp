@@ -10,7 +10,7 @@ namespace Compiler.CallGraph
     public class CallGraphNode
     {
         public FunctionSymbol Function { get; set; }
-        public List<CallGraphNode> Calls { get; set; }
+        public HashSet<CallGraphNode> Calls { get; set; }
         public object Elements { get; internal set; }
     }
 }

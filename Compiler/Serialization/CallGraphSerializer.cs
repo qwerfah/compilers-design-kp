@@ -35,7 +35,7 @@ namespace Compiler.Serialization
         /// <param name="callGraph"> Call graph to serialize. </param>
         public void ToDot(CallGraphNode callGraph)
         {
-            DotGraph dotGraph = new("CallGraph");
+            DotGraph dotGraph = new("CallGraph", true);
             ToDotRecursive(callGraph, dotGraph);
             _writer.Write(dotGraph.Compile(true));
         }

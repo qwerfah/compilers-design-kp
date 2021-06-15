@@ -48,6 +48,8 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         private string _unresolvedReturnType = null;
 
+        public bool IsVisited { get; set; } = false;
+
         /// <summary>
         /// Constructs function symbol from function definition context.
         /// </summary>

@@ -30,7 +30,7 @@ namespace Compiler.Types
         /// Contains all functions that call in current expression.
         /// Uses in call graph builder
         /// </summary>
-        public List<FunctionSymbol> Calls { get; } = new();
+        public HashSet<FunctionSymbol> Calls { get; private set; } = new();
 
         /// <summary>
         /// Deduct prefix expression type according to expression definition context.
@@ -151,7 +151,7 @@ namespace Compiler.Types
             InfixExprTypeDeductor deductor = new();
             SymbolBase symbol = deductor.Deduct(context, _scope);
 
-            Calls.AddRange(deductor.Calls);
+            Calls = Calls.Union(deductor.Calls).ToHashSet();
 
             return symbol;
         }
@@ -172,7 +172,9 @@ namespace Compiler.Types
                    {
                        ExprTypeDeductor deductor = new();
                        SymbolBase symbol = deductor.Deduct(arg, _scope);
-                       Calls.AddRange(deductor.Calls);
+
+                       Calls = Calls.Union(deductor.Calls).ToHashSet();
+
                        return symbol;
                    })
                    ?.ToList()
@@ -209,7 +211,7 @@ namespace Compiler.Types
                 ExprTypeDeductor deductor = new();
                 SymbolBase symbol = deductor.Deduct(exprs.expr().SingleOrDefault(), _scope);
 
-                Calls.AddRange(deductor.Calls);
+                Calls = Calls.Union(deductor.Calls).ToHashSet();
 
                 return symbol;
             }

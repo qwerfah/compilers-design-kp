@@ -4,8 +4,13 @@ class B {
 		var k = func(l)
 		var d = func(j)
 	}
-	def func(j: Double): String = ???
-	def func(j: Char): AnyRef = ???
+
+	def func(j: Double): A = ???
+
+	def func(j: Char): AnyRef = {
+	 var t = 10.1
+	 var y = func(t).A_Func2(func(t))
+	}
 }
 
 abstract class A extends B {

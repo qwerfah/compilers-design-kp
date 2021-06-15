@@ -40,6 +40,8 @@ namespace Compiler.CallGraph
         
         private void Build(CallGraphNode node)
         {
+            node.Function.IsVisited = true;
+
             // If function symbol is function definition
             if (node.Function.Context is FunDefContext funDef && funDef.expr() is { } expr)
             {
@@ -48,13 +50,15 @@ namespace Compiler.CallGraph
                 try
                 {
                     deductor.Deduct(expr, node.Function.InnerScope);
-                    node.Calls = deductor.Calls.Select(c => new CallGraphNode { Function = c }).ToList();
+                    
+                    node.Calls = deductor.Calls.Select(c => new CallGraphNode { Function = c }).ToHashSet();
 
                     foreach (var call in node.Calls)
                     {
-                        if (call.Function.Guid != node.Function.Guid)
-                        
+                        if (!call.Function.IsVisited)
+                        {
                             Build(call);
+                        }
                     }
                 }
                 catch (Exception e)
