@@ -41,6 +41,11 @@ namespace Compiler.SymbolTable.Symbol.Class
         public List<SymbolBase> Traits { get; protected set; }
 
         /// <summary>
+        /// True if class/object/trait is abstract, otherwise false.
+        /// </summary>
+        public bool IsAbstract { get; set; }
+
+        /// <summary>
         /// Class body scope.
         /// Does not set during symbol istantiation because class
         /// signature resolution precedes class body resolution.
@@ -65,12 +70,14 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// <param name="scope"> Scope of class/object/template/trait definition. </param>
         public ClassSymbolBase(
             string name, 
-            AccessModifier accessMod, 
+            AccessModifier accessMod,
+            bool isAbstract,
             ParserRuleContext context, 
             Scope innerScope, 
             Scope scope)
             : base(name, accessMod, context, scope)
         {
+            IsAbstract = isAbstract;
             InnerScope = innerScope ?? throw new ArgumentNullException(nameof(innerScope));
             InnerScope.Owner = this;
         }
@@ -84,8 +91,36 @@ namespace Compiler.SymbolTable.Symbol.Class
         public ClassSymbolBase(ParserRuleContext context, Scope innerScope, Scope scope) 
             : base(context, scope)
         {
+            IsAbstract = CheckAbstract(context);
             InnerScope = innerScope ?? throw  new ArgumentNullException(nameof(innerScope));
             InnerScope.Owner = this;
+        }
+
+        /// <summary>
+        /// Checks class abstract modifier for given context.
+        /// </summary>
+        /// <param name="context"> Class/object/trait definition context. </param>
+        /// <returns> True if class/object/trait is abstract, otherwise false. </returns>
+        private bool CheckAbstract(ParserRuleContext context)
+        {
+            _ = context ?? throw new ArgumentNullException(nameof(context));
+
+            if (context.Parent?.Parent?.Parent is TemplateStatContext stat)
+            {
+                if (stat.modifier()?.SingleOrDefault(m => m.localModifier() is { }) is { } modifier)
+                {
+                    return modifier.GetText() == "abstract";
+                }
+            }
+            else if (context.Parent?.Parent is TopStatContext topStat)
+            {
+                if (topStat.modifier()?.SingleOrDefault(m => m.localModifier() is { }) is { } modifier)
+                {
+                    return modifier.GetText() == "abstract";
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

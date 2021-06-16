@@ -9,7 +9,9 @@ using static Parser.Antlr.Grammar.ScalaParser;
 namespace Compiler.SymbolTable.Symbol
 {
     /// <summary>
-    /// Represents symbol (variable/function/class/object/trait/type definition) in symbol table.
+    /// Represents symbol 
+    /// (variable/function/class/object/trait/type definition)
+    /// in symbol table.
     /// </summary>
     public abstract class SymbolBase
     {
@@ -38,7 +40,10 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         public Scope Scope { get; set; }
 
-        public SymbolBase(string name, AccessModifier accessMod, ParserRuleContext context, Scope scope)
+        public SymbolBase(string name,
+                          AccessModifier accessMod,
+                          ParserRuleContext context,
+                          Scope scope)
         {
             if (name is null)
             {
@@ -103,8 +108,11 @@ namespace Compiler.SymbolTable.Symbol
         /// </summary>
         /// <param name="context"> Type context. </param>
         /// <param name="scope"> Scope of symbol declaration/definition. </param>
-        /// <returns> Symbol of declared type or null if unable to resolve type at this moment. </returns>
-        protected SymbolBase GetType(Type_Context context, Scope scope, out string unresolvedTypeName)
+        /// <returns> Symbol of declared type or null if 
+        /// unable to resolve type at this moment. </returns>
+        protected SymbolBase GetType(Type_Context context,
+                                     Scope scope,
+                                     out string unresolvedTypeName)
         {
             unresolvedTypeName = null;
 
@@ -117,7 +125,8 @@ namespace Compiler.SymbolTable.Symbol
                 ?.simpleType()
                 ?.stableId()?.GetText();
 
-            _ = typeName ?? throw new InvalidSyntaxException($"Invalid symbol definition: type expected.");
+            _ = typeName ?? throw new InvalidSyntaxException(
+                $"Invalid symbol definition: type expected.");
 
             SymbolBase typeSymbol = scope.GetSymbol(typeName, SymbolType.Class)
                 ?? scope.GetSymbol(typeName, SymbolType.Type)
@@ -138,17 +147,23 @@ namespace Compiler.SymbolTable.Symbol
         /// <returns> Symbol access modifier. </returns>
         protected AccessModifier GetAccessModifier(ParserRuleContext context)
         {
-            TemplateStatContext templateStat = context.Parent?.Parent as TemplateStatContext;
+            _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            if (templateStat is null)
+            while (context is not TemplateStatContext && context is not null)
+            {
+                context = (ParserRuleContext)context.Parent;
+            }
+
+            if (context is null)
             {
                 return AccessModifier.None;
             }
 
-            ModifierContext[] modifiers = templateStat?.modifier();
-            string modifier = (modifiers is null || !modifiers.Any())
-                ? null
-                : modifiers.First()?.accessModifier()?.GetText();
+            TemplateStatContext stat = (TemplateStatContext)context;
+            string modifier = stat
+                .modifier()
+                ?.SingleOrDefault(m => m.accessModifier() is { })
+                ?.GetText();
 
             return modifier switch
             {

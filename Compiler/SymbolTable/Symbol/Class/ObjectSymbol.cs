@@ -16,7 +16,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// <param name="context"> Object definition context. </param>
         /// <param name="scope"> Object definition scope. </param>
         public ObjectSymbol(ObjectDefContext context, Scope innerScope, Scope scope)
-            : base(context.Parent as TmplDefContext, innerScope, scope)
+            : base(context, innerScope, scope)
         {
             Name = GetName(context);
             (_parent, Traits) = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());
@@ -24,7 +24,8 @@ namespace Compiler.SymbolTable.Symbol.Class
 
         public override string ToString()
         {
-            return $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
+            return $"{(IsAbstract ? "abstract " : string.Empty)}" +
+                   $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
                    $"object {Name} " +
                    $"{(Parent is { } ? ("extends" + Parent.Name) : string.Empty)} " +
                    $"{(Traits is { } ? string.Join(" ", Traits.Select(t => "with " + t.Name)) : string.Empty)}";

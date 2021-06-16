@@ -182,7 +182,8 @@ namespace Compiler.SymbolTable.Symbol.Variable
                     ({ },   { }) => (resolvedType == deductedType)
                         ? resolvedType
                         : throw new InvalidSyntaxException(
-                            "Invalid variable definition: specified type does not match with deducted type."),
+                            $"Invalid variable definition: specified type {resolvedType.Name} " +
+                            $"does not match with deducted type {deductedType.Name}."),
                 };
             }
         }

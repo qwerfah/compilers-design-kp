@@ -8,21 +8,21 @@ namespace Compiler.SymbolTable.Table
 {
     public static class StandartTypes
     {
-        public static (string Name, string Parent)[] Types { get; } = new[]
+        public static (string Name, string Parent, bool IsAbstract)[] Types { get; } = new[]
         {
-            ("Any", null),
-            ("AnyVal", "Any"),
-            ("AnyRef", "Any"),
-            ("Unit", "AnyVal"),
-            ("Boolean", "AnyVal"),
-            ("Char", "AnyVal"),
-            ("Byte", "AnyVal"),
-            ("Short", "AnyVal"),
-            ("Int", "AnyVal"),
-            ("Long", "AnyVal"),
-            ("Float", "AnyVal"),
-            ("Double", "AnyVal"),
-            ("String", "AnyVal")
+            ("Any", null, true),
+            ("AnyVal", "Any", true),
+            ("AnyRef", "Any", true),
+            ("Unit", "AnyVal", false),
+            ("Boolean", "AnyVal", false),
+            ("Char", "AnyVal", false),
+            ("Byte", "AnyVal", false),
+            ("Short", "AnyVal", false),
+            ("Int", "AnyVal", false),
+            ("Long", "AnyVal", false),
+            ("Float", "AnyVal", false),
+            ("Double", "AnyVal", false),
+            ("String", "AnyVal", false)
         };
 
         public static (string Class, (string Func, string Returns, string[] Args) Signature)[] Methods { get; } = new[]

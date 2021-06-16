@@ -1,8 +1,10 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
+using Compiler.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -179,6 +181,35 @@ namespace Compiler.SymbolTable.Symbol
         }
 
         /// <summary>
+        /// Check function definition.
+        /// Checks if it has definition in nonabstract class
+        /// and if it is then performs typechecking for all expressions.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns> Type of last statement in definition 
+        /// or null if function has no definition 
+        /// (class is abstract or function marked as nonimplemented). </returns>
+        private SymbolBase CheckDefinition(FunDefContext context)
+        {
+            _ = context ?? throw new ArgumentNullException(nameof(context));
+
+            return context.expr() switch
+            {
+                null => Scope.Owner switch
+                {
+                    ClassSymbolBase classSymbol => classSymbol.IsAbstract,
+                    TypeSymbol typeSymbol => typeSymbol.AliasingType.IsAbstract,
+                    _ => throw new NotImplementedException(),
+                }
+                ? null
+                : throw new InvalidSyntaxException(
+                    $"Define function {Name} or mark class as abstract."),
+                { } expr when (expr.GetText() == "???") => null,
+                { } expr => new ExprTypeDeductor().Deduct(expr, InnerScope),
+            };
+        }
+
+        /// <summary>
         /// Resolve overload return types.
         /// </summary>
         public override void Resolve()
@@ -198,7 +229,16 @@ namespace Compiler.SymbolTable.Symbol
         public override void PostResolve()
         {
             ResolveOverloads();
-            // ResolveArguments();
+            if (Context is FunDefContext funDef)
+            {
+                SymbolBase type = CheckDefinition(Context as FunDefContext);
+                if (type is { } && type != ReturnType)
+                {
+                    throw new InvalidSyntaxException(
+                        $"Invalid function definition: {ReturnType.Name} " +
+                        $"exprected but fucntion returns {type.Name}");
+                }
+            }
         }
 
         /// <summary>

@@ -203,12 +203,13 @@ namespace Compiler.SymbolTable.Table
                 Scope innerScope = SymbolTable.PushScope();
 
                 ClassSymbol symbol = new(
-                    type.Item1,
+                    type.Name,
                     AccessModifier.None,
+                    type.IsAbstract,
                     new(),
                     innerScope,
                     global,
-                    type.Item2 is not null
+                    type.Parent is not null
                         ? global.ClassMap[type.Item2]
                         : null);
 

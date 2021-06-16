@@ -28,12 +28,13 @@ namespace Compiler.SymbolTable.Symbol.Class
         public ClassSymbol(
             string name,
             AccessModifier accessMod,
+            bool isAbstract,
             ParserRuleContext context,
             Scope innerScope,
             Scope scope,
             SymbolBase parent = null,
             List<SymbolBase> traits = null)
-            : base(name, accessMod, context, innerScope, scope)
+            : base(name, accessMod, isAbstract, context, innerScope, scope)
         {
             _parent = parent;
             Traits = traits;
@@ -45,7 +46,7 @@ namespace Compiler.SymbolTable.Symbol.Class
         /// <param name="context"> Class definition context. </param>
         /// <param name="scope"> Class definition scope. </param>
         public ClassSymbol(ClassDefContext context, Scope innerScope, Scope scope)
-            : base(context.Parent as TmplDefContext, innerScope, scope)
+            : base(context, innerScope, scope)
         {
             Name = GetName(context);
             (_parent, Traits) = GetParents(context.classTemplateOpt()?.classTemplate()?.classParents());
@@ -53,7 +54,8 @@ namespace Compiler.SymbolTable.Symbol.Class
 
         public override string ToString()
         {
-            return $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
+            return $"{(IsAbstract ? "abstract " : string.Empty)}" +
+                   $"{(AccessMod == AccessModifier.None ? string.Empty : AccessMod)} " +
                    $"class {Name} " +
                    $"{(Parent is { } ? ("extends " + Parent.Name) : string.Empty)} " +
                    $"{(Traits is { } ? string.Join(" ", Traits.Select(t => "with " + t.Name)) : string.Empty)}";
