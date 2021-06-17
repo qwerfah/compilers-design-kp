@@ -43,7 +43,7 @@ namespace Compiler.CallGraph
             node.Function.IsVisited = true;
 
             // If function symbol is function definition
-            if (node.Function.Context is FunDefContext funDef && funDef.expr() is { } expr)
+            if (node.Function.Context is FunDefContext funDef && funDef.expr()?.expr1() is { } expr)
             {
                 ExprTypeDeductor deductor = new();
 
@@ -51,7 +51,8 @@ namespace Compiler.CallGraph
                 {
                     deductor.Deduct(expr, node.Function.InnerScope);
                     
-                    node.Calls = deductor.Calls.Select(c => new CallGraphNode { Function = c }).ToHashSet();
+                    node.Calls = deductor.Calls
+                        .Select(c => new CallGraphNode { Function = c }).ToHashSet();
 
                     foreach (var call in node.Calls)
                     {

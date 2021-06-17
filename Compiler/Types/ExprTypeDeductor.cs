@@ -1,4 +1,5 @@
-﻿using Compiler.Exceptions;
+﻿using Antlr4.Runtime.Misc;
+using Compiler.Exceptions;
 using Compiler.SymbolTable.Symbol;
 using Compiler.SymbolTable.Table;
 using Parser.Antlr.TreeLookup.Impls;
@@ -11,7 +12,7 @@ using static Parser.Antlr.Grammar.ScalaParser;
 
 namespace Compiler.Types
 {
-    class ExprTypeDeductor
+    class ExprTypeDeductor : ScalaBaseVisitor<SymbolBase>
     {
         /// <summary>
         /// Contains all functions that call in current expression.
@@ -19,43 +20,59 @@ namespace Compiler.Types
         /// </summary>
         public HashSet<FunctionSymbol> Calls { get; private set; } = new();
 
-        public SymbolBase Deduct(ExprContext context, Scope scope)
+        /// <summary>
+        /// Expression definition scope.
+        /// </summary>
+        private Scope _scope;
+
+        public SymbolBase Deduct(Expr1Context context, Scope scope)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
             _ = scope ?? throw new ArgumentNullException(nameof(scope));
 
-            if (context.expr1()?.postfixExpr()?.infixExpr()
-                ?.prefixExpr()?.simpleExpr()?.blockExpr() is { } blockExpr)
+            _scope = scope;
+
+            return Visit(context);
+        }
+
+        public override SymbolBase VisitBlockExpr([NotNull] BlockExprContext context)
+        {
+            BlockExprTypeDeductor deductor = new();
+            SymbolBase symbol = deductor.Deduct(context, _scope);
+
+            Calls = Calls.Union(deductor.Calls).ToHashSet();
+
+            return symbol;
+        }
+
+        public override SymbolBase VisitInfixExpr([NotNull] InfixExprContext context)
+        {
+            if (context.prefixExpr() is { } prefixExpr)
             {
-                BlockExprTypeDeductor deductor = new();
-                SymbolBase symbol = deductor.Deduct(blockExpr, scope);
-
-                Calls = Calls.Union(deductor.Calls).ToHashSet();
-
-                return symbol;
-            }
-            if (context.expr1()?.postfixExpr()?.infixExpr()?.prefixExpr() 
-                is { } prefixExpr)
-            {
-                PrefixExprTypeDeductor deductor = new();
-                SymbolBase symbol = deductor.Deduct(prefixExpr, scope);
-
-                Calls = Calls.Union(deductor.Calls).ToHashSet();
-
-                return symbol;
-            }
-            else if (context.expr1()?.postfixExpr()?.infixExpr() is { } infixExpr)
-            {
-                InfixExprTypeDeductor deductor = new();
-                SymbolBase symbol = deductor.Deduct(infixExpr, scope);
-
-                Calls = Calls.Union(deductor.Calls).ToHashSet();
-
-                return symbol;
+                return base.VisitInfixExpr(context);
             }
 
-            throw new InvalidSyntaxException(
-                "Invalid expression: prefix or infix notation expected.");
+            InfixExprTypeDeductor deductor = new();
+            SymbolBase symbol = deductor.Deduct(context, _scope);
+
+            Calls = Calls.Union(deductor.Calls).ToHashSet();
+
+            return symbol;
+        }
+
+        public override SymbolBase VisitPrefixExpr([NotNull] PrefixExprContext context)
+        {
+            if (context.simpleExpr()?.blockExpr() is { })
+            {
+                return base.VisitPrefixExpr(context);
+            }
+
+            PrefixExprTypeDeductor deductor = new();
+            SymbolBase symbol = deductor.Deduct(context, _scope);
+
+            Calls = Calls.Union(deductor.Calls).ToHashSet();
+
+            return symbol;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Table;
 using Compiler.Types;
 using System;
@@ -168,7 +169,23 @@ namespace Compiler.SymbolTable.Symbol.Variable
         public override void Resolve()
         {
             SymbolBase resolvedType = ResolveType(ref _unresolvedTypeName) ?? Type;
+            // Check if variable must have definition
+            if (Context is ValDclContext or VarDclContext)
+            {
+                _ = Scope.Owner switch
+                {
+                    ClassSymbolBase classSymbol when (!classSymbol.IsAbstract) =>
+                        throw new InvalidSyntaxException($"Define variable {Name} or mark class as abstract."),
+                    TypeSymbol typeSymbol when (!typeSymbol.AliasingType.IsAbstract) =>
+                        throw new InvalidSyntaxException($"Define variable {Name} or mark class as abstract."),
+                    FunctionSymbol =>
+                        throw new InvalidSyntaxException($"Define function loacal variable {Name}."),
+                    _ => true,
+                };
 
+                return;
+            }
+            // Check variable definition and compare declared and deducted types
             if (Context is PatVarDefContext context)
             {
                 SymbolBase deductedType = DeductType(context);
@@ -199,14 +216,15 @@ namespace Compiler.SymbolTable.Symbol.Variable
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            ExprContext expr = context.varDef()?.patDef()?.expr()
-                ?? context.patDef()?.expr();
+            Expr1Context expr = context.varDef()?.patDef()?.expr()?.expr1()
+                ?? context.patDef()?.expr()?.expr1();
 
-            if (expr is null) return null;
+            if (expr is null) throw new InvalidSyntaxException(
+                "Invalid variable definition: expression expected.");
 
             return new ExprTypeDeductor().Deduct(expr, Scope)
                 ?? throw new InvalidSyntaxException(
-                    "Invalid variable definition: expected prefix, infix or postfix expression.");
+                    "Invalid variable definition: expression expected.");
         }
     }
 }

@@ -193,12 +193,13 @@ namespace Compiler.SymbolTable.Symbol
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            return context.expr() switch
+            return context.expr()?.expr1() switch
             {
                 null => Scope.Owner switch
                 {
                     ClassSymbolBase classSymbol => classSymbol.IsAbstract,
                     TypeSymbol typeSymbol => typeSymbol.AliasingType.IsAbstract,
+                    FunctionSymbol => throw new InvalidSyntaxException($"Define nested function {Name}"),
                     _ => throw new NotImplementedException(),
                 }
                 ? null

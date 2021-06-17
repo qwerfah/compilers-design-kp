@@ -149,12 +149,14 @@ namespace Compiler.SymbolTable.Symbol
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            while (context is not TemplateStatContext && context is not null)
+            while (context is not TemplateStatContext 
+                && context is not BlockStatContext 
+                && context is not null)
             {
                 context = (ParserRuleContext)context.Parent;
             }
 
-            if (context is null)
+            if (context is null || context is BlockStatContext)
             {
                 return AccessModifier.None;
             }

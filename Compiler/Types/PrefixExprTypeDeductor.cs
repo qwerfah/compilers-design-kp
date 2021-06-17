@@ -44,7 +44,9 @@ namespace Compiler.Types
             _ = scope ?? throw new ArgumentNullException(nameof(scope));
             _scope = scope;
 
-            return Visit(context);
+            SymbolBase symbol = Visit(context);
+
+            return symbol;
         }
 
         /// <summary>
@@ -171,7 +173,7 @@ namespace Compiler.Types
                    ?.Select(arg => 
                    {
                        ExprTypeDeductor deductor = new();
-                       SymbolBase symbol = deductor.Deduct(arg, _scope);
+                       SymbolBase symbol = deductor.Deduct(arg.expr1(), _scope);
 
                        Calls = Calls.Union(deductor.Calls).ToHashSet();
 
@@ -209,7 +211,7 @@ namespace Compiler.Types
             else if (context.exprs() is { } exprs)
             {
                 ExprTypeDeductor deductor = new();
-                SymbolBase symbol = deductor.Deduct(exprs.expr().SingleOrDefault(), _scope);
+                SymbolBase symbol = deductor.Deduct(exprs.expr().SingleOrDefault().expr1(), _scope);
 
                 Calls = Calls.Union(deductor.Calls).ToHashSet();
 
@@ -256,6 +258,21 @@ namespace Compiler.Types
         public override SymbolBase VisitArgumentExprs([NotNull] ArgumentExprsContext context)
         {
             return default;
+        }
+
+        public override SymbolBase VisitSimpleExpr([NotNull] SimpleExprContext context)
+        {
+            return Visit(context.blockExpr());
+        }
+
+        public override SymbolBase VisitBlockExpr([NotNull] BlockExprContext context)
+        {
+            BlockExprTypeDeductor deductor = new();
+            SymbolBase symbol = deductor.Deduct(context, _scope);
+
+            Calls = Calls.Union(deductor.Calls).ToHashSet();
+
+            return symbol;
         }
     }
 }
