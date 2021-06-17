@@ -1,5 +1,7 @@
-class A {
+abstract class A {
 	var v: Int = 90
+
+	protected def u(): Unit
 
 	private def f(): Unit = {
 		var f = {

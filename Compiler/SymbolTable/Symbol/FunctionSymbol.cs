@@ -195,16 +195,7 @@ namespace Compiler.SymbolTable.Symbol
 
             return context.expr()?.expr1() switch
             {
-                null => Scope.Owner switch
-                {
-                    ClassSymbolBase classSymbol => classSymbol.IsAbstract,
-                    TypeSymbol typeSymbol => typeSymbol.AliasingType.IsAbstract,
-                    FunctionSymbol => throw new InvalidSyntaxException($"Define nested function {Name}"),
-                    _ => throw new NotImplementedException(),
-                }
-                ? null
-                : throw new InvalidSyntaxException(
-                    $"Define function {Name} or mark class as abstract."),
+                null => throw new InvalidSyntaxException($"Define function {Name} or mark as ???."),
                 { } expr when (expr.GetText() == "???") => null,
                 { } expr => new ExprTypeDeductor().Deduct(expr, InnerScope),
             };
@@ -230,15 +221,27 @@ namespace Compiler.SymbolTable.Symbol
         public override void PostResolve()
         {
             ResolveOverloads();
-            if (Context is FunDefContext funDef)
+
+            SymbolBase type = Context switch
             {
-                SymbolBase type = CheckDefinition(Context as FunDefContext);
-                if (type is { } && type != ReturnType)
+                FunDefContext def => CheckDefinition(def),
+                FunDclContext => Scope.Owner switch
                 {
-                    throw new InvalidSyntaxException(
-                        $"Invalid function definition: {ReturnType.Name} " +
-                        $"exprected but fucntion returns {type.Name}");
+                    ClassSymbolBase classSymbol => classSymbol.IsAbstract,
+                    TypeSymbol typeSymbol => typeSymbol.AliasingType.IsAbstract,
+                    FunctionSymbol => false,
+                    _ => throw new NotImplementedException(),
                 }
+                ? null
+                : throw new InvalidSyntaxException($"Define function {Name} or mark as ???."),
+                _ => null
+            };
+
+            if (type is { } && type != ReturnType)
+            {
+                throw new InvalidSyntaxException(
+                    $"Invalid function definition: {ReturnType.Name} " +
+                    $"exprected but fucntion returns {type.Name}");
             }
         }
 
