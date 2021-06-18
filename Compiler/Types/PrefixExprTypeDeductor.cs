@@ -180,8 +180,7 @@ namespace Compiler.Types
                        return symbol;
                    })
                    ?.ToList()
-                   ?? throw new InvalidSyntaxException(
-                       "Invalid prefix expression: function arguments list expected.");
+                   ?? new();
 
                 // Get node children that contain terminal
                 IList<IParseTree> children = context switch

@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Compiler.Exceptions;
+using Compiler.SymbolTable.Symbol.Class;
 using Compiler.SymbolTable.Symbol.Variable;
 using Compiler.SymbolTable.Table;
 using System;
@@ -147,6 +148,11 @@ namespace Compiler.SymbolTable.Symbol
         /// <returns> Symbol access modifier. </returns>
         protected AccessModifier GetAccessModifier(ParserRuleContext context)
         {
+            if (Scope.Owner is null or not ClassSymbolBase)
+            {
+                return AccessModifier.None;
+            }
+
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
             while (context is not TemplateStatContext 
@@ -156,16 +162,13 @@ namespace Compiler.SymbolTable.Symbol
                 context = (ParserRuleContext)context.Parent;
             }
 
-            if (context is null || context is BlockStatContext)
+            string modifier = context switch
             {
-                return AccessModifier.None;
-            }
-
-            TemplateStatContext stat = (TemplateStatContext)context;
-            string modifier = stat
-                .modifier()
-                ?.SingleOrDefault(m => m.accessModifier() is { })
-                ?.GetText();
+                null or BlockStatContext => null,
+                TemplateStatContext stat =>
+                    stat.modifier()?.SingleOrDefault(m => m.accessModifier() is { })?.GetText(),
+                _ => throw new NotImplementedException(),
+            };
 
             return modifier switch
             {

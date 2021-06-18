@@ -30,7 +30,9 @@ namespace Compiler.SymbolTable.Table
         /// <summary>
         /// Enclosing scope for current scope.
         /// </summary>
-        public Scope EnclosingScope { get; set; }
+        public Scope EnclosingScope { get; }
+
+        public List<Scope> InnerScopes { get; } 
 
         /// <summary>
         /// Contains symbol (class/object/trait/function) that current scope belongs to.
@@ -77,9 +79,15 @@ namespace Compiler.SymbolTable.Table
 
         public Scope(ScopeType type, Scope enclosingScope = null)
         {
+            if (type == ScopeType.Local && enclosingScope is null)
+            {
+                throw new ArgumentNullException(nameof(enclosingScope));
+            }
+
             Guid = Guid.NewGuid();
             Type = type;
             EnclosingScope = enclosingScope;
+            InnerScopes = new();
         }
 
         /// <summary>
@@ -216,9 +224,17 @@ namespace Compiler.SymbolTable.Table
                 _ => throw new NotImplementedException(),
             };
 
-            if (symbol is null && Owner is ClassSymbolBase classSymbol)
+            if (symbol is null && Owner is { })
             {
-                symbol = classSymbol.Parent?.InnerScope.GetSymbol(name, type, enclose, args);
+                var owner = Owner;
+                while (owner is not null && owner is not ClassSymbolBase) owner = owner.Scope.Owner;
+                if (owner is null) return null;
+
+                symbol = ((ClassSymbolBase)owner)
+                    .Parent
+                    ?.InnerScope
+                    .GetSymbol(name, type, enclose, args);
+
                 symbol = symbol switch
                 {
                     null => null,
