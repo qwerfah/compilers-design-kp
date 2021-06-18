@@ -63,7 +63,7 @@ namespace Compiler
             classTreeSerializer.Close();
 
             CallGraphBuilder callGraphbuilder = new();
-            callGraphbuilder.Build((FunctionSymbol)tableBuilder.SymbolTable.GetSymbol("f", SymbolType.Function));
+            callGraphbuilder.Build((FunctionSymbol)tableBuilder.SymbolTable.GetSymbol("r", SymbolType.Function));
 
             CallGraphSerializer callGraphSerializer = new("call_graph.dot");
             callGraphSerializer.ToDot(callGraphbuilder.Graph);

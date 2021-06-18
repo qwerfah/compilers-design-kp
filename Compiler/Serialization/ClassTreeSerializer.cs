@@ -37,7 +37,7 @@ namespace Compiler.Serialization
         {
             _ = symbolTable ?? throw new ArgumentNullException("File not opened.");
 
-            DotGraph graph = new("ParseTree");
+            DotGraph graph = new("ParseTree", true);
             
             foreach (var scope in symbolTable.Scopes)
             {
@@ -72,6 +72,7 @@ namespace Compiler.Serialization
                 if(!_edgeHashes.Contains(new(symbol.GetHashCode(), symbol.Parent.GetHashCode())))
                 {
                     graph.Elements.Add(new DotEdge(node, parent));
+
                     _edgeHashes.Add(new(symbol.GetHashCode(), symbol.Parent.GetHashCode()));
                 }
             }

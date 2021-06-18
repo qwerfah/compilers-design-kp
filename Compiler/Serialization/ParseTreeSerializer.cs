@@ -55,7 +55,8 @@ namespace Compiler.Serialization
                 Label = tree.ChildCount == 0
                     ? tree.GetText()
                     : tree.GetType().Name.Replace("Context", string.Empty),
-                Color = tree.ChildCount == 0 ? Color.Red : Color.Black
+                Color = tree.ChildCount == 0 ? Color.Red : Color.Black,
+                Height = new(0.35f)
             };
 
             graph.Elements.Add(node);
@@ -64,7 +65,7 @@ namespace Compiler.Serialization
             {
                 DotNode child = ToDotRecursive(graph, tree.GetChild(i));
                 if (child is null) continue;
-                graph.Elements.Add(new DotEdge(node, child));
+                graph.Elements.Add(new DotEdge(node, child) {  });
             }
 
             return node;
