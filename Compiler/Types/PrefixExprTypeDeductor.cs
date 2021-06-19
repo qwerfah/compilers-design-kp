@@ -216,6 +216,18 @@ namespace Compiler.Types
 
                 return symbol;
             }
+            else if (context.simpleExpr1() is { } expr)
+            {
+                SymbolBase prev = Visit(expr);
+                string name = context.children
+                    .SingleOrDefault(ch => ch is TerminalNodeImpl && ch.GetText() != ".")
+                    .GetText();
+
+                _ = name ?? throw new InvalidSyntaxException(
+                    "Invalid expression: variable name expected.");
+
+                return GetVariableType(name, prev);
+            }
 
             return base.VisitSimpleExpr1(context);
         }

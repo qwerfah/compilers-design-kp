@@ -1,9 +1,11 @@
 class A {
-	def f(): Unit = ???
-	private def f(b: Double): Double = ???
+	def f(): Int = ???
+	val o = 'l'
+
+	private def f(b: Double): A = ???
 	protected def f(b: Int): Double = {
 		val y = f(b)
-		val c = y ** f(y)
+		val c = f(y).f() == 'f'
 		return y ++ b
 	}
 }
